@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KGCA44", "KGCA44\KGCA44.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileIO_0", "FileIO_0\FileIO_0.vcxproj", "{3200A72F-AB7A-4F4D-B84B-C305C7D94483}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StackLinkedList", "StackLinkedList\StackLinkedList.vcxproj", "{6A1C4474-568C-4483-8A8B-E489B793206A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{3200A72F-AB7A-4F4D-B84B-C305C7D94483}.Release|x64.Build.0 = Release|x64
 		{3200A72F-AB7A-4F4D-B84B-C305C7D94483}.Release|x86.ActiveCfg = Release|Win32
 		{3200A72F-AB7A-4F4D-B84B-C305C7D94483}.Release|x86.Build.0 = Release|Win32
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Debug|x64.ActiveCfg = Debug|x64
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Debug|x64.Build.0 = Debug|x64
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Debug|x86.ActiveCfg = Debug|Win32
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Debug|x86.Build.0 = Debug|Win32
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Release|x64.ActiveCfg = Release|x64
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Release|x64.Build.0 = Release|x64
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Release|x86.ActiveCfg = Release|Win32
+		{6A1C4474-568C-4483-8A8B-E489B793206A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
