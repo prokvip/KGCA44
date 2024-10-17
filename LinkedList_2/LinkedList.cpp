@@ -1,12 +1,13 @@
-﻿/// 단방향 연결리스트
+﻿/// 양방향 연결리스트
 #include <stdio.h>
 #include <stdlib.h>
 //#include <malloc.h>
 struct TNode
 {
     int     iValue;
-    TNode*  pNext; // 단방향
-} ;
+    TNode*  pNext;
+    TNode*  pPrev;
+};
 
 TNode* g_pHead = nullptr;
 TNode* g_pTail = nullptr;
@@ -16,15 +17,13 @@ void    push_back(TNode* pNewNode);
 void    Initialize();
 void    Release();
 TNode*  CreateNode(int iValue);
-void    ShowAll();
-TNode*  Delete(TNode* pDeleteNode);
+void    ShowAll(bool bReverse=false);
+TNode*  Erase(int iValue);
 TNode*  Erase(TNode* pDeleteNode);
 void    DeleteAll();
-TNode*  Find(int iFindValue);
+TNode*  Find(int iFindValue, bool bReverse = false);
 
-// Find -> Erase(pNode) : pNode 검색을 직접 순회해서 지운다.
-// Erase(pNode)   -> free(pNode)     
-//       : pre, postNode 검색하여 사전에 연결하고 pNode 검색없이 지운다.
+
 
 int main()
 {
@@ -36,17 +35,22 @@ int main()
             push_back(pNewNode);           
         }
         ShowAll();
+        ShowAll(true);
 
         // 0 -> 1 -> 2 -> nullptr
         // 1) 1 del   g_pHead -> 0 -> 2
         // 2) 2 del   g_pHead -> 0 -> 1        
         // 3) 0 del   g_pHead -> 1 -> 2
-        TNode* pNode = Find(0);
-        Erase(pNode);        
+        TNode* pNode1 = Find(1);
+        //TNode* pNode2 = Find(2,true);
+        Erase(pNode1);        
+        //Erase(pNode2);
+        //Erase(0);
 
         DeleteAll();
 
-        ShowAll();
+        ShowAll(true);
+        ShowAll(false);
         for (int iNode = 0; iNode < 5; iNode++)
         {
             push_back(CreateNode(iNode));
@@ -66,14 +70,21 @@ void    Show(TNode* pNode)
 }
 void    push_back(TNode* pNewNode)
 {
-    g_pTail->pNext = pNewNode;
+    // 0(PreNode) -> 1 -> pNewNode(tail) -> nullptr        
+    g_pTail->pNext = pNewNode;    
+    // 0(PreNode) <- 1 <- pNewNode(tail) -> nullptr    
+    pNewNode->pPrev = g_pTail;
+
     g_pTail = pNewNode;
 }
 void    Initialize()
 {
     // 가상의 머리노드를 생성해 둔다.
     g_pHead = (TNode*)malloc(sizeof(TNode));
-    g_pTail = g_pHead;
+    g_pHead->iValue = -1;
+    g_pHead->pNext = nullptr;
+    g_pHead->pPrev = nullptr;
+    g_pTail = g_pHead;    
 }
 void    Release()
 {
@@ -86,64 +97,88 @@ TNode* CreateNode(int iValue)
     TNode* pNewNode = (TNode*)malloc(sizeof(TNode));
     pNewNode->iValue = iValue;
     pNewNode->pNext = nullptr;
+    pNewNode->pPrev = nullptr;
     return pNewNode;
 }
-void    ShowAll()
+void    ShowAll(bool bReverse)
 {
-    // 단 방향 연결리스트 순회.
-    for (TNode* pNode = g_pHead->pNext;
-        pNode != nullptr;
-        pNode = pNode->pNext)
+    if (bReverse == false)
     {
-        Show(pNode);
+        // 단 방향 연결리스트 순회.
+        for (TNode* pNode = g_pHead->pNext;
+            pNode != nullptr;
+            pNode = pNode->pNext)
+        {
+            Show(pNode);
+        }
+    }
+    else
+    {
+        for (TNode* pNode = g_pTail;
+            pNode != g_pHead;
+            pNode = pNode->pPrev)
+        {
+            Show(pNode);
+        }
     }
 }
-TNode* Delete(TNode* pDeleteNode)
+TNode* Erase(int iValue)
 {
-    TNode* pTemp = pDeleteNode->pNext;
-    free(pDeleteNode);
-    return pTemp;
+    TNode* pNode = Find(iValue);
+    return Erase(pNode);    
 }
 TNode* Erase(TNode* pDeleteNode)
 {
-    TNode* pPreNode = g_pHead;
-    while (pPreNode)
+    TNode* pPreNode = pDeleteNode->pPrev;
+    TNode* pPostNode = pDeleteNode->pNext;
+    pPreNode->pNext = pPostNode;
+    if (pPostNode != nullptr)
     {
-        if (pPreNode->pNext == pDeleteNode)
-        {
-            TNode* pNext = Delete(pDeleteNode);
-            if (pNext == nullptr)
-            {
-                g_pTail = pPreNode;
-            }
-            pPreNode->pNext = pNext;
-            break;
-        }
-        pPreNode = pPreNode->pNext;
+        pPostNode->pPrev = pPreNode;
     }
+    else
+    {
+        g_pTail = pPreNode; // 꼬리노드를 삭제의 경우
+    }
+    free(pDeleteNode);
     return pPreNode;
 }
 void    DeleteAll()
 {
     // 해제(신규 추가된 노드를 모두 삭제한다.
-    TNode* pNode = g_pHead->pNext;
-    while (pNode)
+    TNode* pNode = g_pTail;
+    while (pNode!=nullptr && pNode != g_pHead)
     {
-        pNode = Delete(pNode);
+        pNode = Erase(pNode);
     }
     g_pHead->pNext = nullptr;
     g_pTail = g_pHead;
 }
-TNode* Find(int iFindValue)
+TNode* Find(int iFindValue, bool bReverse)
 {
-    TNode* pNode = g_pHead->pNext;
-    while (pNode)
+    if (bReverse == false)
     {
-        if (pNode->iValue == iFindValue)
+        TNode* pNode = g_pHead->pNext;
+        while (pNode)
         {
-            return pNode;
+            if (pNode->iValue == iFindValue)
+            {
+                return pNode;
+            }
+            pNode = pNode->pNext;
         }
-        pNode = pNode->pNext;
+    }
+    else
+    {
+        TNode* pNode = g_pTail;
+        while (pNode && g_pHead != pNode)
+        {
+            if (pNode->iValue == iFindValue)
+            {
+                return pNode;
+            }
+            pNode = pNode->pPrev;
+        }
     }
     return nullptr;
 }
