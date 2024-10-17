@@ -6,13 +6,7 @@ struct TNode
     int     iValue;
     struct TNode*  pNext;
 } ;
-// C언어에서는 동일한 이름의 함수를 선언할 수없다.
-// C++에서는 가능하다.(함수 오버로딩)
-void  PRINT(int k)
-{
-    printf("%d", k);
-}
-void  PRINT( TNode* pNode)
+void  Show( TNode* pNode)
 {    
     if (pNode != nullptr)
     {
@@ -55,32 +49,80 @@ void ShowAll()
         pNode != nullptr;
         pNode = pNode->pNext)
     {
-        PRINT(pNode);
+        Show(pNode);
     }
 }
-
+TNode* Delete(TNode* pDeleteNode)
+{
+    TNode* pTemp = pDeleteNode->pNext;
+    free(pDeleteNode);
+    return pTemp;
+}
+TNode* Del(TNode* pDeleteNode)
+{
+    TNode* pPreNode = g_pHead;
+    while (pPreNode)
+    {
+        if (pPreNode->pNext == pDeleteNode)
+        {
+            TNode* pNext = Delete(pDeleteNode);
+            pPreNode->pNext = pNext;
+            break;
+        }
+        pPreNode = pPreNode->pNext;
+    }
+    return pPreNode;
+}
 void DeleteAll()
 {
     // 해제(신규 추가된 노드를 모두 삭제한다.
     TNode* pNode = g_pHead->pNext;
     while (pNode)
     {
-        TNode* pTemp = pNode->pNext;
-        free(pNode);
-        pNode = pTemp;
+        pNode = Delete(pNode);
     }
     g_pHead->pNext = nullptr;
     g_pTail = g_pHead;
 }
+TNode* Find(int iFindValue)
+{
+    TNode* pPreNode = g_pHead;
+    while (pPreNode)
+    {
+        if (pPreNode->pNext != nullptr)
+        {
+            if (pPreNode->pNext->iValue == iFindValue)
+            {
+                return pPreNode;
+            }
+        }   
+        pPreNode = pPreNode->pNext;
+    }
+    return nullptr;
+}
 int main()
 {
     Initialize();  
-    {
+    {        
         for (int iNode = 0; iNode < 3; iNode++)
         {
-            Insert(CreateNode(iNode));
+            TNode* pNewNode = CreateNode(iNode);
+            Insert(pNewNode);           
         }
         ShowAll();
+
+        // 0 -> 1 -> 2 -> nullptr
+        // 1) 1 del   g_pHead -> 0 -> 2
+        // 2) 2 del   g_pHead -> 0 -> 1        
+        // 3) 0 del   g_pHead -> 1 -> 2
+       /* TNode* pFindPreNode = Find(1);
+        TNode* pNextNode  = Delete(pFindPreNode->pNext);
+        TNode* pNextNode = Delete(g_pTail);
+
+        pFindPreNode->pNext = pNextNode;*/
+        //TNode* pNextNode = Find(2);
+        //TNode* pNextNode = Find(0);
+
         DeleteAll();
 
         ShowAll();
