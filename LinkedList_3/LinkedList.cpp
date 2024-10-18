@@ -41,8 +41,8 @@ int main()
         for (int iNode = 0; iNode < 10; iNode++)
         {
             TNode* pNewNode = CreateNode(iNode);
-            //push_back(pNewNode,g_pTail);    
-            push_front(pNewNode,g_pHead);
+            //push_back(pNewNode);    
+            push_front(pNewNode);
         }
         ShowAll();
         ShowAll(true);
