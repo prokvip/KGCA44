@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{13444226-3B54-42DE-955D-4AE5C832686E}</ProjectGuid>
+    <ProjectGuid>{216A0087-7565-4AF5-823D-EEFD854BCEB4}</ProjectGuid>
     <RootNamespace>StackLinkedList</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -79,10 +79,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>../output/Debug/</OutDir>
-    <IntDir>../output/Debug/Linkedlist_2</IntDir>
+    <IntDir>../output/Debug/Linkedlist_3</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>../output/Release/</OutDir>
+    <IntDir>../output/Release/Linkedlist_3</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
