@@ -1,12 +1,31 @@
 #include "LinkedList.h"
-//Sample.obj : error LNK2005 : "struct TNode * g_pHead" (? g_pHead@@3PEAUTNode@@EA)이(가) LinkedList.obj에 이미 정의되어 있습니다.
+
 TNode* g_pHead;
 TNode* g_pTail;
+int TNode::iCurrentCounter = 0;
+unsigned int TNode::iKeyIndex = 0;
+
+bool    Ascending(TNode* a, TNode* b)
+{
+    if (a > b)
+    {
+        return true;
+    }
+    return false;
+}
+bool    Descending(TNode* a, TNode* b)
+{
+    if (a < b)
+    {
+        return true;
+    }
+    return false;
+}
 void    Show(TNode* pNode)
 {
     if (pNode != nullptr)
     {
-        printf("%d ", pNode->iValue);
+        printf("%d ", pNode->iKey);
     }
 }
 void    push_back(TNode* pNewNode)
@@ -18,6 +37,8 @@ void    push_back(TNode* pNewNode)
     // pPreNode <- pNewNode <- g_pTail
     g_pTail->pPrev = pNewNode;
     pNewNode->pPrev = pPreNode;
+
+    TNode::iCurrentCounter++;
 }
 void    push_front(TNode* pNewNode)
 {
@@ -28,6 +49,8 @@ void    push_front(TNode* pNewNode)
     // g_pHead <- pNewNode <- pPostNode
     pPostNode->pPrev = pNewNode;
     pNewNode->pPrev = g_pHead;
+
+    TNode::iCurrentCounter++;
 }
 void    push_back(TNode* pDestNode, TNode* pNewNode)
 {
@@ -46,6 +69,8 @@ void    push_back(TNode* pDestNode, TNode* pNewNode)
     // pDestNode <- pNewNode <- pPostNode
     pPostNode->pPrev = pNewNode;
     pNewNode->pPrev = pDestNode;
+
+    TNode::iCurrentCounter++;
 }
 void    push_front(TNode* pDestNode, TNode* pNewNode)
 {
@@ -62,14 +87,16 @@ void    push_front(TNode* pDestNode, TNode* pNewNode)
     // pPreNode <- pNewNode <- pDestNode
     pDestNode->pPrev = pNewNode;
     pNewNode->pPrev = pPreNode;
+
+    TNode::iCurrentCounter++;
 }
 void    Initialize()
 {
     // 가상의 머리노드를 생성해 둔다.
     g_pHead = (TNode*)malloc(sizeof(TNode));
-    g_pHead->iValue = -1;
+    g_pHead->iKey = -1;
     g_pTail = (TNode*)malloc(sizeof(TNode));
-    g_pTail->iValue = -2;
+    g_pTail->iKey = -2;
 
     g_pHead->pNext = g_pTail;
     g_pHead->pPrev = nullptr;
@@ -84,10 +111,10 @@ void    Release()
     g_pHead = nullptr;
     g_pTail = nullptr;
 }
-TNode* CreateNode(int iValue)
+TNode* CreateNode()
 {
     TNode* pNewNode = (TNode*)malloc(sizeof(TNode));
-    pNewNode->iValue = iValue;
+    pNewNode->iKey = 0;
     pNewNode->pNext = nullptr;
     pNewNode->pPrev = nullptr;
     return pNewNode;
@@ -121,9 +148,9 @@ void    ShowAll(bool bReverse, void(*Fun)(TNode*,FILE*), FILE* fp)
         }
     }
 }
-TNode* Erase(int iValue)
+TNode* Erase(int iKey)
 {
-    TNode* pNode = Find(iValue);
+    TNode* pNode = Find(iKey);
     return Erase(pNode);
 }
 TNode* Erase(TNode* pDeleteNode)
@@ -133,6 +160,8 @@ TNode* Erase(TNode* pDeleteNode)
     pPreNode->pNext = pPostNode;
     pPostNode->pPrev = pPreNode;
     free(pDeleteNode);
+
+    TNode::iCurrentCounter--;
     return pPreNode;
 }
 void    DeleteAll()
@@ -144,7 +173,7 @@ void    DeleteAll()
         pNode = Erase(pNode);
     }
 }
-TNode* Find(int iFindValue, bool bReverse, bool (*Fun)(TNode*))
+TNode* Find(int iFindKey, bool bReverse, bool (*Fun)(TNode*))
 {
     if (bReverse == false)
     {
@@ -158,7 +187,7 @@ TNode* Find(int iFindValue, bool bReverse, bool (*Fun)(TNode*))
             }
             else
             {
-                if (pNode->iValue == iFindValue)
+                if (pNode->iKey == iFindKey)
                 {
                     return pNode;
                 }
@@ -178,7 +207,7 @@ TNode* Find(int iFindValue, bool bReverse, bool (*Fun)(TNode*))
             }
             else
             {
-                if (pNode->iValue == iFindValue)
+                if (pNode->iKey == iFindKey)
                 {
                     return pNode;
                 }
@@ -188,6 +217,94 @@ TNode* Find(int iFindValue, bool bReverse, bool (*Fun)(TNode*))
     }
     return nullptr;
 }
+TNode* Find(bool (*Fun)(TNode*))
+{
+    if (Fun == nullptr) return nullptr;
+    TNode* pNode = g_pHead->pNext;
+    while (pNode != g_pTail)
+    {
+        bool bResult = Fun(pNode);
+        if (bResult == true) return pNode;
+        pNode = pNode->pNext;
+    }    
+    return nullptr;
+}
+bool Swap(TNode* aNode, TNode* bNode)
+{
+    //  H, a, 1 , 2, b -> H<->b,<->1, 2, a
+    //  a, 1 , b -> b, 1, a
+    //  a, b -> b, a
+    TNode* aTemp = aNode;
+    TNode* aPrev = aNode->pPrev;
+    TNode* aNext = aNode->pNext;
+    TNode* bPrev = bNode->pPrev;
+    TNode* bNext = bNode->pNext;
+
+    //aPrev -> bNode -> aNext -> aNode -> bNext;
+    //aPrev -> bNode -> aNode -> bNext;
+    aPrev->pNext = bNode;
+    if( aNext == bNode)
+    { 
+        bNode->pNext = aNode;
+    }else
+    {
+        bNode->pNext = aNext;
+    }
+   
+    aNext->pNext = aNode;
+    aNode->pNext = bNext;
+
+    //aPrev <- bNode <- aNext <- aNode <- bNext;
+    //aPrev <- bNode <- aNode <- bNext;
+    bNext->pPrev = aNode;
+    if (aNext == bNode)
+    {
+        aNode->pPrev = bNode;
+    }
+    else
+    {
+        aNode->pPrev = aNext;
+    }
+    aNext->pPrev = bNode;
+    bNode->pPrev = aPrev;
+    return true;
+}
+void   Sort(bool (*Fun)(TNode* a, TNode* b))
+{
+    if (Fun == nullptr) return;
+    // 10, 6, 9, 1, 7, 2, 3
+    // 6, 10, 9, 1, 7, 2, 3
+    // 6, 3, 9, 1, 7, 2, 10
+   
+    // 2, 6, 9, 1, 7, 2, 3
+    // 2, 6, 9, 1, 7, 2, 3
+    TNode* pEnd = g_pTail;
+    int iCounter = 0;
+    for (int iCnt=0; iCnt < TNode::iCurrentCounter; iCnt++)
+    {
+        for (TNode* bNode = g_pHead->pNext;
+            bNode != pEnd;
+            )
+        {
+            TNode* pNode0 = bNode;
+            TNode* pNode1 = bNode->pNext;
+            if (pNode1 == g_pTail) break;
+            if (Fun(pNode0, pNode1))
+            {
+                Swap(pNode0, pNode1);
+                bNode = pNode0;
+            }
+            else
+            {
+                bNode = bNode->pNext;
+            }
+            iCounter++;
+        }
+        pEnd = pEnd->pPrev;
+    }
+    printf("\n%d", iCounter);
+}
+
 // 0 -> 1 -> 2 -> nullptr
 // new 3 insert : // 0 -> 1 -> 2 -> 3 -> nullptr
 // new 4 insert : // 0 -> 1 -> 2 -> 3 -> 4 -> nullptr

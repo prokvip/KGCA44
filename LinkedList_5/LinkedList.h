@@ -25,10 +25,17 @@ struct TStudent
 struct TNode
 {
     TStudent data;
-    int     iValue;    
+    int     iKey;    
+    // 고유한 키 생성
+    static  unsigned int iKeyIndex;
+    // 연결된 노드의 현재 개수
+    static  int iCurrentCounter;
+
     TNode*  pNext;
     TNode*  pPrev;
 };
+
+
 extern TNode* g_pHead;
 extern TNode* g_pTail;
 
@@ -42,11 +49,17 @@ void    push_back(TNode* pDestNode, TNode* pNewNode);
 void    push_front(TNode* pDestNode, TNode* pNewNode);
 void    Initialize();
 void    Release();
-TNode* CreateNode(int iValue);
+TNode* CreateNode();
 void   ShowAll( bool bReverse = false, 
                 void (*Fun)(TNode*, FILE*) = nullptr,
                 FILE* fp = nullptr);
-TNode* Erase(int iValue);
+TNode* Erase(int iKey);
 TNode* Erase(TNode* pDeleteNode);
 void    DeleteAll();
-TNode* Find(int iFindValue, bool bReverse = false, bool (*Fun)(TNode*)=nullptr);
+TNode* Find(int iFindKey, bool bReverse = false, bool (*Fun)(TNode*)=nullptr);
+TNode* Find(bool (*Fun)(TNode*) = nullptr);
+bool   Swap(TNode* aNode, TNode* bNode);
+
+bool    Ascending(TNode* a, TNode* b);
+bool    Descending(TNode* a, TNode* b);
+void   Sort(bool (*Fun)(TNode* a, TNode* b) = Ascending);

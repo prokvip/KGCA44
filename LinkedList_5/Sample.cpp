@@ -3,7 +3,7 @@
 #include <string.h>
 TNode*  CreateStudent(int iIndex)
 {
-    TNode* pNewNode = CreateNode(iIndex);
+    TNode* pNewNode = CreateNode();
     pNewNode->data.m_iIndex = iIndex;
     pNewNode->data.m_szName[0] = 65 + rand() % 26;
     pNewNode->data.m_szName[1] = 65 + rand() % 26;
@@ -21,7 +21,7 @@ TNode*  CreateStudent(int iIndex)
 }
 TNode* CreateStudent(int iIndex, char name[], int iKor, int iEng, int iMat)
 {
-    TNode* pNewNode = CreateNode(iIndex);
+    TNode* pNewNode = CreateNode();
     pNewNode->data.m_iIndex = iIndex;
     //strcpy(pNewNode->data.m_szName, name);
     strcpy_s(pNewNode->data.m_szName, name);
@@ -40,7 +40,7 @@ void    ShowStudent(TNode* pNode, FILE* fp=nullptr)
     if (pNode == nullptr) return;
     if (fp == nullptr)
     {
-        printf("\n%d %s %d %d %d %d %10.4f", 
+        printf("\nKey[%d] %d %s %d %d %d %d %10.4f", pNode->iKey,
                 pNode->data.m_iIndex,
             pNode->data.m_szName,
             pNode->data.m_iKor,
@@ -51,7 +51,7 @@ void    ShowStudent(TNode* pNode, FILE* fp=nullptr)
     }
     else
     {        
-        fprintf(fp,"%d %s %d %d %d %d %10.4f\n",
+        fprintf(fp,"%d %d %s %d %d %d %d %10.4f\n", pNode->iKey,
             pNode->data.m_iIndex,
             pNode->data.m_szName,
             pNode->data.m_iKor,
@@ -66,6 +66,7 @@ void    ShowStudentLine(TNode* pNode, FILE* fp=nullptr)
     if (pNode == nullptr) return;
     if (fp == nullptr)
     {
+        printf("\nKEY:%d", pNode->iKey);
         printf("\n번호:%d", pNode->data.m_iIndex);
         printf("\n이름:%s", pNode->data.m_szName);
         printf("\n국어:%d", pNode->data.m_iKor);
@@ -73,17 +74,7 @@ void    ShowStudentLine(TNode* pNode, FILE* fp=nullptr)
         printf("\n수학:%d", pNode->data.m_iMat);
         printf("\n총점:%d", pNode->data.m_iTotal);
         printf("\n평균%10.4f", pNode->data.m_fAverage);        
-    }
-    else
-    {
-        fprintf(fp,"\n번호:%d", pNode->data.m_iIndex);
-        fprintf(fp, "\n이름:%s", pNode->data.m_szName);
-        fprintf(fp, "\n국어:%d", pNode->data.m_iKor);
-        fprintf(fp, "\n영어:%d", pNode->data.m_iEng);
-        fprintf(fp, "\n수학:%d", pNode->data.m_iMat);
-        fprintf(fp, "\n총점:%d", pNode->data.m_iTotal);
-        fprintf(fp, "\n평균%10.4f", pNode->data.m_fAverage);
-    }
+    }    
 }
 
 void*  g_pValueData=nullptr;
@@ -116,31 +107,51 @@ bool    FindStudentString(TNode* pNode)
     }
     return false;
 }
+bool    AscendingStudent(TNode* a, TNode* b)
+{
+    if (a->data.m_iTotal > b->data.m_iTotal)
+    {
+        return true;
+    }
+    return false;
+}
+bool    DescendingStudet(TNode* a, TNode* b)
+{
+    if (a->data.m_iTotal < b->data.m_iTotal)
+    {
+        return true;
+    }
+    return false;
+}
 void    Title()
 {
     printf("\n=========성적관리프로그램=========");
     //printf("\n번호 이름 국어 영어 수학 총점 평균");
 }
 enum WORK { PRINT, NEW_DATA, FILE_SAVE, FILE_LOAD,
-            UPDATE, SAMPLE_DATA, EXIT=99};
-void  Print();
+            UPDATE, FIND, DELETE, SORT, SAMPLE_DATA,  EXIT=99};
+void  PrintData();
 void  NewData();
 void  FileSave();
 void  FileLoad();
-void  Update();
+void  UpdateData();
+void  FindData();
+void  DeleteData();
 void  SampleData();
+void  SortData();
 
 void (*WORK)();
 int main()
 {
+    int iCnt = TNode::iCurrentCounter;
+
     Initialize();
     int iWork = 0;
     bool workRun = true;
     while (workRun)
     {        
         Title();
-        printf("\nPRINT(0) NEW_DATA(1)FILE_SAVE(2) FILE_LOAD(3)UPDATE(4) SAMPLE_DATA(5) EXIT(99)");
-        //scanf("%d", &iWork);
+        printf("\nPRINT(0)NEW_DATA(1)SAVE(2)LOAD(3)UPDATE(4)FIND(5)DEL(6)SORT(7)SAMPLE(8)EXIT(99)");
         scanf_s("%d", &iWork);
         
         switch (iWork)
@@ -151,7 +162,7 @@ int main()
             }break;
             case PRINT:
             {
-                WORK = Print;
+                WORK = PrintData;
             }break;
             case NEW_DATA:
             {
@@ -167,41 +178,54 @@ int main()
             }break;
             case UPDATE:
             {
-                 WORK = Update; 
+                 WORK = UpdateData; 
+            }break;
+            case FIND:
+            {
+                WORK = FindData;
+            }break;
+            case DELETE:
+            {
+                WORK = DeleteData;
+            }break;
+            case SORT:
+            {
+                WORK = SortData;
             }break;
             case EXIT:
             {
+                WORK = nullptr;
                 workRun = false;
             }break;
         }
         
-        WORK();
+        if( WORK != nullptr)  WORK();
     }
     Release();
 }
 
-
-void  Print(){
+void  PrintData(){
     system("cls");
     ShowAll(false, ShowStudent);
 }
 void  NewData()
 {
     char name[4] = { 0, };
-    int iKor, iEng, iMat;
-    scanf_s("%s %d %d %d", name, _countof(name), &iKor, &iEng, &iMat);
-    TNode* pNewNode1 = CreateStudent(999, name, iKor, iEng, iMat);
-    if (pNewNode1 != nullptr)
+    int iID, iKor, iEng, iMat;
+    printf("\n이름,번호,국어,영어,수학 : ");
+    scanf_s("%s %d %d %d %d", name, _countof(name), &iID, &iKor, &iEng, &iMat);
+    TNode* pNewNode = CreateStudent(iID, name, iKor, iEng, iMat);
+    if (pNewNode != nullptr)
     {
-        push_back(pNewNode1);
+        pNewNode->iKey = ++TNode::iKeyIndex;
+        push_back(pNewNode);
     }
 }
 void  FileSave()
 {
     FILE* fp = 0;
-    fopen_s(&fp, "data.txt", "w");
-    int iNodeCounter = 3;
-    fprintf(fp, "%d\n", iNodeCounter);
+    fopen_s(&fp, "data.txt", "w");    
+    fprintf(fp, "%d %d\n", TNode::iCurrentCounter, TNode::iKeyIndex);
     ShowAll(false, ShowStudent, fp);
     fclose(fp);
 }
@@ -209,19 +233,29 @@ void  FileLoad()
 {
     FILE* fp = 0;
     fopen_s(&fp, "data.txt", "r");
-    int iNodeCounter = 3;
-    fscanf_s(fp, "%d\n",&iNodeCounter);
+    if (fp != nullptr)
+    {
+        DeleteAll();
+    }
+
+    char buffer[256] = { 0 , };
+    int iNodeCounter = 3;   
+    fgets(buffer, 256, fp);
+    sscanf_s(buffer, "%d %d", &iNodeCounter, &TNode::iKeyIndex);
+
+    //fscanf_s(fp, "%d %d\n",&iNodeCounter, &TNode::iKeyIndex);
     for (int iNode = 0; iNode < iNodeCounter; iNode++)
     {
         char name[4] = { 0, };
         int iKor, iEng, iMat, iTotal;
         float fAvg;
 
-        int id;
-        char buffer[256] = { 0 , };
+        int id, iKey;
+        
         fgets(buffer, 256, fp);
-        sscanf_s(buffer,"%d %s %d %d %d\n", &id, name, _countof(name), &iKor, &iEng, &iMat, &iTotal, &fAvg);
+        sscanf_s(buffer,"%d %d %s %d %d %d\n", &iKey, &id, name, _countof(name), &iKor, &iEng, &iMat, &iTotal, &fAvg);
         TNode* pNewNode1 = CreateStudent(id, name, iKor, iEng, iMat);
+        pNewNode1->iKey = iKey;
         if (pNewNode1 != nullptr)
         {
             push_back(pNewNode1);
@@ -230,24 +264,68 @@ void  FileLoad()
     ShowAll(false, ShowStudent, fp);
     fclose(fp);
 };
-void  Update(){
+void  UpdateData(){
     int iIndex;
     printf("index= ");
     scanf_s("%d", &iIndex);
     TNode* pNode = Find(iIndex);
     ShowStudent(pNode);
 
-    char name[4] = { 0, };
-    int iKor, iEng, iMat;
-    scanf_s("%s %d %d %d", pNode->data.m_szName, _countof(pNode->data.m_szName),
-        &pNode->data.m_iKor, &pNode->data.m_iEng, &pNode->data.m_iMat);
+    printf("\n이름,번호,국어,영어,수학 : ");    
+    scanf_s("%s %d %d %d %d", pNode->data.m_szName, _countof(pNode->data.m_szName),
+       &pNode->data.m_iIndex, &pNode->data.m_iKor, &pNode->data.m_iEng, &pNode->data.m_iMat);
 
+}
+void  FindData()
+{
+    char name[4] = { 0, };
+    scanf_s("%s", name, _countof(name));
+    g_pValueData = name;
+    TNode* pNode = Find(FindStudentString);
+    if (pNode != nullptr)
+    {
+        ShowStudentLine(pNode);
+    }
+}
+void  DeleteData()
+{
+    int iIndex;
+    printf("\nindex= ");
+    scanf_s("%d", &iIndex);
+    TNode* pNode = Find(iIndex);
+    ShowStudent(pNode);
+
+    int iDelete = 0;
+    printf("\n%d 노드를 삭제하시겠습니까.y(1)or n(0)", iIndex);
+    scanf_s("%d", &iDelete);
+    if (iDelete == 1)
+    {
+        Erase(pNode);
+        printf("\n%d 삭제되었습니다.", iIndex);
+    }
+}
+void  SortData()
+{
+    /*TNode* a = g_pHead->pNext;
+    TNode* b = g_pHead->pNext->pNext->pNext;
+    Swap(a, b);*/
+
+  /*  TNode* a = g_pHead->pNext;
+    TNode* b = g_pHead->pNext->pNext;
+    Swap(a, b);*/
+
+    //Sort(AscendingStudent);
+    Sort();
 }
 void  SampleData()
 {
-    for (int iNode = 0; iNode < 3; iNode++)
+    for (int iNode = 0; iNode < 10; iNode++)
     {
         TNode* pNewNode = CreateStudent(iNode);
-        push_back(pNewNode);
+        if (pNewNode != nullptr)
+        {
+            pNewNode->iKey = ++TNode::iKeyIndex;
+            push_back(pNewNode);
+        }
     }
 }
