@@ -9,17 +9,33 @@ enum WORK {
 
 class TStudentManager
 {
-    TLinkedlist  list;
+    TLinkedlist  m_Linkedlist;
+    typedef void (TStudentManager::* EXECUTE)();
+    EXECUTE m_Execute[10];
 public:   
     static void* g_pValueData;
-    void (TStudentManager::* EXECUTE)(TLinkedlist& list);
-    void Execute(TLinkedlist& list)
+    void SetExecute(void (TStudentManager::*setFun)(),int work)
+    { 
+        m_Execute[work] = setFun;
+    };   
+    void Execute(int iExeFun)
     {
-        (this->*EXECUTE)(list);
+        if (m_Execute[iExeFun] != nullptr)
+        {
+            (this->*m_Execute[iExeFun])();
+        }        
     }
 
-    bool Run();
-    TLinkedlist&  GetList() { return list; }
+    void (TStudentManager::* EXECUTEDirect)();
+    void ExecuteDirect()
+    {
+        if (EXECUTEDirect != nullptr)
+        {
+            (this->*EXECUTEDirect)();
+        }        
+    }
+
+    TLinkedlist&  GetList() { return m_Linkedlist; }
     TNode* CreateStudent(int iIndex)
     {
         TNode* pNewNode = TLinkedlist::CreateNode();
@@ -145,14 +161,14 @@ public:
         //printf("\n번호 이름 국어 영어 수학 총점 평균");
     }
     
-    void    PrintData(TLinkedlist& list);
-    void    NewData(TLinkedlist& list);
-    void    FileSave(TLinkedlist& list);
-    void    FileLoad(TLinkedlist& list);
-    void    UpdateData(TLinkedlist& list);
-    void    FindData(TLinkedlist& list);
-    void    DeleteData(TLinkedlist& list);
-    void    SampleData(TLinkedlist& list);
-    void    SortData(TLinkedlist& list);
+    void    PrintData   ();
+    void    NewData     ();
+    void    FileSave    ();
+    void    FileLoad    ();
+    void    UpdateData  ();
+    void    FindData    ();
+    void    DeleteData  ();
+    void    SampleData  ();
+    void    SortData    ();
 };
 
