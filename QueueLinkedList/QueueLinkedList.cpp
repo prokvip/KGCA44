@@ -1,4 +1,4 @@
-﻿#include "TStack.h"
+﻿#include "TQueue.h"
 
 TNode* CreateStudent(int iIndex)
 {
@@ -22,19 +22,19 @@ TNode* CreateStudent(int iIndex)
 
 void main()
 {
-    TStack stack;
-	//TStack stack(3);	
+    //TQueue quque;
+	TQueue quque(3);	
     TNode* pNewNode = CreateStudent(0);
-	bool bRet = stack.Push(pNewNode);
-    bRet = stack.Push(CreateStudent(1));
-    bRet = stack.Push(CreateStudent(2));
-    bRet = stack.Push(CreateStudent(3));
-    stack.ShowAll();
-    //const TNode* const pNode = stack.Top(); 
-    stack.Show(stack.Top());
-    bRet = stack.Pop();
-    bRet = stack.Pop();
-    bRet = stack.Pop();
-    bRet = stack.Pop();
-    stack.ShowAll();
+	bool bRet = quque.Push(pNewNode);
+    bRet = quque.Push(CreateStudent(1));
+    bRet = quque.Push(CreateStudent(2));
+    bRet = quque.Push(CreateStudent(3));
+    quque.ShowAll();
+    //const TNode* const pNode = quque.Top(); 
+    quque.Show(quque.Top());
+    bRet = quque.Pop();
+    bRet = quque.Pop();
+    bRet = quque.Pop();
+    bRet = quque.Pop();
+    quque.ShowAll();
 };

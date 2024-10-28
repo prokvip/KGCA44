@@ -1,6 +1,6 @@
 #pragma once
 #include "LinkedList.h"
-class TStack : private TLinkedlist
+class TQueue : private TLinkedlist
 {
 	int		m_iMaxSize;
 public:
@@ -12,9 +12,9 @@ public:
 	void    Show(const TNode* const pNode);
 	void    ShowAll();
 public:
-	TStack();
-	TStack(int iMaxSize);
-	~TStack();
+	TQueue();
+	TQueue(int iMaxSize);
+	~TQueue();
 
 };
 
