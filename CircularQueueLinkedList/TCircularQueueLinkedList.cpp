@@ -11,40 +11,56 @@
 //}
 bool	TCircularQueueLinkedList::Push(TNode* pNode)
 {
-	if (IsFull()) return false;
-	m_pArray[m_iBack] = pNode;
+	if (IsFull())
+	{
+		delete pNode;
+		return false;
+	}
 	m_iBack = (m_iBack + 1) % m_iMaxSize;
+	m_pArray[m_iBack] = pNode;	
+	m_iSize++;
 	return true;
 }
-TNode*	TCircularQueueLinkedList::Pop()
+void TCircularQueueLinkedList::Pop()
 {
-	if (IsEmpty()) return nullptr;
+	if (IsEmpty()) return;
 	TNode* pNode = m_pArray[m_iFront];
-	m_pArray[m_iFront] = nullptr; // delete
+	delete pNode;
+	m_pArray[m_iFront] = nullptr;
 	m_iFront = (m_iFront + 1) % m_iMaxSize;
+	m_iSize--;
+	
+}
+TNode*	TCircularQueueLinkedList::Top()
+{
+	if (IsEmpty()) return nullptr;	
+	TNode* pNode = m_pArray[m_iFront];	
 	return pNode;
 }
+
 bool	TCircularQueueLinkedList::IsFull()
 {
-	return m_iFront == (m_iBack + 1) % m_iMaxSize;
+	//return m_iFront == (m_iBack + 1) % m_iMaxSize;
+	return m_iSize == m_iMaxSize;
 }
 bool	TCircularQueueLinkedList::IsEmpty()
 {
-	return m_iFront == m_iBack;
+	//return m_iFront == m_iBack;
+	return m_iSize == 0;
 	
 }
 TCircularQueueLinkedList::TCircularQueueLinkedList()
 {
-	m_iBack = 0;
-	m_iFront = 0;
 	m_iMaxSize = 10;
+	m_iSize = m_iFront = 0;
+	m_iBack = m_iMaxSize-1;	
 	m_pArray = new TNode*[m_iMaxSize];
 };
 TCircularQueueLinkedList::TCircularQueueLinkedList(int iMaxSize)
 {
-	m_iBack = 0;
-	m_iFront = 0;
 	m_iMaxSize = iMaxSize;
+	m_iSize = m_iFront = 0;
+	m_iBack = m_iMaxSize - 1;
 	m_pArray = new TNode*[iMaxSize];
 };
 TCircularQueueLinkedList::~TCircularQueueLinkedList()

@@ -28,14 +28,27 @@ void main()
 	bool bRet = quque.Push(CreateStudent(0));
     bRet = quque.Push(CreateStudent(1));
     bRet = quque.Push(CreateStudent(2));
-    bRet = quque.Push(CreateStudent(3)); // full
-    bRet = quque.Pop();
-    bRet = quque.Push(CreateStudent(4));    
+    bRet = quque.Push(CreateStudent(3)); 
+    bRet = quque.Push(CreateStudent(4)); // full
+    
+    quque.Pop();
+    TNode* pNode = quque.Top();
+    pNode = quque.Top();
+
+    quque.Pop();
+    quque.Pop();
+    quque.Pop();
+    quque.Pop();
+    quque.Pop();
+
+
+   /* bRet = quque.Push(CreateStudent(4));    
     bRet = quque.Pop();
     bRet = quque.Push(CreateStudent(5));
     bRet = quque.Pop();
     bRet = quque.Push(CreateStudent(6));
-    bRet = quque.Pop();
-    bRet = quque.Pop();
-    bRet = quque.Pop(); 
+    bRet = quque.Top();
+    bRet = quque.Top();
+    bRet = quque.Top();
+    bRet = quque.Top();*/
 };

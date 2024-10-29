@@ -6,9 +6,11 @@ class TCircularQueueLinkedList //: private TLinkedlist
 	TNode**  m_pArray = nullptr; 
 	int		m_iBack;
 	int		m_iFront;
+	int     m_iSize;
 public:
 	bool	Push(TNode* pNode);
-	TNode*	Pop();
+	void	Pop();
+	TNode*	Top();
 	bool	IsFull();
 	bool	IsEmpty();
 public:
