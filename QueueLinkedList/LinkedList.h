@@ -18,11 +18,8 @@ struct TStudent
     int m_iEng;
     int m_iMat;
     int m_iTotal;
-    float m_fAverage;/*
-    TStudent* pNext;
-    TStudent* pPrev;*/
+    float m_fAverage;
 };
-
 struct TNode
 {
     TStudent data;
@@ -32,7 +29,6 @@ struct TNode
     // 고유한 키 생성
     static  unsigned int iKeyIndex;
 };
-
 class TLinkedlist
 {
 private:
