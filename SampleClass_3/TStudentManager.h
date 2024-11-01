@@ -3,7 +3,7 @@
 
 class TStudentManager
 {
-    TLinkedlist<TNode>    m_Linkedlist;
+    TLinkedlist<TStudent>    m_Linkedlist;
 
     typedef void (TStudentManager::* EXECUTE)();
     EXECUTE m_Execute[10];
@@ -30,10 +30,10 @@ public:
         }        
     }
 
-    TLinkedlist<TNode>&  GetList() { return m_Linkedlist; }
-    TNode* CreateStudent(int iIndex)
+    TLinkedlist<TStudent>&  GetList() { return m_Linkedlist; }
+    TNode<TStudent>* CreateStudent(int iIndex)
     {
-        TNode* pNewNode = TLinkedlist<TNode>::CreateNode();
+        TNode<TStudent>* pNewNode = TLinkedlist<TStudent>::CreateNode();
         pNewNode->data.m_iIndex = iIndex;
         pNewNode->data.m_szName[0] = 65 + rand() % 26;
         pNewNode->data.m_szName[1] = 65 + rand() % 26;
@@ -49,9 +49,9 @@ public:
         pNewNode->data.m_fAverage = pNewNode->data.m_iTotal / 3.0f;
         return pNewNode;
     }
-    TNode* CreateStudent(int iIndex, char name[], int iKor, int iEng, int iMat)
+    TNode<TStudent>* CreateStudent(int iIndex, char name[], int iKor, int iEng, int iMat)
     {
-        TNode* pNewNode = TLinkedlist<TNode>::CreateNode();
+        TNode<TStudent>* pNewNode = TLinkedlist<TStudent>::CreateNode();
         pNewNode->data.m_iIndex = iIndex;
         //strcpy(pNewNode->data.m_szName, name);
         strcpy_s(pNewNode->data.m_szName, name);
@@ -65,7 +65,7 @@ public:
         pNewNode->data.m_fAverage = pNewNode->data.m_iTotal / 3.0f;
         return pNewNode;
     }
-    static void    ShowStudent(TNode* pNode, FILE* fp = nullptr)
+    static void    ShowStudent(TNode<TStudent>* pNode, FILE* fp = nullptr)
     {
         if (pNode == nullptr) return;
         if (fp == nullptr)
@@ -91,7 +91,7 @@ public:
                 pNode->data.m_fAverage);
         }
     }
-    static void    ShowStudentLine(TNode* pNode, FILE* fp = nullptr)
+    static void    ShowStudentLine(TNode<TStudent>* pNode, FILE* fp = nullptr)
     {
         if (pNode == nullptr) return;
         if (fp == nullptr)
@@ -107,7 +107,7 @@ public:
         }
     }
    
-    static bool    FindStudent(TNode* pNode)
+    static bool    FindStudent(TNode<TStudent>* pNode)
     {
         int iIndex = *((int*)g_pValueData);
         if (pNode->data.m_iKor == iIndex)
@@ -116,7 +116,7 @@ public:
         }
         return false;
     }
-    static bool    FindStudentFloat(TNode* pNode)
+    static bool    FindStudentFloat(TNode<TStudent>* pNode)
     {
         float iKor = *((float*)g_pValueData);
         if (pNode->data.m_fAverage == iKor)
@@ -125,7 +125,7 @@ public:
         }
         return false;
     }
-    static bool    FindStudentString(TNode* pNode)
+    static bool    FindStudentString(TNode<TStudent>* pNode)
     {
         char* iKor = (char*)g_pValueData;
         if (_stricmp(pNode->data.m_szName, iKor) == 0)
@@ -134,7 +134,7 @@ public:
         }
         return false;
     }
-    static bool    AscendingStudent(TNode* a, TNode* b)
+    static bool    AscendingStudent(TNode<TStudent>* a, TNode<TStudent>* b)
     {
         if (a->data.m_iTotal > b->data.m_iTotal)
         {
@@ -142,7 +142,7 @@ public:
         }
         return false;
     }
-    static bool    DescendingStudet(TNode* a, TNode* b)
+    static bool    DescendingStudet(TNode<TStudent>* a, TNode<TStudent>* b)
     {
         if (a->data.m_iTotal < b->data.m_iTotal)
         {

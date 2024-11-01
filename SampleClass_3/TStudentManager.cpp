@@ -11,10 +11,10 @@ void  TStudentManager::NewData()
     int iID, iKor, iEng, iMat;
     printf("\n이름,번호,국어,영어,수학 : ");
     scanf_s("%s %d %d %d %d", name, _countof(name), &iID, &iKor, &iEng, &iMat);
-    TNode* pNewNode = CreateStudent(iID, name, iKor, iEng, iMat);
+    TNode<TStudent>* pNewNode = CreateStudent(iID, name, iKor, iEng, iMat);
     if (pNewNode != nullptr)
     {
-        pNewNode->iKey = ++TNode::iKeyIndex;
+        pNewNode->iKey = ++TNode<TStudent>::iKeyIndex;
         m_Linkedlist.push_back(pNewNode);
     }
 }
@@ -22,7 +22,7 @@ void  TStudentManager::FileSave()
 {
     FILE* fp = 0;
     fopen_s(&fp, "data.txt", "w");
-    fprintf(fp, "%d %d\n", m_Linkedlist.GetCounter(), TNode::iKeyIndex);
+    fprintf(fp, "%d %d\n", m_Linkedlist.GetCounter(), TNode<TStudent>::iKeyIndex);
     m_Linkedlist.ShowAll(false, ShowStudent, fp);
     fclose(fp);
 }
@@ -38,7 +38,7 @@ void  TStudentManager::FileLoad()
     char buffer[256] = { 0 , };
     int iNodeCounter = 3;
     fgets(buffer, 256, fp);
-    sscanf_s(buffer, "%d %d", &iNodeCounter, &TNode::iKeyIndex);
+    sscanf_s(buffer, "%d %d", &iNodeCounter, &TNode<TStudent>::iKeyIndex);
 
     //fscanf_s(fp, "%d %d\n",&iNodeCounter, &TNode::iKeyIndex);
     for (int iNode = 0; iNode < iNodeCounter; iNode++)
@@ -51,7 +51,7 @@ void  TStudentManager::FileLoad()
 
         fgets(buffer, 256, fp);
         sscanf_s(buffer, "%d %d %s %d %d %d\n", &iKey, &id, name, _countof(name), &iKor, &iEng, &iMat, &iTotal, &fAvg);
-        TNode* pNewNode1 = CreateStudent(id, name, iKor, iEng, iMat);
+        TNode<TStudent>* pNewNode1 = CreateStudent(id, name, iKor, iEng, iMat);
         pNewNode1->iKey = iKey;
         if (pNewNode1 != nullptr)
         {
@@ -65,7 +65,7 @@ void  TStudentManager::UpdateData() {
     int iIndex;
     printf("index= ");
     scanf_s("%d", &iIndex);
-    TNode* pNode = m_Linkedlist.Find(iIndex);
+    TNode<TStudent>* pNode = m_Linkedlist.Find(iIndex);
     ShowStudent(pNode);
 
     printf("\n이름,번호,국어,영어,수학 : ");
@@ -83,7 +83,7 @@ void  TStudentManager::FindData()
     char name[4] = { 0, };
     scanf_s("%s", name, _countof(name));
     g_pValueData = name;
-    TNode* pNode = m_Linkedlist.Find(FindStudentString);
+    TNode<TStudent>* pNode = m_Linkedlist.Find(FindStudentString);
     if (pNode != nullptr)
     {
         ShowStudentLine(pNode);
@@ -94,7 +94,7 @@ void  TStudentManager::DeleteData()
     int iIndex;
     printf("\nindex= ");
     scanf_s("%d", &iIndex);
-    TNode* pNode = m_Linkedlist.Find(iIndex);
+    TNode<TStudent>* pNode = m_Linkedlist.Find(iIndex);
     ShowStudent(pNode);
 
     int iDelete = 0;
@@ -123,10 +123,10 @@ void  TStudentManager::SampleData()
 {
     for (int iNode = 0; iNode < 10; iNode++)
     {
-        TNode* pNewNode = CreateStudent(iNode);
+        TNode<TStudent>* pNewNode = CreateStudent(iNode);
         if (pNewNode != nullptr)
         {
-            pNewNode->iKey = ++TNode::iKeyIndex;
+            pNewNode->iKey = ++TNode<TStudent>::iKeyIndex;
             m_Linkedlist.push_back(pNewNode);
         }
     }

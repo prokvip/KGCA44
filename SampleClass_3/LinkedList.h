@@ -7,42 +7,55 @@
 // g_pHead(V) ->realData-> g_pTail(V)
 // realData -> g_pTail( 대부분 뒤에 삽입)
 
+template <class T>
+struct TNode
+{
+    T       data;
+    int     iKey;
+    TNode* pNext;
+    TNode* pPrev;
+    // 고유한 키 생성
+    static  unsigned int iKeyIndex;
+};
+
+template <class T>
+unsigned int TNode<T>::iKeyIndex = 0;
 
 template<class T>
 class TLinkedlist
 {
 private:
-    T* g_pHead;
-    T* g_pTail;
+    TNode<T>* g_pHead;
+    TNode<T>* g_pTail;
     // 연결된 노드의 현재 개수
     static  int m_iCurrentCounter;   
 public:
     int   GetCounter() { return m_iCurrentCounter; }
     // 자료에 처리의 주요기능
     // 초기화, 정리, 치환, 자료생성, 자료해제, 출력, 삽입, 검색, 삭제, 저장, 로드, 정렬
-    void    Show(T* pNode);
-    void    push_back(T* pNewNode);
-    void    push_front(T* pNewNode);
-    void    push_back(T* pDestNode, T* pNewNode);
-    void    push_front(T* pDestNode, T* pNewNode);
+    void    Show(TNode<T>* pNode);
+    void    push_back(TNode<T>* pNewNode);
+    void    push_front(TNode<T>* pNewNode);
+    void    push_back(TNode<T>* pDestNode, TNode<T>* pNewNode);
+    void    push_front(TNode<T>* pDestNode, TNode<T>* pNewNode);
     void    Initialize();
     void    DeInitialize();
     
     void   ShowAll( bool bReverse = false, 
-                    void (*Fun)(T*, FILE*) = nullptr,
+                    void (*Fun)(TNode<T>*, FILE*) = nullptr,
                     FILE* fp = nullptr);
-    T* Erase(int iKey);
-    T* Erase(T* pDeleteNode);
+    TNode<T>* Erase(int iKey);
+    TNode<T>* Erase(TNode<T>* pDeleteNode);
     void    DeleteAll();
-    T* Find(int iFindKey, bool bReverse = false,
-                bool (*Fun)(T*)=nullptr);
-    T* Find(bool (*Fun)(T*) = nullptr);
-    bool   Swap(T* aNode, T* bNode);
-    void   Sort(bool (*Fun)(T* a, T* b) = Ascending);
+    TNode<T>* Find(int iFindKey, bool bReverse = false,
+                bool (*Fun)(TNode<T>*)=nullptr);
+    TNode<T>* Find(bool (*Fun)(TNode<T>*) = nullptr);
+    bool   Swap(TNode<T>* aNode, TNode<T>* bNode);
+    void   Sort(bool (*Fun)(TNode<T>* a, TNode<T>* b) = Ascending);
 public:
-    static T* CreateNode();
-    static bool    Ascending(T* a, T* b);
-    static bool    Descending(T* a, T* b);
+    static TNode<T>* CreateNode();
+    static bool    Ascending(TNode<T>* a, TNode<T>* b);
+    static bool    Descending(TNode<T>* a, TNode<T>* b);
 public:
     TLinkedlist();
     ~TLinkedlist();
@@ -62,7 +75,7 @@ TLinkedlist<T>::~TLinkedlist()
     DeInitialize();
 }
 template<class T>
-bool    TLinkedlist<T>::Ascending(T* a, T* b)
+bool    TLinkedlist<T>::Ascending(TNode<T>* a, TNode<T>* b)
 {
     if (a > b)
     {
@@ -71,7 +84,7 @@ bool    TLinkedlist<T>::Ascending(T* a, T* b)
     return false;
 }
 template<class T>
-bool    TLinkedlist<T>::Descending(T* a, T* b)
+bool    TLinkedlist<T>::Descending(TNode<T>* a, TNode<T>* b)
 {
     if (a < b)
     {
@@ -80,7 +93,7 @@ bool    TLinkedlist<T>::Descending(T* a, T* b)
     return false;
 }
 template<class T>
-void    TLinkedlist<T>::Show(T* pNode)
+void    TLinkedlist<T>::Show(TNode<T>* pNode)
 {
     if (pNode != nullptr)
     {
@@ -88,10 +101,11 @@ void    TLinkedlist<T>::Show(T* pNode)
     }
 }
 template<class T>
-void    TLinkedlist<T>::push_back(T* pNewNode)
+void    TLinkedlist<T>::push_back(TNode<T>* pNewNode)
 {
+    //error C2440: '초기화 중': 'TNodeBase *'에서 'T *'(으)로 변환할 수 없습니다.
     // pPreNode -> pNewNode - > g_pTail
-    T* pPreNode = g_pTail->pPrev;
+    TNode<T>* pPreNode = g_pTail->pPrev;
     pPreNode->pNext = pNewNode;
     pNewNode->pNext = g_pTail;
     // pPreNode <- pNewNode <- g_pTail
@@ -101,7 +115,7 @@ void    TLinkedlist<T>::push_back(T* pNewNode)
     TLinkedlist::m_iCurrentCounter++;
 }
 template<class T>
-void    TLinkedlist<T>::push_front(T* pNewNode)
+void    TLinkedlist<T>::push_front(TNode<T>* pNewNode)
 {
     // g_pHead -> pNewNode - > pPostNode
     T* pPostNode = g_pHead->pNext;
@@ -114,7 +128,7 @@ void    TLinkedlist<T>::push_front(T* pNewNode)
     TLinkedlist::m_iCurrentCounter++;
 }
 template<class T>
-void    TLinkedlist<T>::push_back(T* pDestNode, T* pNewNode)
+void    TLinkedlist<T>::push_back(TNode<T>* pDestNode, TNode<T>* pNewNode)
 {
 #ifdef _DEBUG
     if (pDestNode == nullptr || pNewNode == nullptr)
@@ -125,7 +139,7 @@ void    TLinkedlist<T>::push_back(T* pDestNode, T* pNewNode)
     assert(pDestNode);
     assert(pNewNode);
     // pDestNode -> pNewNode - > pPostNode
-    T* pPostNode = pDestNode->pNext;
+    TNode<T>* pPostNode = pDestNode->pNext;
     pDestNode->pNext = pNewNode;
     pNewNode->pNext = pPostNode;
     // pDestNode <- pNewNode <- pPostNode
@@ -135,7 +149,7 @@ void    TLinkedlist<T>::push_back(T* pDestNode, T* pNewNode)
     TLinkedlist::m_iCurrentCounter++;
 }
 template<class T>
-void    TLinkedlist<T>::push_front(T* pDestNode, T* pNewNode)
+void    TLinkedlist<T>::push_front(TNode<T>* pDestNode, TNode<T>* pNewNode)
 {
     /*if (pDestNode == nullptr || pNewNode == nullptr)
     {
@@ -144,7 +158,7 @@ void    TLinkedlist<T>::push_front(T* pDestNode, T* pNewNode)
     assert(pDestNode);
     assert(pNewNode);
     // pPreNode -> pNewNode - > pDestNode
-    T* pPreNode = pDestNode->pPrev;
+    TNode<T>* pPreNode = pDestNode->pPrev;
     pPreNode->pNext = pNewNode;
     pNewNode->pNext = pDestNode;
     // pPreNode <- pNewNode <- pDestNode
@@ -157,9 +171,9 @@ template<class T>
 void    TLinkedlist<T>::Initialize()
 {
     // 가상의 머리노드를 생성해 둔다.
-    g_pHead = (T*)malloc(sizeof(T));
+    g_pHead = (TNode<T>*)malloc(sizeof(T));
     g_pHead->iKey = -1;
-    g_pTail = (T*)malloc(sizeof(T));
+    g_pTail = (TNode<T>*)malloc(sizeof(T));
     g_pTail->iKey = -2;
 
     g_pHead->pNext = g_pTail;
@@ -177,21 +191,21 @@ void    TLinkedlist<T>::DeInitialize()
     g_pTail = nullptr;
 }
 template<class T>
-T* TLinkedlist<T>::CreateNode()
+TNode<T>* TLinkedlist<T>::CreateNode()
 {
-    T* pNewNode = (T*)malloc(sizeof(T));
+    TNode<T>* pNewNode = (TNode<T>*)new T;
     pNewNode->iKey = 0;
     pNewNode->pNext = nullptr;
     pNewNode->pPrev = nullptr;
     return pNewNode;
 }
 template<class T>
-void    TLinkedlist<T>::ShowAll(bool bReverse, void(*Fun)(T*, FILE*), FILE* fp)
+void    TLinkedlist<T>::ShowAll(bool bReverse, void(*Fun)(TNode<T>*, FILE*), FILE* fp)
 {
     if (bReverse == false)
     {
         // 단 방향 연결리스트 순회.
-        for (T* pNode = g_pHead->pNext;
+        for (TNode<T>* pNode = g_pHead->pNext;
             pNode != g_pTail;
             pNode = pNode->pNext)
         {
@@ -207,7 +221,7 @@ void    TLinkedlist<T>::ShowAll(bool bReverse, void(*Fun)(T*, FILE*), FILE* fp)
     }
     else
     {
-        for (T* pNode = g_pTail->pPrev;
+        for (TNode<T>* pNode = g_pTail->pPrev;
             pNode != g_pHead;
             pNode = pNode->pPrev)
         {
@@ -216,16 +230,16 @@ void    TLinkedlist<T>::ShowAll(bool bReverse, void(*Fun)(T*, FILE*), FILE* fp)
     }
 }
 template<class T>
-T* TLinkedlist<T>::Erase(int iKey)
+TNode<T>* TLinkedlist<T>::Erase(int iKey)
 {
-    T* pNode = Find(iKey);
+    TNode<T>* pNode = Find(iKey);
     return Erase(pNode);
 }
 template<class T>
-T* TLinkedlist<T>::Erase(T* pDeleteNode)
+TNode<T>* TLinkedlist<T>::Erase(TNode<T>* pDeleteNode)
 {
-    T* pPreNode = pDeleteNode->pPrev;
-    T* pPostNode = pDeleteNode->pNext;
+    TNode<T>* pPreNode = pDeleteNode->pPrev;
+    TNode<T>* pPostNode = pDeleteNode->pNext;
     pPreNode->pNext = pPostNode;
     pPostNode->pPrev = pPreNode;
     free(pDeleteNode);
@@ -237,18 +251,18 @@ template<class T>
 void    TLinkedlist<T>::DeleteAll()
 {
     // 해제(신규 추가된 노드를 모두 삭제한다.
-    T* pNode = g_pTail->pPrev;
+    TNode<T>* pNode = g_pTail->pPrev;
     while (pNode != g_pHead)
     {
         pNode = Erase(pNode);
     }
 }
 template<class T>
-T* TLinkedlist<T>::Find(int iFindKey, bool bReverse, bool (*Fun)(T*))
+TNode<T>* TLinkedlist<T>::Find(int iFindKey, bool bReverse, bool (*Fun)(TNode<T>*))
 {
     if (bReverse == false)
     {
-        T* pNode = g_pHead->pNext;
+        TNode<T>* pNode = g_pHead->pNext;
         while (pNode != g_pTail)
         {
             if (Fun != nullptr)
@@ -268,7 +282,7 @@ T* TLinkedlist<T>::Find(int iFindKey, bool bReverse, bool (*Fun)(T*))
     }
     else
     {
-        T* pNode = g_pTail->pPrev;
+        TNode<T>* pNode = g_pTail->pPrev;
         while (pNode != g_pHead)
         {
             if (Fun != nullptr)
@@ -289,10 +303,10 @@ T* TLinkedlist<T>::Find(int iFindKey, bool bReverse, bool (*Fun)(T*))
     return nullptr;
 }
 template<class T>
-T* TLinkedlist<T>::Find(bool (*Fun)(T*))
+TNode<T>* TLinkedlist<T>::Find(bool (*Fun)(TNode<T>*))
 {
     if (Fun == nullptr) return nullptr;
-    T* pNode = g_pHead->pNext;
+    TNode<T>* pNode = g_pHead->pNext;
     while (pNode != g_pTail)
     {
         bool bResult = Fun(pNode);
@@ -302,16 +316,16 @@ T* TLinkedlist<T>::Find(bool (*Fun)(T*))
     return nullptr;
 }
 template<class T>
-bool TLinkedlist<T>::Swap(T* aNode, T* bNode)
+bool TLinkedlist<T>::Swap(TNode<T>* aNode, TNode<T>* bNode)
 {
     //  H, a, 1 , 2, b -> H<->b,<->1, 2, a
     //  a, 1 , b -> b, 1, a
     //  a, b -> b, a
-    T* aTemp = aNode;
-    T* aPrev = aNode->pPrev;
-    T* aNext = aNode->pNext;
-    T* bPrev = bNode->pPrev;
-    T* bNext = bNode->pNext;
+    TNode<T>* aTemp = aNode;
+    TNode<T>* aPrev = aNode->pPrev;
+    TNode<T>* aNext = aNode->pNext;
+    TNode<T>* bPrev = bNode->pPrev;
+    TNode<T>* bNext = bNode->pNext;
 
     //aPrev -> bNode -> aNext -> aNode -> bNext;
     //aPrev -> bNode -> aNode -> bNext;
@@ -344,7 +358,7 @@ bool TLinkedlist<T>::Swap(T* aNode, T* bNode)
     return true;
 }
 template<class T>
-void   TLinkedlist<T>::Sort(bool (*Fun)(T* a, T* b))
+void   TLinkedlist<T>::Sort(bool (*Fun)(TNode<T>* a, TNode<T>* b))
 {
     if (Fun == nullptr) return;
     // 10, 6, 9, 1, 7, 2, 3
@@ -353,16 +367,16 @@ void   TLinkedlist<T>::Sort(bool (*Fun)(T* a, T* b))
 
     // 2, 6, 9, 1, 7, 2, 3
     // 2, 6, 9, 1, 7, 2, 3
-    T* pEnd = g_pTail;
+    TNode<T>* pEnd = g_pTail;
     int iCounter = 0;
     for (int iCnt = 0; iCnt < TLinkedlist::m_iCurrentCounter; iCnt++)
     {
-        for (T* bNode = g_pHead->pNext;
+        for (TNode<T>* bNode = g_pHead->pNext;
             bNode != pEnd;
             )
         {
-            T* pNode0 = bNode;
-            T* pNode1 = bNode->pNext;
+            TNode<T>* pNode0 = bNode;
+            TNode<T>* pNode1 = bNode->pNext;
             if (pNode1 == g_pTail) break;
             if (Fun(pNode0, pNode1))
             {

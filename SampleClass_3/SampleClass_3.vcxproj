@@ -146,13 +146,11 @@
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="Sample.cpp" />
     <ClCompile Include="TCharacter.cpp" />
-    <ClCompile Include="TCharacterManager.cpp" />
     <ClCompile Include="TStudentManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="TCharacter.h" />
-    <ClInclude Include="TCharacterManager.h" />
     <ClInclude Include="TStudentManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

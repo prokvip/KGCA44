@@ -26,33 +26,7 @@ struct TCharacter
     int m_iTotal;
     float m_fAverage;
 };
-struct TNode
-{
-    TCharacter data;
-    int     iKey;
-    TNode* pNext;
-    TNode* pPrev;
-    // 고유한 키 생성
-    static  unsigned int iKeyIndex;
-};
-struct TNodeCharacter
-{
-    TCharacter data;
-    int     iKey;
-    TNodeCharacter* pNext;
-    TNodeCharacter* pPrev;
-    // 고유한 키 생성
-    static  unsigned int iKeyIndex;
-};
-struct TNodeStudent
-{
-    TStudent data;
-    int     iKey;
-    TNodeStudent* pNext;
-    TNodeStudent* pPrev;
-    // 고유한 키 생성
-    static  unsigned int iKeyIndex;
-};
+
 enum WORK {
     PRINT, NEW_DATA, FILE_SAVE, FILE_LOAD,
     UPDATE, FIND, DELETE, SORT, SAMPLE_DATA, EXIT = 99
