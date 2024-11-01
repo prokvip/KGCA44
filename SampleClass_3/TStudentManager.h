@@ -31,39 +31,40 @@ public:
     }
 
     TLinkedlist<TStudent>&  GetList() { return m_Linkedlist; }
-    TNode<TStudent>* CreateStudent(int iIndex)
+    TStudent* CreateStudent(int iIndex)
     {
-        TNode<TStudent>* pNewNode = TLinkedlist<TStudent>::CreateNode();
-        pNewNode->data.m_iIndex = iIndex;
-        pNewNode->data.m_szName[0] = 65 + rand() % 26;
-        pNewNode->data.m_szName[1] = 65 + rand() % 26;
-        pNewNode->data.m_szName[2] = 65 + rand() % 26;
-        pNewNode->data.m_szName[3] = 0;
-        pNewNode->data.m_iKor = rand() % 100; // 0 ~ 65535
-        pNewNode->data.m_iEng = rand() % 100;
-        pNewNode->data.m_iMat = rand() % 100;
-        pNewNode->data.m_iTotal =
-            pNewNode->data.m_iKor +
-            pNewNode->data.m_iEng +
-            pNewNode->data.m_iMat;
-        pNewNode->data.m_fAverage = pNewNode->data.m_iTotal / 3.0f;
-        return pNewNode;
+        TStudent* pNewData = new TStudent;// TLinkedlist<TStudent>::CreateNode();
+        pNewData->m_iIndex = iIndex;
+        pNewData->m_szName[0] = 65 + rand() % 26;
+        pNewData->m_szName[1] = 65 + rand() % 26;
+        pNewData->m_szName[2] = 65 + rand() % 26;
+        pNewData->m_szName[3] = 0;
+        pNewData->m_iKor = rand() % 100; // 0 ~ 65535
+        pNewData->m_iEng = rand() % 100;
+        pNewData->m_iMat = rand() % 100;
+        pNewData->m_iTotal =
+        pNewData->m_iKor +
+        pNewData->m_iEng +
+        pNewData->m_iMat;
+        pNewData->m_fAverage = 
+        pNewData->m_iTotal / 3.0f;
+        return pNewData;
     }
-    TNode<TStudent>* CreateStudent(int iIndex, char name[], int iKor, int iEng, int iMat)
+    TStudent* CreateStudent(int iIndex, char name[], int iKor, int iEng, int iMat)
     {
-        TNode<TStudent>* pNewNode = TLinkedlist<TStudent>::CreateNode();
-        pNewNode->data.m_iIndex = iIndex;
-        //strcpy(pNewNode->data.m_szName, name);
-        strcpy_s(pNewNode->data.m_szName, name);
-        pNewNode->data.m_iKor = iKor;
-        pNewNode->data.m_iEng = iEng;
-        pNewNode->data.m_iMat = iMat;
-        pNewNode->data.m_iTotal =
-            pNewNode->data.m_iKor +
-            pNewNode->data.m_iEng +
-            pNewNode->data.m_iMat;
-        pNewNode->data.m_fAverage = pNewNode->data.m_iTotal / 3.0f;
-        return pNewNode;
+        TStudent* pNewData = new TStudent();
+        pNewData->m_iIndex = iIndex;
+        strcpy_s(pNewData->m_szName, name);
+        pNewData->m_iKor = iKor;
+        pNewData->m_iEng = iEng;
+        pNewData->m_iMat = iMat;
+        pNewData->m_iTotal =
+            pNewData->m_iKor +
+            pNewData->m_iEng +
+            pNewData->m_iMat;
+        pNewData->m_fAverage =
+            pNewData->m_iTotal / 3.0f;
+        return pNewData;
     }
     static void    ShowStudent(TNode<TStudent>* pNode, FILE* fp = nullptr)
     {

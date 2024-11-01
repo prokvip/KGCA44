@@ -16,6 +16,10 @@ struct TNode
     TNode* pPrev;
     // 고유한 키 생성
     static  unsigned int iKeyIndex;
+    ~TNode()
+    {
+        //delete data;
+    }
 };
 
 template <class T>
@@ -34,10 +38,15 @@ public:
     // 자료에 처리의 주요기능
     // 초기화, 정리, 치환, 자료생성, 자료해제, 출력, 삽입, 검색, 삭제, 저장, 로드, 정렬
     void    Show(TNode<T>* pNode);
+
+    //void    push_back(T* pNewData, int iKey = -1);
+    void    push_back(T  data, int iKey = -1);
+protected:
     void    push_back(TNode<T>* pNewNode);
     void    push_front(TNode<T>* pNewNode);
     void    push_back(TNode<T>* pDestNode, TNode<T>* pNewNode);
     void    push_front(TNode<T>* pDestNode, TNode<T>* pNewNode);
+public:
     void    Initialize();
     void    DeInitialize();
     
@@ -98,6 +107,36 @@ void    TLinkedlist<T>::Show(TNode<T>* pNode)
     if (pNode != nullptr)
     {
         printf("%d ", pNode->iKey);
+    }
+}
+//template<class T>
+//void    TLinkedlist<T>::push_back(T* pNewData, int iKey)
+//{
+//    TNode<T>* pNewNode = CreateNode();
+//    if (pNewNode != nullptr)
+//    {
+//        pNewNode->data = pNewData;
+//        pNewNode->iKey = iKey;
+//        if (iKey < 0)
+//        {
+//            pNewNode->iKey = ++TNode<TStudent>::iKeyIndex;
+//        }
+//        push_back(pNewNode);
+//    }
+//}
+template<class T>
+void    TLinkedlist<T>::push_back(T pNewData, int iKey)
+{
+    TNode<T>* pNewNode = CreateNode();
+    if (pNewNode != nullptr)
+    {
+        pNewNode->data = pNewData;
+        pNewNode->iKey = iKey;
+        if (iKey < 0)
+        {
+            pNewNode->iKey = ++TNode<TStudent>::iKeyIndex;
+        }
+        push_back(pNewNode);
     }
 }
 template<class T>
@@ -171,9 +210,9 @@ template<class T>
 void    TLinkedlist<T>::Initialize()
 {
     // 가상의 머리노드를 생성해 둔다.
-    g_pHead = (TNode<T>*)malloc(sizeof(T));
+    g_pHead = new TNode<T>;
     g_pHead->iKey = -1;
-    g_pTail = (TNode<T>*)malloc(sizeof(T));
+    g_pTail = new TNode<T>;
     g_pTail->iKey = -2;
 
     g_pHead->pNext = g_pTail;
@@ -185,15 +224,15 @@ void    TLinkedlist<T>::Initialize()
 template<class T>
 void    TLinkedlist<T>::DeInitialize()
 {
-    free(g_pHead);
-    free(g_pTail);
+    delete g_pHead;
+    delete g_pTail;
     g_pHead = nullptr;
     g_pTail = nullptr;
 }
 template<class T>
 TNode<T>* TLinkedlist<T>::CreateNode()
 {
-    TNode<T>* pNewNode = (TNode<T>*)new T;
+    TNode<T>* pNewNode = new TNode<T>;
     pNewNode->iKey = 0;
     pNewNode->pNext = nullptr;
     pNewNode->pPrev = nullptr;
@@ -242,7 +281,7 @@ TNode<T>* TLinkedlist<T>::Erase(TNode<T>* pDeleteNode)
     TNode<T>* pPostNode = pDeleteNode->pNext;
     pPreNode->pNext = pPostNode;
     pPostNode->pPrev = pPreNode;
-    free(pDeleteNode);
+    delete pDeleteNode;
 
     TLinkedlist::m_iCurrentCounter--;
     return pPreNode;

@@ -11,11 +11,11 @@ void  TStudentManager::NewData()
     int iID, iKor, iEng, iMat;
     printf("\n이름,번호,국어,영어,수학 : ");
     scanf_s("%s %d %d %d %d", name, _countof(name), &iID, &iKor, &iEng, &iMat);
-    TNode<TStudent>* pNewNode = CreateStudent(iID, name, iKor, iEng, iMat);
-    if (pNewNode != nullptr)
+    TStudent* pNewData = CreateStudent(iID, name, iKor, iEng, iMat);
+    if (pNewData != nullptr)
     {
-        pNewNode->iKey = ++TNode<TStudent>::iKeyIndex;
-        m_Linkedlist.push_back(pNewNode);
+        m_Linkedlist.push_back(*pNewData);
+        delete pNewData;
     }
 }
 void  TStudentManager::FileSave()
@@ -51,15 +51,15 @@ void  TStudentManager::FileLoad()
 
         fgets(buffer, 256, fp);
         sscanf_s(buffer, "%d %d %s %d %d %d\n", &iKey, &id, name, _countof(name), &iKor, &iEng, &iMat, &iTotal, &fAvg);
-        TNode<TStudent>* pNewNode1 = CreateStudent(id, name, iKor, iEng, iMat);
-        pNewNode1->iKey = iKey;
+        TStudent* pNewNode1 = CreateStudent(id, name, iKor, iEng, iMat);
         if (pNewNode1 != nullptr)
         {
-            m_Linkedlist.push_back(pNewNode1);
+            m_Linkedlist.push_back(*pNewNode1, iKey);
+            delete pNewNode1;
         }
-    }
-    m_Linkedlist.ShowAll(false, ShowStudent, fp);
+    }    
     fclose(fp);
+    m_Linkedlist.ShowAll(false, ShowStudent, nullptr);
 };
 void  TStudentManager::UpdateData() {
     int iIndex;
@@ -121,13 +121,13 @@ void  TStudentManager::SortData()
 }
 void  TStudentManager::SampleData()
 {
-    for (int iNode = 0; iNode < 10; iNode++)
+    for (int iNode = 0; iNode < 3; iNode++)
     {
-        TNode<TStudent>* pNewNode = CreateStudent(iNode);
-        if (pNewNode != nullptr)
+        TStudent* pNewData = CreateStudent(iNode);
+        if (pNewData != nullptr)
         {
-            pNewNode->iKey = ++TNode<TStudent>::iKeyIndex;
-            m_Linkedlist.push_back(pNewNode);
+             m_Linkedlist.push_back(*pNewData);
+             delete pNewData;
         }
     }
 }
