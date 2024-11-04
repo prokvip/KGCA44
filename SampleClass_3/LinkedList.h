@@ -16,6 +16,7 @@ struct TNode
     TNode* pPrev;
     // 고유한 키 생성
     static  unsigned int iKeyIndex;
+   // friend std::ostream& operator <<(std::ostream& os, TNode<T>& a);
     ~TNode()
     {
         //delete data;
@@ -24,6 +25,12 @@ struct TNode
 
 template <class T>
 unsigned int TNode<T>::iKeyIndex = 0;
+//template <class T>
+//std::ostream& operator <<(std::ostream& os, TNode& a)
+//{
+//    os << a;
+//    return os;
+//}
 
 template<class T>
 class TLinkedlist
@@ -34,7 +41,7 @@ private:
     // 연결된 노드의 현재 개수
     static  int m_iCurrentCounter;   
 public:
-    int   GetCounter() { return m_iCurrentCounter; }
+    int   Size() { return m_iCurrentCounter; }
     // 자료에 처리의 주요기능
     // 초기화, 정리, 치환, 자료생성, 자료해제, 출력, 삽입, 검색, 삭제, 저장, 로드, 정렬
     void    Show(TNode<T>* pNode);
@@ -61,6 +68,7 @@ public:
     TNode<T>* Find(bool (*Fun)(TNode<T>*) = nullptr);
     bool   Swap(TNode<T>* aNode, TNode<T>* bNode);
     void   Sort(bool (*Fun)(TNode<T>* a, TNode<T>* b) = Ascending);
+    friend std::ostream& operator <<(std::ostream& os, TNode<T>* a);
 public:
     static TNode<T>* CreateNode();
     static bool    Ascending(TNode<T>* a, TNode<T>* b);
@@ -72,6 +80,12 @@ public:
 
 template<class T>
 int          TLinkedlist<T>::m_iCurrentCounter = 0;
+template<class T>
+std::ostream& operator<<(std::ostream& os, TNode<T>* a)
+{
+    os << a->data;    
+    return os;
+}
 
 template<class T>
 TLinkedlist<T>::TLinkedlist()

@@ -1,6 +1,6 @@
 #pragma once
 #include <assert.h>
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 //#include <malloc.h>
@@ -15,7 +15,9 @@ struct TStudent
     int m_iMat;
     int m_iTotal;
     float m_fAverage;
+    friend std::ostream& operator <<(std::ostream& os, TStudent& a);
 };
+
 struct TCharacter
 {
     char m_szName[4];

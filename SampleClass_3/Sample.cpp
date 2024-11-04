@@ -3,8 +3,19 @@
 int main()
 {
     TLinkedlist<TStudent>          m_LinkedlistStudent;
-    TLinkedlist<int>               m_intArray;
+    TLinkedlist<float>               m_intArray;
     TLinkedlist<TCharacter>        m_LinkedlistCharacter;
+    m_LinkedlistStudent.push_back(TStudent());
+    m_LinkedlistStudent.push_back(TStudent());
+    m_LinkedlistStudent.push_back(TStudent());
+    for (int i = 0; i < m_LinkedlistStudent.Size(); i++)
+    {
+        TNode<TStudent>* pNode = m_LinkedlistStudent.Find(1);
+        std::cout << pNode  <<  10 << std::endl;
+    }
+    m_intArray.ShowAll();
+    return 1;
+
 
     TStudentManager mgr;
     int iWork = 0;

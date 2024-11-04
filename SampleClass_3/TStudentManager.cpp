@@ -22,7 +22,7 @@ void  TStudentManager::FileSave()
 {
     FILE* fp = 0;
     fopen_s(&fp, "data.txt", "w");
-    fprintf(fp, "%d %d\n", m_Linkedlist.GetCounter(), TNode<TStudent>::iKeyIndex);
+    fprintf(fp, "%d %d\n", m_Linkedlist.Size(), TNode<TStudent>::iKeyIndex);
     m_Linkedlist.ShowAll(false, ShowStudent, fp);
     fclose(fp);
 }
