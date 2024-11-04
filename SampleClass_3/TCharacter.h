@@ -27,6 +27,7 @@ struct TCharacter
     int m_iMat;
     int m_iTotal;
     float m_fAverage;
+    friend std::ostream& operator <<(std::ostream& os, TCharacter& a);
 };
 
 enum WORK {

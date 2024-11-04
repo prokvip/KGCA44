@@ -5,19 +5,35 @@ int main()
     TLinkedlist<TStudent>          m_LinkedlistStudent;
     TLinkedlist<float>               m_intArray;
     TLinkedlist<TCharacter>        m_LinkedlistCharacter;
+   
+    m_LinkedlistCharacter.push_back(TCharacter());
+    m_LinkedlistCharacter.push_back(TCharacter());
+    m_LinkedlistCharacter.push_back(TCharacter());
+    
+    std::cout << &m_LinkedlistCharacter << std::endl;
+
+    for (int i = 0; i < m_LinkedlistCharacter.Size(); i++)
+    {
+        TNode<TCharacter>* pNode = m_LinkedlistCharacter.Find(1);
+        std::cout << pNode << std::endl;
+    }
+
     m_LinkedlistStudent.push_back(TStudent());
     m_LinkedlistStudent.push_back(TStudent());
     m_LinkedlistStudent.push_back(TStudent());
+    //std::cout << m_LinkedlistStudent << std::endl;
+    
     for (int i = 0; i < m_LinkedlistStudent.Size(); i++)
     {
         TNode<TStudent>* pNode = m_LinkedlistStudent.Find(1);
-        std::cout << pNode  <<  10 << std::endl;
-    }
-    m_intArray.ShowAll();
-    return 1;
+        std::cout << pNode  << std::endl;
+    //}
+    //m_intArray.ShowAll();
+    
 
 
     TStudentManager mgr;
+   
     int iWork = 0;
     bool workRun = true;
 
@@ -48,6 +64,7 @@ int main()
         }break;
         case PRINT:
         {
+            std::cout << mgr << std::endl;           
             mgr.EXECUTEDirect = &TStudentManager::PrintData;
         }break;
         case NEW_DATA:

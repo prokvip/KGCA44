@@ -35,7 +35,7 @@ unsigned int TNode<T>::iKeyIndex = 0;
 template<class T>
 class TLinkedlist
 {
-private:
+public:
     TNode<T>* g_pHead;
     TNode<T>* g_pTail;
     // 연결된 노드의 현재 개수
@@ -69,6 +69,7 @@ public:
     bool   Swap(TNode<T>* aNode, TNode<T>* bNode);
     void   Sort(bool (*Fun)(TNode<T>* a, TNode<T>* b) = Ascending);
     friend std::ostream& operator <<(std::ostream& os, TNode<T>* a);
+   
 public:
     static TNode<T>* CreateNode();
     static bool    Ascending(TNode<T>* a, TNode<T>* b);

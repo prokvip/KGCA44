@@ -1,5 +1,53 @@
 ﻿#include <iostream> // stdio.h
-
+struct TItem
+{
+    int iData;
+    friend std::ostream& operator << (std::ostream& os, TItem& a);
+};
+std::ostream& operator << (std::ostream& os, TItem& a)
+{
+    return os;
+}
+template <class T>
+class TItemMgr
+{
+public:
+};
+template <class T>
+class TManager
+{
+public:
+    TItemMgr<T> list;
+public:
+    //friend std::ostream&  operator << (std::ostream& os, TManager<T>& a);
+    friend std::ostream&  operator << (std::ostream& os, TItemMgr<T>& a);
+};
+//error LNK2019: "void __cdecl operator<<(int,class TManager<int> &)" (??6@YAXHAEAV?$TManager@H@@@Z)main 함수에서 참조되는 확인할 수 없는 외부 기호
+//template <class T>
+//std::ostream& operator << (std::ostream& os, TManager<T>& a)
+//{
+//    return os;
+//}
+template <class T>
+std::ostream& operator << (std::ostream& os, TItemMgr<T>& a)
+{
+    return os;
+}
+class AMgr
+{
+public:    
+    TManager<int> list;
+    friend std::ostream& operator << (std::ostream& os, AMgr& a);
+    friend std::ostream& operator << (std::ostream& os, TManager<int>& a);
+};
+std::ostream& operator << (std::ostream& os, AMgr& a)
+{
+    return os;
+}
+std::ostream& operator << (std::ostream& os, TManager<int>& a)
+{
+    return os;
+}
 class Parent
 {
 public :
@@ -56,7 +104,18 @@ public:
 };
 int main()
 {
-   
+    AMgr mgr;
+    std::cout << mgr;
+    //
+    TItem item;
+    std::cout << item;
+
+    TManager<TItem>  tmgr;
+    //std::cout << tmgr;
+    std::cout << mgr.list;
+
+    std::cout << tmgr.list;
+    
 
     //Parent* p = new Parent;   //Parent pParent;
     //char* i = (char*)p;

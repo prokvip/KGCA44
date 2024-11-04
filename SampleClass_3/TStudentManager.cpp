@@ -1,6 +1,17 @@
 #include "TStudentManager.h"
 void* TStudentManager::g_pValueData = nullptr;
 
+std::ostream& operator <<(std::ostream& os, 
+                          TStudentManager& mgr)
+{
+    for (TNode<TStudent>* pNode = mgr.m_Linkedlist.g_pHead->pNext;
+        pNode != mgr.m_Linkedlist.g_pTail;
+        pNode = pNode->pNext)
+    {
+        std::cout << pNode << std::endl;
+    }
+    return os;
+}
 void  TStudentManager::PrintData() {
     system("cls");
     m_Linkedlist.ShowAll(false, ShowStudent);

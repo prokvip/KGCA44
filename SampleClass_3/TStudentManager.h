@@ -13,6 +13,7 @@ public:
     { 
         m_Execute[work] = setFun;
     };   
+    friend std::ostream& operator <<(std::ostream& os, TStudentManager& a);
     void Execute(int iExeFun)
     {
         if (m_Execute[iExeFun] != nullptr)
