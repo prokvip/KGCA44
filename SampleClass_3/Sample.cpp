@@ -1,34 +1,47 @@
 ﻿#include "TStudentManager.h"
 
 int main()
-{
-   /* TStudent* cList[3];
-    cList[0] = new TStudent();
-    cList[1] = new TStudent();
-    cList[2] = new TStudent();*/
-        TLinkedlist<TStudent*>          m_LinkedlistStudentPoint;
-        m_LinkedlistStudentPoint.push_back(new TStudent);
-        m_LinkedlistStudentPoint.push_back(new TStudent);
-        m_LinkedlistStudentPoint.push_back(new TStudent);
+{  
+    TLinkedlist<TStudent*>*     pp = new TLinkedlist<TStudent*>;
+    TLinkedlist<TStudent*>          m_LinkedlistStudentPoint;
+    m_LinkedlistStudentPoint.push_back(new TStudent);
+    m_LinkedlistStudentPoint.push_back(new TStudent);
+    m_LinkedlistStudentPoint.push_back(new TStudent);
 
-        TLinkedlist<TStudent>          m_LinkedlistStudentValue;
-        m_LinkedlistStudentValue.push_back(TStudent());
-        m_LinkedlistStudentValue.push_back(TStudent());
-        m_LinkedlistStudentValue.push_back(TStudent());
+    /*TNode<TStudent*>* pNode = m_LinkedlistStudentPoint[1];
+    if (pNode != nullptr)
+    {
+        delete pNode->data;
+    }
+    m_LinkedlistStudentPoint.Erase(pNode);    */
 
-        //std::cout << m_LinkedlistStudent << std::endl;
-   
-        for (int i = 0; i < m_LinkedlistStudentPoint.Size(); i++)
+    std::cout << pp << std::endl;
+    std::cout << m_LinkedlistStudentPoint << std::endl;
+
+    int iNumNode = m_LinkedlistStudentPoint.Size();
+    for (TNode<TStudent*>* pNode = m_LinkedlistStudentPoint.begin();
+         pNode != m_LinkedlistStudentPoint.end();
+         )
+    {
+        //TNode<TStudent*>* pNode = m_LinkedlistStudentPoint[i+1];
+        if (pNode != nullptr)
         {
-            TNode<TStudent*>* pNode = m_LinkedlistStudentPoint[i];
             delete pNode->data;
-            m_LinkedlistStudentPoint.Erase(pNode);
+            pNode->data = 0;
         }
-
-    /*delete cList[0];
-    delete cList[1];
-    delete cList[2];*/
+        pNode = m_LinkedlistStudentPoint.Erase(pNode);
+    }
     m_LinkedlistStudentPoint.DeleteAll();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    TLinkedlist<TStudent>          m_LinkedlistStudentValue;
+    m_LinkedlistStudentValue.push_back(TStudent());
+    m_LinkedlistStudentValue.push_back(TStudent());
+    m_LinkedlistStudentValue.push_back(TStudent());
+
     m_LinkedlistStudentValue.DeleteAll();
 
 

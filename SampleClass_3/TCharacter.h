@@ -15,7 +15,16 @@ struct TStudent
     int m_iMat;
     int m_iTotal;
     float m_fAverage;
-    friend std::ostream& operator <<(std::ostream& os, TStudent& a);
+    friend std::ostream& operator <<(std::ostream& os, TStudent* a)
+    {
+        os << a->m_iKor;
+        return os;
+    }
+    friend std::ostream& operator <<(std::ostream& os, TStudent& a)
+    {
+        os << a.m_iKor;
+        return os;
+    };
 };
 
 struct TCharacter
@@ -27,7 +36,16 @@ struct TCharacter
     int m_iMat;
     int m_iTotal;
     float m_fAverage;
-    friend std::ostream& operator <<(std::ostream& os, TCharacter& a);
+    friend std::ostream& operator <<(std::ostream& os, TCharacter* a)
+    {
+        os << a->m_iKor;
+        return os;
+    }
+    friend std::ostream& operator <<(std::ostream& os, TCharacter& a)
+    {
+        os << a.m_iKor;
+        return os;
+    };
 };
 
 enum WORK {

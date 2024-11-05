@@ -16,7 +16,16 @@ struct TNode
     TNode* pPrev;
     // 고유한 키 생성
     static  unsigned int iKeyIndex;
-   // friend std::ostream& operator <<(std::ostream& os, TNode<T>& a);
+    friend std::ostream& operator <<(std::ostream& os, TNode<T>& a)
+    {
+        os << a.data;
+        return  os;
+    }
+    friend std::ostream& operator <<(std::ostream& os, TNode<T>* a) 
+    {
+        os << a->data;
+        return os;
+    }
     ~TNode()
     {
     }
@@ -24,22 +33,19 @@ struct TNode
 
 template <class T>
 unsigned int TNode<T>::iKeyIndex = 0;
-//template <class T>
-//std::ostream& operator <<(std::ostream& os, TNode& a)
-//{
-//    os << a;
-//    return os;
-//}
 
 template<class T>
 class TLinkedlist
 {
-public:
+protected:
     TNode<T>* g_pHead;
     TNode<T>* g_pTail;
+public:
+    TNode<T>* begin() { return g_pHead->pNext; }
+    TNode<T>* end() { return g_pTail; }
     // 연결된 노드의 현재 개수
     static  int m_iCurrentCounter;   
-public:
+
     int   Size() { return m_iCurrentCounter; }
     // 자료에 처리의 주요기능
     // 초기화, 정리, 치환, 자료생성, 자료해제, 출력, 삽입, 검색, 삭제, 저장, 로드, 정렬
@@ -69,7 +75,36 @@ public:
     TNode<T>* Find(bool (*Fun)(TNode<T>*) = nullptr);
     bool   Swap(TNode<T>* aNode, TNode<T>* bNode);
     void   Sort(bool (*Fun)(TNode<T>* a, TNode<T>* b) = Ascending);
-    friend std::ostream& operator <<(std::ostream& os, TNode<T>* a);
+
+    friend std::ostream& operator <<(std::ostream& os, TLinkedlist<T>& a)
+    {
+        for (TNode<T>* pNode = a.begin();
+            pNode != a.end();
+            pNode = pNode->pNext)
+        {
+            if (pNode != nullptr)
+            {
+                os << *pNode;
+                os << pNode;
+                os << pNode->data;
+                os << *pNode->data;
+            }
+        }
+        return os;
+    }
+    friend std::ostream& operator <<(std::ostream& os, TLinkedlist<T>* a)
+    {
+        for (TNode<T>* pNode = a->begin();
+            pNode != a->end();
+            pNode = pNode->pNext)
+        {
+            if (pNode != nullptr)
+            {
+                os << pNode->data;
+            }
+        }
+        return os;
+    }
    
 public:
     static TNode<T>* CreateNode();
@@ -99,12 +134,7 @@ TNode<T>* TLinkedlist<T>::operator[](int iKey)
     }
     return pRetNode;
 }
-template<class T>
-std::ostream& operator<<(std::ostream& os, TNode<T>* a)
-{
-    os << a->data;    
-    return os;
-}
+
 
 template<class T>
 TLinkedlist<T>::TLinkedlist()
@@ -317,7 +347,7 @@ TNode<T>* TLinkedlist<T>::Erase(TNode<T>* pDeleteNode)
     delete pDeleteNode;
 
     TLinkedlist::m_iCurrentCounter--;
-    return pPreNode;
+    return pPostNode;
 }
 template<class T>
 void    TLinkedlist<T>::DeleteAll()
