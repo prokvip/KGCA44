@@ -2,7 +2,6 @@
 
 int main()
 {  
-    TLinkedlist<TStudent*>*     pp = new TLinkedlist<TStudent*>;
     TLinkedlist<TStudent*>          m_LinkedlistStudentPoint;
     m_LinkedlistStudentPoint.push_back(new TStudent);
     m_LinkedlistStudentPoint.push_back(new TStudent);
@@ -15,7 +14,7 @@ int main()
     }
     m_LinkedlistStudentPoint.Erase(pNode);    */
 
-    std::cout << pp << std::endl;
+    std::cout << &m_LinkedlistStudentPoint << std::endl;
     std::cout << m_LinkedlistStudentPoint << std::endl;
 
     int iNumNode = m_LinkedlistStudentPoint.Size();
