@@ -19,7 +19,6 @@ struct TNode
    // friend std::ostream& operator <<(std::ostream& os, TNode<T>& a);
     ~TNode()
     {
-        //delete data;
     }
 };
 
@@ -48,6 +47,8 @@ public:
 
     //void    push_back(T* pNewData, int iKey = -1);
     void    push_back(T  data, int iKey = -1);
+public:
+    TNode<T>* operator[](int index);
 protected:
     void    push_back(TNode<T>* pNewNode);
     void    push_front(TNode<T>* pNewNode);
@@ -81,6 +82,23 @@ public:
 
 template<class T>
 int          TLinkedlist<T>::m_iCurrentCounter = 0;
+
+template<class T>
+TNode<T>* TLinkedlist<T>::operator[](int iKey)
+{
+    TNode<T>* pRetNode = nullptr;
+    for (TNode<T>* pNode = g_pHead->pNext;
+        pNode != g_pTail;
+        pNode = pNode->pNext)
+    {
+        if (pNode->iKey == iKey)
+        {
+            pRetNode = pNode;
+            break;
+        }
+    }
+    return pRetNode;
+}
 template<class T>
 std::ostream& operator<<(std::ostream& os, TNode<T>* a)
 {

@@ -2,13 +2,40 @@
 
 int main()
 {
-    TLinkedlist<TStudent>          m_LinkedlistStudent;
+   /* TStudent* cList[3];
+    cList[0] = new TStudent();
+    cList[1] = new TStudent();
+    cList[2] = new TStudent();*/
+        TLinkedlist<TStudent*>          m_LinkedlistStudentPoint;
+        m_LinkedlistStudentPoint.push_back(new TStudent);
+        m_LinkedlistStudentPoint.push_back(new TStudent);
+        m_LinkedlistStudentPoint.push_back(new TStudent);
+
+        TLinkedlist<TStudent>          m_LinkedlistStudentValue;
+        m_LinkedlistStudentValue.push_back(TStudent());
+        m_LinkedlistStudentValue.push_back(TStudent());
+        m_LinkedlistStudentValue.push_back(TStudent());
+
+        //std::cout << m_LinkedlistStudent << std::endl;
+   
+        for (int i = 0; i < m_LinkedlistStudentPoint.Size(); i++)
+        {
+            TNode<TStudent*>* pNode = m_LinkedlistStudentPoint[i];
+            delete pNode->data;
+            m_LinkedlistStudentPoint.Erase(pNode);
+        }
+
+    /*delete cList[0];
+    delete cList[1];
+    delete cList[2];*/
+    m_LinkedlistStudentPoint.DeleteAll();
+    m_LinkedlistStudentValue.DeleteAll();
+
+
     TLinkedlist<float>               m_intArray;
     TLinkedlist<TCharacter>        m_LinkedlistCharacter;
    
-    m_LinkedlistCharacter.push_back(TCharacter());
-    m_LinkedlistCharacter.push_back(TCharacter());
-    m_LinkedlistCharacter.push_back(TCharacter());
+   
     
     std::cout << &m_LinkedlistCharacter << std::endl;
 
@@ -18,16 +45,9 @@ int main()
         std::cout << pNode << std::endl;
     }
 
-    m_LinkedlistStudent.push_back(TStudent());
-    m_LinkedlistStudent.push_back(TStudent());
-    m_LinkedlistStudent.push_back(TStudent());
-    //std::cout << m_LinkedlistStudent << std::endl;
+
     
-    for (int i = 0; i < m_LinkedlistStudent.Size(); i++)
-    {
-        TNode<TStudent>* pNode = m_LinkedlistStudent.Find(1);
-        std::cout << pNode  << std::endl;
-    //}
+
     //m_intArray.ShowAll();
     
 
