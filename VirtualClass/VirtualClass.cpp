@@ -102,10 +102,27 @@ public:
         std::cout << "Child2 해제자!\n";
     }
 };
+const int Fun1()
+{
+    const int ret = 3;
+    return ret;
+}
+
+int ret = 3;
+const int& Fun2()
+{    
+    return ret;
+}
 int main()
 {
+    int& i =const_cast<int&>(Fun2());
+    const int& j = Fun2();
+    int& k = const_cast<int&>(j);
+
     AMgr mgr;
     std::cout << mgr;
+
+    TItem* a = reinterpret_cast<TItem*>(&mgr);
     //
     TItem item;
     std::cout << item;
