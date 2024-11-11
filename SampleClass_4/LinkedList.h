@@ -86,7 +86,7 @@ public:
             {
                 os << *pNode;
                 os << pNode;
-                os << pNode->data;
+                os << pNode->data;               
             }
         }
         return os;
