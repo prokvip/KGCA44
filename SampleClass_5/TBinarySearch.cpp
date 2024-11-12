@@ -70,6 +70,7 @@ bool TBinarySearch::del(int iData)
 	delete pFindNode;
 	return true;	
 }
+
 // case0 , case1
 bool TBinarySearch::deleteNode(TDataNode* pDelNode)
 {
