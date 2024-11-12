@@ -15,11 +15,19 @@ void TBinarySearch::case2(TDataNode* pDest, TDataNode* pSrc)
 		{
 			pDestParent->pLeft = pSrc;		
 			pSrc->pLeft = pDestLeft;
+			if (pDest != pSrcParent)
+			{
+				pSrc->pRight = pDestRight;
+			}
 		}
 		else
 		{
 			pDestParent->pRight = pSrc;
-			pSrc->pRight = pDestRight;			
+			pSrc->pRight = pDestRight;	
+			if (pDest != pSrcParent)
+			{
+				pSrc->pLeft = pDestLeft;
+			}
 		}
 		pSrc->pParent = pDestParent;
 	}
