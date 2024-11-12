@@ -144,6 +144,7 @@ bool TBinarySearch::deleteNode(TDataNode* pDelNode)
 	}	
 	return false;
 }
+
 bool	   TBinarySearch::Add(int iData)
 {
 	TDataNode* pNode = new TDataNode(iData);
@@ -152,9 +153,9 @@ bool	   TBinarySearch::Add(int iData)
 		m_pRoot = pNode;
 		return true;
 	}	
-	push(m_pRoot, pNode);
+	return push(m_pRoot, pNode);	
 }
-void	   TBinarySearch::push(TDataNode* pParent, TDataNode* pNewNode)
+bool	   TBinarySearch::push(TDataNode* pParent, TDataNode* pNewNode)
 {
 	if (pParent->iData > pNewNode->iData)
 	{
@@ -163,7 +164,8 @@ void	   TBinarySearch::push(TDataNode* pParent, TDataNode* pNewNode)
 		{
 			pParent->pLeft = pNewNode;
 			pNewNode->pParent = pParent;
-			return;
+			UpdateHeight(pNewNode->pParent);
+			return true;
 		}
 		push(pParent->pLeft, pNewNode);
 	}
@@ -174,10 +176,12 @@ void	   TBinarySearch::push(TDataNode* pParent, TDataNode* pNewNode)
 		{
 			pParent->pRight = pNewNode;
 			pNewNode->pParent = pParent;
-			return;
+			UpdateHeight(pNewNode->pParent);			
+			return true;
 		}
 		push(pParent->pRight, pNewNode);
 	}
+	return false;
 }
 TDataNode* TBinarySearch::find(int iData)
 {
@@ -198,4 +202,33 @@ TDataNode* TBinarySearch::get(TDataNode* pParent, int iData)
 	{
 		get(pParent->pRight, iData);
 	}
+	return nullptr;
+}
+int			TBinarySearch::GetBalance(TDataNode* pNode)
+{
+	if (pNode == nullptr) return 0;
+	return GetHeight(pNode->pLeft) - GetHeight(pNode->pRight);
+}
+TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
+{
+	int iLeftHeight = GetHeight(pNode->pLeft);
+	int iRightHeight = GetHeight(pNode->pRight);
+	pNode->iHeight = 1 + max(iLeftHeight, iRightHeight);
+	int iBalanceFactor = GetBalance(pNode);
+	if (iBalanceFactor > 1) {
+		// 회전
+	}
+	if (iBalanceFactor < -1) {
+		// 회전
+	}
+	if (pNode->pParent != nullptr)
+	{
+		UpdateHeight(pNode->pParent);
+	}
+	return pNode;
+}
+int TBinarySearch::GetHeight(TDataNode* pNode)
+{
+	if (pNode == nullptr) return 0;
+	return pNode->iHeight;
 }
