@@ -1,61 +1,61 @@
 #include "TBinarySearch.h"
-void TBinarySearch::case2(TDataNode* pDest, TDataNode* pSrc)
+void TBinarySearch::case2(TDataNode* pDeleteNode, TDataNode* pSuccessorNode)
 {
-	TDataNode* pDestParent = pDest->pParent;
-	TDataNode* pSrcParent = pSrc->pParent;
+	TDataNode* pDeleteParent = pDeleteNode->pParent;
+	TDataNode* pSuccessorParent = pSuccessorNode->pParent;
 
-	TDataNode* pDestLeft = pDest->pLeft;
-	TDataNode* pDestRight = pDest->pRight;
-	TDataNode* pSrcLeft = pSrc->pLeft;
-	TDataNode* pSrcRight = pSrc->pRight;
+	TDataNode* pDeleteLeft = pDeleteNode->pLeft;
+	TDataNode* pDeleteRight = pDeleteNode->pRight;
+	TDataNode* pSuccessorLeft = pSuccessorNode->pLeft;
+	TDataNode* pSuccessorRight = pSuccessorNode->pRight;
 
-	if (pDestParent)
+	if (pDeleteParent)
 	{
-		if (pDestParent->pLeft == pDest) // ¿ÞÂÊ ÀÚ½Ä
+		if (pDeleteParent->pLeft == pDeleteNode) // ¿ÞÂÊ ÀÚ½Ä
 		{
-			pDestParent->pLeft = pSrc;		
-			pSrc->pLeft = pDestLeft;
-			if (pDest != pSrcParent)
+			pDeleteParent->pLeft = pSuccessorNode;		
+			pSuccessorNode->pLeft = pDeleteLeft;
+			if (pDeleteNode != pSuccessorParent)
 			{
-				pSrc->pRight = pDestRight;
+				pSuccessorNode->pRight = pDeleteRight;
 			}
 		}
 		else
 		{
-			pDestParent->pRight = pSrc;
-			pSrc->pRight = pDestRight;	
-			if (pDest != pSrcParent)
+			pDeleteParent->pRight = pSuccessorNode;
+			pSuccessorNode->pRight = pDeleteRight;	
+			if (pDeleteNode != pSuccessorParent)
 			{
-				pSrc->pLeft = pDestLeft;
+				pSuccessorNode->pLeft = pDeleteLeft;
 			}
 		}
-		pSrc->pParent = pDestParent;
+		pSuccessorNode->pParent = pDeleteParent;
 	}
 	else
 	{
-		m_pRoot = pSrc;
-		m_pRoot->pLeft = pDestLeft;
-		m_pRoot->pRight = pDestRight;
+		m_pRoot = pSuccessorNode;
+		m_pRoot->pLeft = pDeleteLeft;
+		m_pRoot->pRight = pDeleteRight;
 		m_pRoot->pParent = nullptr;
-		pDestRight->pParent = pSrc;
-		pDestLeft->pParent  = pSrc;
+		pDeleteRight->pParent = pSuccessorNode;
+		pDeleteLeft->pParent  = pSuccessorNode;
 	}
 
-	if (pDest == pSrcParent)
+	if (pDeleteNode == pSuccessorParent)
 	{
-		pDest->pParent = pSrc;
-		pDest->pLeft = pSrcLeft;
-		pDest->pRight = pSrcRight;
+		pDeleteNode->pParent = pSuccessorNode;
+		pDeleteNode->pLeft = pSuccessorLeft;
+		pDeleteNode->pRight = pSuccessorRight;
 	}
 	else
 	{
-		if (pSrcParent->pLeft == pSrc) 
+		if (pSuccessorParent->pLeft == pSuccessorNode) 
 		{
-			pSrcParent->pLeft = pSrcRight;
+			pSuccessorParent->pLeft = pSuccessorRight;
 		}
-		if (pSrcParent->pRight == pSrc) 
+		if (pSuccessorParent->pRight == pSuccessorNode) 
 		{
-			pSrcParent->pRight = pSrcLeft;
+			pSuccessorParent->pRight = pSuccessorLeft;
 		}		
 	}
 }

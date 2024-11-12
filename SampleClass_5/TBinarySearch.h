@@ -29,7 +29,7 @@ public:
 	TDataNode*  get(TDataNode* pParent, int iData);
 	bool		del(int iData);
 	bool		deleteNode(TDataNode* pParent);
-	void		case2(TDataNode* pDest, TDataNode* pSrc);
+	void		case2(TDataNode* pDelNode, TDataNode* pSuccessorNode);
 	TBinarySearch() : m_pRoot(nullptr)
 	{
 
