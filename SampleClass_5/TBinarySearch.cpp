@@ -1,5 +1,5 @@
 #include "TBinarySearch.h"
-void TBinarySearch::Swap(TDataNode* pDest, TDataNode* pSrc)
+void TBinarySearch::case2(TDataNode* pDest, TDataNode* pSrc)
 {
 	TDataNode* pDestParent = pDest->pParent;
 	TDataNode* pSrcParent = pSrc->pParent;
@@ -13,12 +13,13 @@ void TBinarySearch::Swap(TDataNode* pDest, TDataNode* pSrc)
 	{
 		if (pDestParent->pLeft == pDest) // ¿ÞÂÊ ÀÚ½Ä
 		{
-			pDestParent->pLeft = pSrc;			
+			pDestParent->pLeft = pSrc;		
+			pSrc->pLeft = pDestLeft;
 		}
 		else
 		{
 			pDestParent->pRight = pSrc;
-			
+			pSrc->pRight = pDestRight;			
 		}
 		pSrc->pParent = pDestParent;
 	}
@@ -35,19 +36,18 @@ void TBinarySearch::Swap(TDataNode* pDest, TDataNode* pSrc)
 	if (pDest == pSrcParent)
 	{
 		pDest->pParent = pSrc;
-		pSrc->pRight = pDest;
 		pDest->pLeft = pSrcLeft;
 		pDest->pRight = pSrcRight;
 	}
 	else
 	{
-		if (pSrcParent->pLeft == pSrc) // ¿ÞÂÊ ÀÚ½Ä
+		if (pSrcParent->pLeft == pSrc) 
 		{
-			pSrcParent->pLeft = pSrcLeft;
+			pSrcParent->pLeft = pSrcRight;
 		}
-		if (pSrcParent->pRight == pSrc) // ¿ÞÂÊ ÀÚ½Ä
+		if (pSrcParent->pRight == pSrc) 
 		{
-			pSrcParent->pRight = pSrcRight;
+			pSrcParent->pRight = pSrcLeft;
 		}		
 	}
 }
@@ -64,7 +64,7 @@ bool TBinarySearch::del(int iData)
 		pRightSucceed = pRightParent;
 		pRightParent = pRightParent->pLeft;		
 	}
-	Swap(pFindNode, pRightSucceed);
+	case2(pFindNode, pRightSucceed);
 	pFindNode->pLeft = nullptr;
 	pFindNode->pRight = nullptr;
 	delete pFindNode;

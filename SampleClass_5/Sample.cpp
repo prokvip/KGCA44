@@ -4,23 +4,25 @@
 int main()
 {  
     TBinarySearch bst;
-
-    /*for (int i = 0; i < 10; i++)
+    int iDataAray[] = { 50,76,21,4,32,64,15,52,14,100,83,2,3,70,87,80,55 };
+    for (int i = 0; i < _countof(iDataAray); i++)
     {
-        bst.Add(rand() % 100);
-    }*/
-    bst.Add(50);
-    bst.Add(30);
-    bst.Add(70);
-    bst.Add(20);
-    bst.Add(40);
-    //bst.Add(90);
-    bst.Add(60);
-    bst.Add(80);
-    
-    bst.del(20);
-   // bst.del(70);
+        //bst.Add(rand() % 100);
+        bst.Add(iDataAray[i]);
+    }
     bst.del(50);
+   // bst.Add(50);
+   // bst.Add(30);
+   // bst.Add(70);
+   // bst.Add(20);
+   // bst.Add(40);
+   // //bst.Add(90);
+   // bst.Add(60);
+   // bst.Add(80);
+   // 
+   // bst.del(20);
+   //// bst.del(70);
+   // bst.del(50);
 
     TDataNode* pFindNode = bst.find(80);
     delete bst.m_pRoot;
