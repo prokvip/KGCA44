@@ -28,7 +28,7 @@ void TBinarySearch::case2(TDataNode* pDeleteNode, TDataNode* pSuccessorNode)
 			pDeleteLeft->pParent = pSuccessorNode;
 			if (pDeleteNode != pSuccessorParent)
 			{
-				pSuccessorNode->pLeft = pDeleteLeft;
+				pSuccessorNode->pRight = pDeleteRight;
 			}
 		}
 		pSuccessorNode->pParent = pDeleteParent;
