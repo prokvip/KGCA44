@@ -167,7 +167,10 @@ bool	   TBinarySearch::push(TDataNode* pParent, TDataNode* pNewNode)
 			UpdateHeight(pNewNode->pParent);
 			return true;
 		}
-		push(pParent->pLeft, pNewNode);
+		else
+		{
+			push(pParent->pLeft, pNewNode);
+		}
 	}
 	else
 	{
@@ -179,7 +182,10 @@ bool	   TBinarySearch::push(TDataNode* pParent, TDataNode* pNewNode)
 			UpdateHeight(pNewNode->pParent);			
 			return true;
 		}
-		push(pParent->pRight, pNewNode);
+		else
+		{
+			push(pParent->pRight, pNewNode);
+		}
 	}
 	return false;
 }
@@ -209,21 +215,100 @@ int			TBinarySearch::GetBalance(TDataNode* pNode)
 	if (pNode == nullptr) return 0;
 	return GetHeight(pNode->pLeft) - GetHeight(pNode->pRight);
 }
+void	   TBinarySearch::RRRotation(
+	TDataNode* pPNode,
+	TDataNode* pANode,
+	TDataNode* pBNode,
+	TDataNode* pCNode )
+{
+	// RR Rotation
+	if (pPNode)
+	{
+		pPNode->pLeft = pBNode;//
+		pBNode->pParent = pPNode;//
+	}
+	else
+	{
+		m_pRoot = pBNode;
+		pBNode->pParent = nullptr;		
+	}
+
+	if (pBNode)
+	{
+		TDataNode* cNode = pBNode->pRight;
+		pBNode->pRight = pANode;
+		pANode->pParent = pBNode;
+		pANode->pLeft = cNode;
+	}
+	UpdateHeight(pANode);
+}
 TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 {
 	int iLeftHeight = GetHeight(pNode->pLeft);
 	int iRightHeight = GetHeight(pNode->pRight);
 	pNode->iHeight = 1 + max(iLeftHeight, iRightHeight);
 	int iBalanceFactor = GetBalance(pNode);
-	if (iBalanceFactor > 1) {
-		// 회전
-	}
-	if (iBalanceFactor < -1) {
-		// 회전
-	}
-	if (pNode->pParent != nullptr)
+	if (iBalanceFactor > 1 || iBalanceFactor < -1)
 	{
-		UpdateHeight(pNode->pParent);
+		if (iBalanceFactor > 1) {
+			TDataNode* pPNode = pNode->pParent;
+			TDataNode* pANode = pNode;
+			TDataNode* pBNode = pNode->pLeft;			
+			TDataNode* pCNode = pBNode->pLeft;
+
+			TDataNode* pcNode = pBNode->pRight;
+			if (pcNode != nullptr)// D
+			{
+				TDataNode* pbNode = pcNode->pLeft;
+				pANode->pLeft = pcNode;
+				pcNode->pParent = pANode;
+				pcNode->pLeft = pBNode;
+				pBNode->pParent = pcNode;
+				pBNode->pRight = pbNode;
+				// RR Rotation
+				RRRotation(pPNode, 
+					pANode,
+					pCNode, 
+					pBNode);
+			}
+			else
+			{
+				// RR Rotation
+				RRRotation(pPNode,pANode, pBNode, pCNode);
+			}
+		}
+		//if (iBalanceFactor < -1)
+		//{
+		//	TDataNode* pPNode = pNode->pParent;
+		//	TDataNode* pBNode = pNode->pRight;
+		//	TDataNode* pDNode = pBNode->pLeft;
+		//	TDataNode* pCNode = pBNode->pRight;
+		//	// 회전 : 오른쪽으로 기울어져 있다.
+		//	if (pDNode != nullptr)// D
+		//	{
+		//		pNode->pRight = pDNode;
+		//		TDataNode* pDLeft = pDNode->pRight;
+		//		pDNode->pRight = pBNode;
+
+		//		pPNode->pRight = pDNode;
+		//		pDNode->pLeft = pNode;
+		//		UpdateHeight(pNode);
+		//	}
+		//	else
+		//	{
+		//		pPNode->pRight = pBNode;
+		//		pBNode->pLeft = pNode;
+		//		UpdateHeight(pBNode);
+		//		UpdateHeight(pNode);
+		//	}
+		//}
+	}
+	else
+	{
+		if (pNode->pParent != nullptr)
+		{
+			UpdateHeight(pNode->pParent);
+		}
 	}
 	return pNode;
 }

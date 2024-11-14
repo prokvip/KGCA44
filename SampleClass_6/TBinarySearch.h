@@ -40,6 +40,12 @@ public:
 	TDataNode*  UpdateHeight(TDataNode* pNode);
 	int			GetHeight(TDataNode* pNode);
 	int			GetBalance(TDataNode* pNode);
+public:
+	void	   RRRotation(
+		TDataNode* pPNode,
+		TDataNode* pANode,
+		TDataNode* pBNode,
+		TDataNode* pCNode);
 	TBinarySearch() : m_pRoot(nullptr)
 	{
 
