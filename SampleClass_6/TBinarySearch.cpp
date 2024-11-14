@@ -257,7 +257,12 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 			TDataNode* pCNode = pBNode->pLeft;
 
 			TDataNode* pcNode = pBNode->pRight;
-			if (pcNode != nullptr)// D
+			if (pCNode != nullptr)// D
+			{
+				// RR Rotation
+				RRRotation(pPNode, pANode, pBNode, pCNode);				
+			}
+			else
 			{
 				TDataNode* pbNode = pcNode->pLeft;
 				pANode->pLeft = pcNode;
@@ -266,15 +271,10 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 				pBNode->pParent = pcNode;
 				pBNode->pRight = pbNode;
 				// RR Rotation
-				RRRotation(pPNode, 
+				RRRotation(pPNode,
 					pANode,
-					pCNode, 
+					pCNode,
 					pBNode);
-			}
-			else
-			{
-				// RR Rotation
-				RRRotation(pPNode,pANode, pBNode, pCNode);
 			}
 		}
 		//if (iBalanceFactor < -1)
