@@ -12,7 +12,8 @@ int main()
         //bst.Add(rand() % 100);
         bst.Add(iDataAray[i]);
     }
-    bst.del(14);
+    bst.del(8);
+    /*bst.del(14);
     bst.del(87);
     bst.del(15);
     bst.del(52);
@@ -20,7 +21,7 @@ int main()
     bst.del(50);
     bst.del(4);
     bst.del(64);
-    bst.del(21);
+    bst.del(21);*/
    
     TDataNode* pFindNode = bst.find(80);
     delete bst.m_pRoot;

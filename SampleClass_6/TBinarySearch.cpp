@@ -15,6 +15,7 @@ void TBinarySearch::case2(TDataNode* pDeleteNode, TDataNode* pSuccessorNode)
 		{
 			pDeleteParent->pLeft = pSuccessorNode;		
 			pSuccessorNode->pLeft = pDeleteLeft;
+			pDeleteLeft->pParent = pSuccessorNode;
 			if (pDeleteNode != pSuccessorParent)
 			{
 				pSuccessorNode->pRight = pDeleteRight;
@@ -23,7 +24,8 @@ void TBinarySearch::case2(TDataNode* pDeleteNode, TDataNode* pSuccessorNode)
 		else
 		{
 			pDeleteParent->pRight = pSuccessorNode;
-			pSuccessorNode->pRight = pDeleteRight;	
+			pSuccessorNode->pLeft = pDeleteLeft;	
+			pDeleteLeft->pParent = pSuccessorNode;
 			if (pDeleteNode != pSuccessorParent)
 			{
 				pSuccessorNode->pLeft = pDeleteLeft;
@@ -196,19 +198,20 @@ TDataNode* TBinarySearch::find(int iData)
 TDataNode* TBinarySearch::get(TDataNode* pParent, int iData)
 {
 	if (pParent == nullptr) return nullptr;
+	TDataNode* pRet = nullptr;
 	if (pParent->iData == iData)
 	{
 		return pParent;
 	}
 	if (pParent->iData > iData)
 	{		
-		get(pParent->pLeft, iData);
+		pRet = get(pParent->pLeft, iData);
 	}
 	else
 	{
-		get(pParent->pRight, iData);
+		pRet = get(pParent->pRight, iData);
 	}
-	return nullptr;
+	return pRet;
 }
 int			TBinarySearch::GetBalance(TDataNode* pNode)
 {
