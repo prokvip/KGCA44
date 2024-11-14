@@ -46,6 +46,11 @@ public:
 		TDataNode* pANode,
 		TDataNode* pBNode,
 		TDataNode* pCNode);
+	void	   LLRotation(
+		TDataNode* pPNode,
+		TDataNode* pANode,
+		TDataNode* pBNode,
+		TDataNode* pCNode);
 	TBinarySearch() : m_pRoot(nullptr)
 	{
 

@@ -239,6 +239,41 @@ void	   TBinarySearch::RRRotation(
 		pBNode->pRight = pANode;
 		pANode->pParent = pBNode;
 		pANode->pLeft = cNode;
+		if (cNode!=nullptr)
+		{
+			cNode->pParent = pANode;
+		}
+	}
+	UpdateHeight(pANode);
+}
+void	   TBinarySearch::LLRotation(
+	TDataNode* pPNode,
+	TDataNode* pANode,
+	TDataNode* pBNode,
+	TDataNode* pCNode)
+{
+	// RR Rotation
+	if (pPNode)
+	{
+		pPNode->pRight = pBNode;//
+		pBNode->pParent = pPNode;//
+	}
+	else
+	{
+		m_pRoot = pBNode;
+		pBNode->pParent = nullptr;
+	}
+
+	if (pBNode)
+	{
+		TDataNode* cNode = pBNode->pLeft;
+		pBNode->pLeft = pANode;
+		pANode->pParent = pBNode;
+		pANode->pRight = cNode;
+		if (cNode != nullptr)
+		{
+			cNode->pParent = pANode;
+		}
 	}
 	UpdateHeight(pANode);
 }
@@ -256,7 +291,7 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 			TDataNode* pBNode = pNode->pLeft;			
 			TDataNode* pCNode = pBNode->pLeft;
 
-			TDataNode* pcNode = pBNode->pRight;
+			
 			if (pCNode != nullptr)// D
 			{
 				// RR Rotation
@@ -264,7 +299,9 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 			}
 			else
 			{
+				TDataNode* pcNode = pBNode->pRight;
 				TDataNode* pbNode = pcNode->pLeft;
+
 				pANode->pLeft = pcNode;
 				pcNode->pParent = pANode;
 				pcNode->pLeft = pBNode;
@@ -277,31 +314,34 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 					pBNode);
 			}
 		}
-		//if (iBalanceFactor < -1)
-		//{
-		//	TDataNode* pPNode = pNode->pParent;
-		//	TDataNode* pBNode = pNode->pRight;
-		//	TDataNode* pDNode = pBNode->pLeft;
-		//	TDataNode* pCNode = pBNode->pRight;
-		//	// 회전 : 오른쪽으로 기울어져 있다.
-		//	if (pDNode != nullptr)// D
-		//	{
-		//		pNode->pRight = pDNode;
-		//		TDataNode* pDLeft = pDNode->pRight;
-		//		pDNode->pRight = pBNode;
-
-		//		pPNode->pRight = pDNode;
-		//		pDNode->pLeft = pNode;
-		//		UpdateHeight(pNode);
-		//	}
-		//	else
-		//	{
-		//		pPNode->pRight = pBNode;
-		//		pBNode->pLeft = pNode;
-		//		UpdateHeight(pBNode);
-		//		UpdateHeight(pNode);
-		//	}
-		//}
+		if (iBalanceFactor < -1)
+		{
+			TDataNode* pPNode = pNode->pParent;
+			TDataNode* pANode = pNode;
+			TDataNode* pBNode = pNode->pRight;
+			TDataNode* pCNode = pBNode->pRight;
+			TDataNode* pcNode = pBNode->pLeft;
+			if (pCNode != nullptr)// D
+			{
+				// RR Rotation
+				LLRotation(pPNode, pANode, pBNode, pCNode);
+			}
+			else
+			{
+				TDataNode* pcNode = pBNode->pLeft;
+				TDataNode* pbNode = pcNode->pRight;
+				pANode->pRight = pcNode;
+				pcNode->pParent = pANode;
+				pcNode->pRight = pBNode;
+				pBNode->pParent = pcNode;
+				pBNode->pLeft = pbNode;
+				// RR Rotation
+				LLRotation(pPNode,
+					pANode,
+					pCNode,
+					pBNode);
+			}
+		}
 	}
 	else
 	{

@@ -5,7 +5,8 @@ int main()
 {  
     TBinarySearch bst;
     //int iDataAray[] = { 50,76,21,4,32,64,15,52,14,100,83,2,3,70,87,80,55 };
-    int iDataAray[] = { 10,9,8,7,6,5,4,3,2,1 };
+    //int iDataAray[] = { 10,9,8,7,6,5,4,3,2,1 };
+    int iDataAray[] = { 1,2,3,4,5,6,7,8,9,10 };
     for (int i = 0; i < _countof(iDataAray); i++)
     {
         //bst.Add(rand() % 100);
