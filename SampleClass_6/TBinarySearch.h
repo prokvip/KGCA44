@@ -40,6 +40,8 @@ public:
 	TDataNode*  UpdateHeight(TDataNode* pNode);
 	int			GetHeight(TDataNode* pNode);
 	int			GetBalance(TDataNode* pNode);
+	TDataNode*	GetSuccessorRight(TDataNode* pNode);
+	TDataNode*	GetSuccessorLeft(TDataNode* pNode);
 public:
 	void	   RRRotation(
 		TDataNode* pPNode,

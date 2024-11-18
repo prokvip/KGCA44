@@ -11,53 +11,89 @@ void TBinarySearch::case2(TDataNode* pDeleteNode, TDataNode* pSuccessorNode)
 
 	if (pDeleteParent)
 	{
-		if (pDeleteParent->pLeft == pDeleteNode) // 왼쪽 자식
+		if (pDeleteParent->pLeft == pDeleteNode) 
 		{
-			pDeleteParent->pLeft = pSuccessorNode;		
-			pSuccessorNode->pLeft = pDeleteLeft;
-			pDeleteLeft->pParent = pSuccessorNode;
-			if (pDeleteNode != pSuccessorParent)
-			{
-				pSuccessorNode->pRight = pDeleteRight;
-			}
+			pDeleteParent->pLeft = pSuccessorNode;					
 		}
 		else
 		{
 			pDeleteParent->pRight = pSuccessorNode;
-			pSuccessorNode->pLeft = pDeleteLeft;	
-			pDeleteLeft->pParent = pSuccessorNode;
-			if (pDeleteNode != pSuccessorParent)
-			{
-				pSuccessorNode->pRight = pDeleteRight;
-			}
 		}
+		if (pDeleteLeft != pSuccessorNode)
+		{			
+			pSuccessorNode->pLeft = pDeleteLeft;
+			if (pDeleteLeft)pDeleteLeft->pParent = pSuccessorNode;
+		}		
+		if (pDeleteRight != pSuccessorNode)
+		{
+			pSuccessorNode->pRight = pDeleteRight;
+			if (pDeleteRight)pDeleteRight->pParent = pSuccessorNode;
+		}		
 		pSuccessorNode->pParent = pDeleteParent;
 	}
 	else
 	{
 		m_pRoot = pSuccessorNode;
-		m_pRoot->pLeft = pDeleteLeft;
-		m_pRoot->pRight = pDeleteRight;
-		m_pRoot->pParent = nullptr;
-		pDeleteRight->pParent = pSuccessorNode;
-		pDeleteLeft->pParent  = pSuccessorNode;
+		if ( pDeleteLeft != pSuccessorNode)
+		{
+			m_pRoot->pLeft = pDeleteLeft;
+			if (pDeleteLeft)pDeleteLeft->pParent = pSuccessorNode;
+		}
+		if (pDeleteRight != pSuccessorNode)
+		{
+			m_pRoot->pRight = pDeleteRight;
+			if (pDeleteRight)pDeleteRight->pParent = pSuccessorNode;
+		}
+		m_pRoot->pParent = nullptr;		
 	}
-
 	if (pDeleteNode != pSuccessorParent)
 	{		
 		if (pSuccessorParent->pLeft == pSuccessorNode) 
 		{
 			pSuccessorParent->pLeft = pSuccessorRight;
+			if(pSuccessorRight)pSuccessorRight->pParent = pSuccessorParent;
 		}
 		if (pSuccessorParent->pRight == pSuccessorNode) 
 		{
 			pSuccessorParent->pRight = pSuccessorLeft;
+			if (pSuccessorLeft)pSuccessorLeft->pParent = pSuccessorParent;
 		}		
+		pDeleteNode->pParent = nullptr;
+		pDeleteNode->pLeft = nullptr;
+		pDeleteNode->pRight = nullptr;
+		delete pDeleteNode;
+		UpdateHeight(pSuccessorParent);
 	}
-	pDeleteNode->pParent = nullptr;
-	pDeleteNode->pLeft = nullptr;
-	pDeleteNode->pRight = nullptr;
-	delete pDeleteNode;
+	else
+	{
+		pDeleteNode->pParent = nullptr;
+		pDeleteNode->pLeft = nullptr;
+		pDeleteNode->pRight = nullptr;
+		delete pDeleteNode;
+		UpdateHeight(pSuccessorNode);
+	}	
+}
+TDataNode* TBinarySearch::GetSuccessorRight(TDataNode* pNode)
+{
+	TDataNode* pSuccessor = nullptr;
+	TDataNode* pNext = pNode->pRight;
+	while (pNext != nullptr)
+	{
+		pSuccessor = pNext;
+		pNext = pNext->pLeft;
+	}
+	return pSuccessor;
+}
+TDataNode* TBinarySearch::GetSuccessorLeft(TDataNode* pNode)
+{
+	TDataNode* pSuccessor = nullptr;
+	TDataNode* pNext = pNode->pLeft;
+	while (pNext != nullptr)
+	{
+		pSuccessor = pNext;
+		pNext = pNext->pRight;
+	}
+	return pSuccessor;
 }
 bool TBinarySearch::del(int iData)
 {	
@@ -65,15 +101,38 @@ bool TBinarySearch::del(int iData)
 	if (pFindNode == nullptr) return false;
 	if (deleteNode(pFindNode)) return true;
 		
-	TDataNode* pRightSucceed = nullptr;
-	TDataNode* pRightParent = pFindNode->pRight;
-	while (pRightParent != nullptr)
+	TDataNode* pSuccessor = nullptr;
+	int iBalanceFactor = GetBalance(pFindNode);
+	if (iBalanceFactor >= 0)
+		pSuccessor = GetSuccessorLeft(pFindNode);
+	else
+		pSuccessor = GetSuccessorRight(pFindNode);
+
+	if (pSuccessor != nullptr)
 	{
-		pRightSucceed = pRightParent;
-		pRightParent = pRightParent->pLeft;		
+		case2(pFindNode, pSuccessor);
 	}
-	case2(pFindNode, pRightSucceed);
-	
+	else
+	{
+		if (pFindNode->pLeft == nullptr && pFindNode->pRight == nullptr)
+		{
+			delete pFindNode;
+			m_pRoot = nullptr;
+			return true;
+		}
+		if (pFindNode->pLeft != nullptr)
+		{
+			m_pRoot = pFindNode->pLeft;
+		}
+		if (pFindNode->pRight != nullptr)
+		{
+			m_pRoot = pFindNode->pRight;
+		}
+		m_pRoot->pParent = nullptr;
+		pFindNode->pLeft = nullptr;
+		pFindNode->pRight = nullptr;
+		delete pFindNode;
+	}
 	return true;	
 }
 
@@ -82,27 +141,27 @@ bool TBinarySearch::deleteNode(TDataNode* pDelNode)
 {
 	// case 0
 	TDataNode* pParent = pDelNode->pParent;
-	if (pParent == nullptr) return false;
+	if (pParent == nullptr)
+	{		
+		return false;
+	}
 	if (pParent->pLeft == pDelNode)
 	{
-		// 왼쪽 자식
-		if (pDelNode->pLeft == nullptr &&
-			pDelNode->pRight == nullptr)
+		if (pDelNode->pLeft == nullptr &&	pDelNode->pRight == nullptr)
 		{
 			pParent->pLeft = nullptr;
 			delete pDelNode;
+			UpdateHeight(pParent);
 			return true;
 		}
 	}
 	else
 	{
-		// 오른쪽 자식
-		// 왼쪽 자식
-		if (pDelNode->pLeft == nullptr &&
-			pDelNode->pRight == nullptr)
+		if (pDelNode->pLeft == nullptr &&	pDelNode->pRight == nullptr)
 		{
 			pParent->pRight = nullptr;
 			delete pDelNode;
+			UpdateHeight(pParent);
 			return true;
 		}
 	}
@@ -124,6 +183,7 @@ bool TBinarySearch::deleteNode(TDataNode* pDelNode)
 		pDelNode->pLeft = nullptr;
 		pDelNode->pRight = nullptr;
 		delete pDelNode;
+		UpdateHeight(pParent);
 		return true;
 	}
 	if (pDelNode->pRight == nullptr)
@@ -142,6 +202,7 @@ bool TBinarySearch::deleteNode(TDataNode* pDelNode)
 		pDelNode->pLeft = nullptr;
 		pDelNode->pRight = nullptr;
 		delete pDelNode;
+		UpdateHeight(pParent);
 		return true;
 	}	
 	return false;
@@ -227,7 +288,10 @@ void	   TBinarySearch::RRRotation(
 	// RR Rotation
 	if (pPNode)
 	{
-		pPNode->pLeft = pBNode;//
+		if (pPNode->pLeft == pANode)
+			pPNode->pLeft = pBNode;//
+		if (pPNode->pRight == pANode)
+			pPNode->pRight = pBNode;//
 		pBNode->pParent = pPNode;//
 	}
 	else
@@ -258,7 +322,14 @@ void	   TBinarySearch::LLRotation(
 	// RR Rotation
 	if (pPNode)
 	{
-		pPNode->pRight = pBNode;//
+		if (pPNode->pLeft == pANode)
+		{
+			pPNode->pLeft = pBNode;
+		}
+		else
+		{
+			pPNode->pRight = pBNode;
+		}
 		pBNode->pParent = pPNode;//
 	}
 	else
@@ -294,8 +365,9 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 			TDataNode* pBNode = pNode->pLeft;			
 			TDataNode* pCNode = pBNode->pLeft;
 
-			
-			if (pCNode != nullptr)// D
+			int iBF = GetBalance(pBNode);
+			//if (pCNode != nullptr)// D
+			if (iBF >=0  )
 			{
 				// RR Rotation
 				RRRotation(pPNode, pANode, pBNode, pCNode);				
@@ -310,11 +382,14 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 				pcNode->pLeft = pBNode;
 				pBNode->pParent = pcNode;
 				pBNode->pRight = pbNode;
+				if (pbNode)pbNode->pParent = pBNode;
+				
 				// RR Rotation
 				RRRotation(pPNode,
 					pANode,
-					pCNode,
-					pBNode);
+					pANode->pLeft,
+					pANode->pLeft->pLeft);
+				UpdateHeight(pBNode);
 			}
 		}
 		if (iBalanceFactor < -1)
@@ -324,7 +399,10 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 			TDataNode* pBNode = pNode->pRight;
 			TDataNode* pCNode = pBNode->pRight;
 			TDataNode* pcNode = pBNode->pLeft;
-			if (pCNode != nullptr)// D
+
+			int iBF = GetBalance(pBNode);
+			if( iBF <= 0)
+			//if (pCNode != nullptr)// D
 			{
 				// RR Rotation
 				LLRotation(pPNode, pANode, pBNode, pCNode);
@@ -338,11 +416,14 @@ TDataNode* TBinarySearch::UpdateHeight(TDataNode* pNode)
 				pcNode->pRight = pBNode;
 				pBNode->pParent = pcNode;
 				pBNode->pLeft = pbNode;
+				if(pbNode)pbNode->pParent = pBNode;
+
 				// RR Rotation
 				LLRotation(pPNode,
 					pANode,
-					pCNode,
-					pBNode);
+					pANode->pRight,
+					pANode->pRight->pRight);
+				UpdateHeight(pBNode);
 			}
 		}
 	}
