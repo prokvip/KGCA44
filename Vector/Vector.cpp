@@ -1,6 +1,7 @@
 ﻿
 #include <iostream>
 #include <vector>
+#include <algorithm>
 // 재할당 되는 배열
 // 1) 연속적인 메모리를 할당한다.
 // 2) 할당된 메모리 뒤로 할당하려고 하지만 
@@ -39,14 +40,50 @@ struct TData
 };
 int main()
 {
+    std::vector<int> vecList20(10);
+    for (int i = 0; i < 10; i++)
+    {
+        vecList20[i] = rand() % 100;   
+    }
+    for (auto data : vecList20)
+    {
+        std::cout << data << " ";
+    }
+    std::cout << std::endl;
+    std::sort(vecList20.begin(), vecList20.end(), std::less<>());
+    for (auto data : vecList20)
+    {
+        std::cout << data << " ";
+    }
+    std::cout << std::endl;
+    std::sort(vecList20.begin(), vecList20.end(), std::greater<>());
+    for (auto data : vecList20)
+    {
+        std::cout << data << " ";
+    }
+    std::cout << std::endl;
+    auto iFindIter = std::find(vecList20.begin(), vecList20.end(), 14);
+    if (iFindIter != vecList20.end())
+    {
+        std::cout << *iFindIter << " ";
+    }
+
     std::vector<TData> vecList12;
     vecList12.reserve(10);
     vecList12.emplace_back(1);
     vecList12.emplace_back(2);
     vecList12.emplace_back(3);
     vecList12.emplace_back(4);
-    //vecList12.emplace(vecList12.begin(),5);
+    vecList12.emplace(vecList12.begin(),5);
     vecList12.insert(vecList12.end(), 6);
+
+
+    
+
+    std::vector<TData> vecList19(vecList12.begin(), vecList12.end());
+    std::vector<TData> vecList18(1);
+    //vecList18.assign(vecList12.begin(), vecList12.end());
+    vecList12.swap(vecList18);
 
     for (auto data : vecList12)
     {
