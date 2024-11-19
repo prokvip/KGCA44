@@ -45,7 +45,80 @@ int main()
     vecList12.emplace_back(2);
     vecList12.emplace_back(3);
     vecList12.emplace_back(4);
-    vecList12.emplace(vecList12.begin(),5);
+    //vecList12.emplace(vecList12.begin(),5);
+    vecList12.insert(vecList12.end(), 6);
+
+    for (auto data : vecList12)
+    {
+        data.iData = 10;
+        std::cout << data.iData << " ";
+    }
+    for (auto data : vecList12)
+    {
+        std::cout << data.iData << " ";
+    }
+    /*for (auto& data : vecList12)
+    {
+        data.iData = 9;
+        std::cout << data.iData << " ";
+    }*/
+    for (auto data : vecList12)
+    {
+        std::cout << data.iData << " ";
+    }
+
+
+    std::vector<TData> vecList16 = vecList12;
+    auto vecList17 = vecList16;
+    auto h = 3;
+    auto f = 3.14;
+    auto s = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    char ss[] = "dddddddddd";
+    std::cout << h << f << s;
+
+    vecList12.pop_back();
+    TData& data = vecList12.at(1);
+    TData& pFront = vecList12.front();
+    TData& pBack  = vecList12.back();
+    // 배열의 시작주소 반환
+    TData* datapointer = &vecList12.at(0);
+    TData* pDataPointer = vecList12.data();
+    pDataPointer++;
+    std::cout << (pDataPointer)->iData << " ";
+    pDataPointer++;
+    std::cout << (pDataPointer)->iData << " ";
+    //std::vector<TData>::reverse_iterator iter12;
+    for (auto iter = vecList12.rbegin();
+        iter != vecList12.rend();
+        iter++)
+    {
+        std::cout << iter->iData << " ";
+    }
+    const int j = 3;
+    int k = j;
+    std::vector<TData>::const_iterator citer12;
+    for (citer12 = vecList12.begin();
+        citer12 != vecList12.end();
+        citer12++)
+    {
+        std::cout << citer12->iData << " ";
+    }
+    
+    std::vector<TData>::iterator iter120 = vecList12.begin();
+    std::cout << (iter120++)->iData << " ";
+    std::cout << (iter120--)->iData << " ";
+    std::cout << (iter120)->iData << " ";
+
+    while (!vecList12.empty())
+    {
+        vecList12.erase(vecList12.begin());
+        // error
+        //vecList12.erase(vecList12.end());
+    }
+
+    // 배열의 시작 주소
+    TData* pData = &vecList12.at(0);
+    
 
     std::vector<TData> vecList13 = vecList12;
     std::vector<TData> vecList14(vecList12);
@@ -82,6 +155,7 @@ int main()
         iter++)
     {
         std::cout << iter->iData;
+        //vecList8.emplace_back(3);
     }
     vecList8.erase(vecList8.begin());
     int iSize = vecList8.size();
