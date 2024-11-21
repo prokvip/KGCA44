@@ -1,9 +1,33 @@
-﻿
+﻿#include <windows.h>
 #include <iostream>
+#include <vector>
 #include <list>
+#include <string>
 #include <algorithm>
+#include <atlconv.h>  // A2W
 using namespace std;
 // 연결리스트
+static std::wstring to_mw(const std::string& _src)
+{
+    USES_CONVERSION;
+    return std::wstring(A2W(_src.c_str()));
+};
+
+static std::string to_wm(const std::wstring& _src)
+{
+    USES_CONVERSION;
+    return std::string(W2A(_src.c_str()));
+};
+static std::wstring mtw(std::string str)
+{
+    std::wstring ret = std::wstring(str.begin(), str.end());
+    return  ret;
+}
+static std::string wtm(std::wstring str)
+{
+    return  std::string(str.begin(), str.end());
+}
+
 template <typename S> 
 void print(const S& s) 
 {
@@ -66,6 +90,57 @@ bool CmpFun(int val)
 }
 int main()
 {
+    std::setlocale(LC_ALL, "");
+
+    // 영문,숫자,기호 1byte 표현 가능
+    // 한글,중일아 2byte 표현 가능
+    // 싱글바이트,멀티바이트,유니코드
+    // 1Byte     , 한글2+영문1  무조건 2바이트
+    std::string     multibyte;
+    //basic_string<char, char_traits<char>
+    multibyte = "한글abc";//7
+    std::wstring    unicodebyte;
+    //basic_string<wchar_t, char_traits<wchar_t>,
+    unicodebyte = L"한글abc"; //  _T("한글abc") #include <tchar.h?
+    // [하][ㄴ][그][ㄹ][a][0][b][0][c][0]
+
+
+    int iMSize = multibyte.size();
+    int iUSize = unicodebyte.size();
+
+    std::wstring s1 = std::wstring( multibyte.begin(),
+                                    multibyte.end());
+    std::string s2 = std::string(unicodebyte.begin(),
+                                unicodebyte.end());
+    std::wstring s3 = to_mw(multibyte);
+    std::string s4 = to_wm(unicodebyte);
+
+    char szData[] = "aa";
+    wchar_t szData2[] = L"aa";
+    if (szData2 == L"aa")
+    {
+
+    }
+    std::wstring szText(L"aaaa");
+    std::wstring szSum(szText.begin(), szText.end());
+
+    const char* pStringPointer1 = multibyte.c_str();
+    const wchar_t* pStringPointer2 = unicodebyte.c_str();
+    std::cout << pStringPointer1 << std::endl;
+    std::wcout << unicodebyte << std::endl;
+    std::wcout << pStringPointer2 << std::endl;
+
+    std::vector<std::wstring> szList;  
+    szList.push_back(L"aaa");
+    szList.push_back(L"bbb");
+    std::wstring sum = szList[0] +szList[1];
+    std::wcin >> unicodebyte;
+    for (auto data : szList)
+    {
+        //std::cout << data << " ";
+        std::wcout << data << " ";
+    }
+
     list<int> c1{ 10,11 };
     list<int> c2{ 20,21,22 };
     list<int> c3{ 30,31 };
