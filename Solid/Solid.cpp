@@ -111,8 +111,8 @@ int main()
 
     {
         // 공유 : 참조(레버런싱)
-        //std::shared_ptr<TCharacter> obj = std::make_shared<TCharacter>();
-        std::shared_ptr<TCharacter> obj(new TCharacter);
+        auto obj = std::make_shared<TCharacter>();
+        //std::shared_ptr<TCharacter> obj(new TCharacter);
         TCharacter* pChar = obj.get();
      }
 
