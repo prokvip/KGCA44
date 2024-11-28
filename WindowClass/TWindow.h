@@ -1,12 +1,10 @@
 #pragma once
 #include <windows.h>
 #include <string>
-#include <vector>
-#include <map>
-#include <set>
-#include <algorithm>
+
 class TWindow
 {
+public:
 	HINSTANCE   m_hInstance;
 	HWND		m_hWnd;
 	bool		m_bRun = true;
@@ -20,7 +18,5 @@ public:
 		UINT iWindowY=600);
 	// 메세지 프로시쳐, 처리
 	bool   MessageProcess();
-public:
-	virtual bool GameRun();
 };
 

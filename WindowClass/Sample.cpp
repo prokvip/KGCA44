@@ -1,8 +1,22 @@
 #include "Sample.h"
-bool Sample::GameRun()
+void   Sample::Init() 
 {
-    return true;
+    int a = 0;
 }
+void   Sample::Frame()  
+{
+    int a = 0;
+}
+void   Sample::Render() 
+{
+    int a = 0;
+}
+void   Sample::Release() 
+{
+    int a = 0;
+}
+
+//GameStart(800, 600);
 int WINAPI wWinMain(
     HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -12,5 +26,5 @@ int WINAPI wWinMain(
     Sample sample;
     sample.SetWindowClass(hInstance);
     sample.SetWindow();
-    sample.MessageProcess();    
+    sample.GameRun();    
 }

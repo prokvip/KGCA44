@@ -47,26 +47,73 @@ bool   TWindow::SetWindow(
 	return true;
 }
 // 메세지 프로시쳐, 처리
-bool   TWindow::MessageProcess() 
+bool   TWindow::MessageProcess()
 {
-    MSG msg;
-    while (m_bRun)
+    MSG msg;   
+    if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
     {
-        if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        if (msg.message == WM_QUIT)
         {
-            TranslateMessage(&msg); // 키를 번역한다.
-            DispatchMessage(&msg);  // 프로시져로 전송한다.
-        }
-        else
-        {
-            // 게임로직
-            GameRun();
-        }
+            m_bRun = false;
+            return false;
+        };
+        TranslateMessage(&msg); // 키를 번역한다.
+        DispatchMessage(&msg);  // 프로시져로 전송한다.
+        return true;
     }
-	return true;
+    return false;
 }
 
-bool TWindow::GameRun()
-{
-    return true;
-}
+//// 메세지 프로시쳐, 처리
+//bool   TWindow::MessageProcess() 
+//{
+//    MSG msg;
+//    std::clock_t tick = std::clock();
+//    std::clock_t start = std::clock();
+//    std::clock_t end = std::clock();
+//    double gametime = 0.0;
+//    double time = 0.0f;
+//    double secondPerFrame = 0.0f;
+//    UINT iFrame = 0;
+//    while (m_bRun)
+//    {
+//        if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+//        {
+//            TranslateMessage(&msg); // 키를 번역한다.
+//            DispatchMessage(&msg);  // 프로시져로 전송한다.
+//        }
+//        else
+//        {
+//            
+//            end = std::clock();
+//            std::clock_t t1 = end - tick; // 1000단위
+//            
+//            secondPerFrame = (end - start) / (double)CLOCKS_PER_SEC;
+//            gametime += secondPerFrame;
+//            time += secondPerFrame;
+//            if (time > 1.0)
+//            {
+//                std::wstring msgTime = std::to_wstring(gametime);
+//                msgTime += L" ";
+//                msgTime += std::to_wstring(secondPerFrame);
+//                msgTime += L" ";
+//                msgTime += std::to_wstring(iFrame);
+//                msgTime += L"\n";
+//                OutputDebugString(msgTime.c_str());
+//                time -= 1.0;
+//                iFrame = 0;
+//            }
+//            
+//            /*if (t1 >= 10)
+//            {*/
+//                iFrame++;
+//                // 게임로직
+//                GameRun();       
+//              /*  tick = end;
+//            }*/
+//            start = end;
+//        }
+//    }
+//	return true;
+//}
+

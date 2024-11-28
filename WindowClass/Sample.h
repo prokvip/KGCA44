@@ -1,8 +1,11 @@
 #pragma once
-#include "TWindow.h"
-class Sample : public TWindow
+#include "TGameCore.h"
+class Sample : public TGameCore
 {
 public:
-	virtual bool GameRun() override;
+	virtual void   Init() override;
+	virtual void   Frame() override;
+	virtual void   Render() override;
+	virtual void   Release() override;
 };
 
