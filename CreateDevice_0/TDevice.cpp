@@ -1,4 +1,4 @@
-#include "Sample.h"
+#include "TDevice.h"
 void DX_CHECK(HRESULT hr, const TCHAR* function)
 {
     if (FAILED(hr))
@@ -6,10 +6,10 @@ void DX_CHECK(HRESULT hr, const TCHAR* function)
         LPWSTR output;
         WCHAR buffer[256] = { 0, };
         FormatMessage(
-            FORMAT_MESSAGE_FROM_SYSTEM | 
-            FORMAT_MESSAGE_IGNORE_INSERTS | 
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS |
             FORMAT_MESSAGE_ALLOCATE_BUFFER,
-            NULL, hr, 
+            NULL, hr,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&output, 0, NULL);
         wsprintf(buffer, L"File=%ls\nLine=%d\nFuction=%ls", _T(__FILE__), __LINE__, function);
         std::wstring msg = buffer;
@@ -23,7 +23,7 @@ void DX_CHECK(HRESULT hr, const TCHAR* function)
             title.c_str(), MB_OK);
     }
 }
-bool   Sample::CreateDevice()
+bool   TDevice::CreateDevice()
 {
     D3D_FEATURE_LEVEL pFeatureLevel;
     //  주 디스플레이 그래픽카드
@@ -42,11 +42,11 @@ bool   Sample::CreateDevice()
     // 더블버퍼링( 프런트 버퍼, 백버퍼 <-> 화면버퍼) 
     // 백버퍼
     scd.BufferCount = 1;
-    scd.BufferDesc.Width = m_WindowSize.x;
-    scd.BufferDesc.Height = m_WindowSize.y;
+    scd.BufferDesc.Width = g_WindowSize.x;
+    scd.BufferDesc.Height = g_WindowSize.y;
     scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    scd.OutputWindow = m_hWnd;
+    scd.OutputWindow = g_hWnd;
     scd.Windowed = true;
     // 주사율
     scd.BufferDesc.RefreshRate.Numerator = 60;
@@ -68,7 +68,7 @@ bool   Sample::CreateDevice()
         &m_pd3dDevice,
         &pFeatureLevel,//D3D_FEATURE_LEVEL_11_0
         &m_pd3dContext);
-  
+
     if (FAILED(hr))
     {
         DX_CHECK(hr, _T(__FUNCTION__));
@@ -77,15 +77,15 @@ bool   Sample::CreateDevice()
 
     //RTV 백버퍼의 시작주소를 얻는다.
     ID3D11Texture2D* pBackBuffer;
-    hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), 
-                        (LPVOID*)&pBackBuffer);
-        if (FAILED(hr))
-        {
-            DX_CHECK(hr, _T(__FUNCTION__));
-            return false;
-        }
-        hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL,
-                            &m_pRTV);
+    hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+        (LPVOID*)&pBackBuffer);
+    if (FAILED(hr))
+    {
+        DX_CHECK(hr, _T(__FUNCTION__));
+        return false;
+    }
+    hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL,
+        &m_pRTV);
     pBackBuffer->Release();
     if (FAILED(hr))
     {
@@ -93,8 +93,8 @@ bool   Sample::CreateDevice()
         return false;
     }
     // viewport
-    m_MainVP.Width = (FLOAT)m_WindowSize.x;
-    m_MainVP.Height = (FLOAT)m_WindowSize.y;
+    m_MainVP.Width = (FLOAT)g_WindowSize.x;
+    m_MainVP.Height = (FLOAT)g_WindowSize.y;
     m_MainVP.MinDepth = 0.0f;
     m_MainVP.MaxDepth = 1.0f;
     m_MainVP.TopLeftX = 0;
@@ -103,41 +103,28 @@ bool   Sample::CreateDevice()
     m_pd3dContext->RSSetViewports(1, &m_MainVP);
     m_pd3dContext->OMSetRenderTargets(1, &m_pRTV, NULL);
 }
-void   Sample::Init() 
+void   TDevice::Init()
 {
     if (!CreateDevice())
     {
 
     }
 }
-void   Sample::Frame()  
+void   TDevice::Frame()
 {
     int a = 0;
 }
-void   Sample::Render() 
-{    
-    float ClearColor[] = {0.0f, 0.0f,0.0f, 1.0f};
+void   TDevice::Render()
+{
+    float ClearColor[] = { 0.0f, 0.0f,0.0f, 1.0f };
     m_pd3dContext->ClearRenderTargetView(m_pRTV, ClearColor);
     // 게임드로우
     m_pSwapChain->Present(0, 0);
 }
-void   Sample::Release() 
+void   TDevice::Release()
 {
     if (m_pRTV)m_pRTV->Release();
     if (m_pd3dDevice)m_pd3dDevice->Release();
     if (m_pd3dContext)m_pd3dContext->Release();
     if (m_pSwapChain)m_pSwapChain->Release();
-}
-
-//GameStart(800, 600);
-int WINAPI wWinMain(
-    HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPWSTR    lpCmdLine,
-    int       nCmdShow)
-{
-    Sample sample;
-    sample.SetWindowClass(hInstance);
-    sample.SetWindow();
-    sample.GameRun();    
 }
