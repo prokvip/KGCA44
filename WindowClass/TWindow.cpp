@@ -32,6 +32,9 @@ bool   TWindow::SetWindow(
     std::wstring title,
     UINT iWindowX, UINT iWindowY)
 {
+    this->m_WindowSize.x = iWindowX;
+    this->m_WindowSize.y = iWindowY;
+
     HWND hWnd = CreateWindowW(
         L"KGCA", title.c_str(),
         WS_OVERLAPPEDWINDOW,//WS_OVERLAPPED,
@@ -69,12 +72,12 @@ bool   TWindow::MessageProcess()
 //{
 //    MSG msg;
 //    std::clock_t tick = std::clock();
-//    std::clock_t start = std::clock();
-//    std::clock_t end = std::clock();
-//    double gametime = 0.0;
-//    double time = 0.0f;
-//    double secondPerFrame = 0.0f;
-//    UINT iFrame = 0;
+//    std::clock_t m_StartClock = std::clock();
+//    std::clock_t m_EndClock = std::clock();
+//    double m_fGameTimer = 0.0;
+//    double m_fTmpTimer = 0.0f;
+//    double m_fSecondPerFrame = 0.0f;
+//    UINT m_iGameFrame = 0;
 //    while (m_bRun)
 //    {
 //        if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -85,33 +88,33 @@ bool   TWindow::MessageProcess()
 //        else
 //        {
 //            
-//            end = std::clock();
-//            std::clock_t t1 = end - tick; // 1000단위
+//            m_EndClock = std::clock();
+//            std::clock_t t1 = m_EndClock - tick; // 1000단위
 //            
-//            secondPerFrame = (end - start) / (double)CLOCKS_PER_SEC;
-//            gametime += secondPerFrame;
-//            time += secondPerFrame;
-//            if (time > 1.0)
+//            m_fSecondPerFrame = (m_EndClock - m_StartClock) / (double)CLOCKS_PER_SEC;
+//            m_fGameTimer += m_fSecondPerFrame;
+//            m_fTmpTimer += m_fSecondPerFrame;
+//            if (m_fTmpTimer > 1.0)
 //            {
-//                std::wstring msgTime = std::to_wstring(gametime);
-//                msgTime += L" ";
-//                msgTime += std::to_wstring(secondPerFrame);
-//                msgTime += L" ";
-//                msgTime += std::to_wstring(iFrame);
-//                msgTime += L"\n";
-//                OutputDebugString(msgTime.c_str());
-//                time -= 1.0;
-//                iFrame = 0;
+//                std::wstring m_szTime = std::to_wstring(m_fGameTimer);
+//                m_szTime += L" ";
+//                m_szTime += std::to_wstring(m_fSecondPerFrame);
+//                m_szTime += L" ";
+//                m_szTime += std::to_wstring(m_iGameFrame);
+//                m_szTime += L"\n";
+//                OutputDebugString(m_szTime.c_str());
+//                m_fTmpTimer -= 1.0;
+//                m_iGameFrame = 0;
 //            }
 //            
 //            /*if (t1 >= 10)
 //            {*/
-//                iFrame++;
+//                m_iGameFrame++;
 //                // 게임로직
 //                GameRun();       
-//              /*  tick = end;
+//              /*  tick = m_EndClock;
 //            }*/
-//            start = end;
+//            m_StartClock = m_EndClock;
 //        }
 //    }
 //	return true;

@@ -8,6 +8,7 @@ public:
 	HINSTANCE   m_hInstance;
 	HWND		m_hWnd;
 	bool		m_bRun = true;
+	POINT		m_WindowSize;
 public:
 	// 윈도우클래스 등록
 	bool   SetWindowClass(HINSTANCE hInstance);

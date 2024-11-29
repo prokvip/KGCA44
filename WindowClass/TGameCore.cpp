@@ -1,15 +1,36 @@
 #include "TGameCore.h"
+void   TGameCore::CoreInit()
+{
+    m_GameTimer.Init();
+    Init();
+}
+void   TGameCore::CoreFrame() 
+{
+    m_GameTimer.Frame();
+    Frame();
+}
+void   TGameCore::CoreRender() 
+{
+    m_GameTimer.Render();
+    Render();
+}
+void   TGameCore::CoreRelease()
+{
+    m_GameTimer.Release();
+    Release();
+}
 bool TGameCore::GameRun()
 {
-    Init();
+    CoreInit();
     while (m_bRun)
     {        
         if(!MessageProcess())
         {
-            Frame();
-            Render();
+            CoreFrame();
+            CoreRender();
         }
+        Sleep(100);
     }	
-	Release();
+    CoreRelease();
 	return true;
 }
