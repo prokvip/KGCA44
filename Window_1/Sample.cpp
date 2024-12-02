@@ -59,7 +59,7 @@ int WINAPI wWinMain(
     while (GetMessage(&msg, nullptr, 0, 0))
     {
        TranslateMessage(&msg); // 키를 번역한다.
-       DispatchMessage(&msg);  // 프로시져로 전송한다.
+       DispatchMessage(&msg);  // 프로시져로 전송한다.       
     }
     //MessageBox(NULL, L"안녕하세여", L"메세지박스", MB_OK);
 }

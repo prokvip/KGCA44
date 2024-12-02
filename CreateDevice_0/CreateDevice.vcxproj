@@ -146,7 +146,7 @@
   <ItemGroup>
     <ClInclude Include="Sample.h" />
     <ClInclude Include="TDevice.h" />
-    <ClInclude Include="TFontDraw.h" />
+    <ClInclude Include="TDxWrite.h" />
     <ClInclude Include="TGameCore.h" />
     <ClInclude Include="TInput.h" />
     <ClInclude Include="TSound.h" />
@@ -157,7 +157,7 @@
   <ItemGroup>
     <ClCompile Include="Sample.cpp" />
     <ClCompile Include="TDevice.cpp" />
-    <ClCompile Include="TFontDraw.cpp" />
+    <ClCompile Include="TDxWrite.cpp" />
     <ClCompile Include="TGameCore.cpp" />
     <ClCompile Include="TInput.cpp" />
     <ClCompile Include="TSound.cpp" />

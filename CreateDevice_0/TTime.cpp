@@ -18,23 +18,24 @@ void    TTime::Frame()
     m_fTmpTimer += m_fSecondPerFrame;    
     if (m_fTmpTimer > 1.0)
     {
-//#ifdef _DEBUG
-//        m_szTime = std::to_wstring(m_fGameTimer);
-//        m_szTime += L" ";
-//        m_szTime += std::to_wstring(m_fSecondPerFrame);
-//        m_szTime += L" ";
-//        m_szTime += std::to_wstring(m_iGameFrame);
-//        m_szTime += L"\n";        
-//#endif
         m_fTmpTimer -= 1.0;
         m_iGameFrame = 0;
     }
     m_StartClock= m_EndClock;
+
+#ifdef _DEBUG
+    m_szTime = std::to_wstring(m_fGameTimer);
+    m_szTime += L" ";
+    m_szTime += std::to_wstring(m_fSecondPerFrame);
+    m_szTime += L" ";
+    m_szTime += std::to_wstring(m_iGameFrame);
+    m_szTime += L"\n";
+#endif
 }
 void    TTime::Render()
 {
 #ifdef _DEBUG
-    OutputDebugString(m_szTime.c_str());
+    //OutputDebugString(m_szTime.c_str());
 #endif
 }
 void    TTime::Release()

@@ -15,7 +15,12 @@ void   Sample::Frame()
 }
 void   Sample::Render() 
 {    
-
+    //// 디바이스컨텍스트(화면에 뿌리는 허가권)
+    //HDC hc = GetDC(g_hWnd);
+    //RECT rt;
+    //GetClientRect(g_hWnd, &rt);
+    //DrawText(hc, L"AAa", -1, &rt, DT_LEFT | DT_VCENTER);
+    //ReleaseDC(g_hWnd,hc);
 }
 void   Sample::Release() 
 {

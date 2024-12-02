@@ -43,10 +43,17 @@ void    TInput::Frame()
 	g_GameKey.dwMiddleClick = KeyCheck(VK_MBUTTON);
 	g_GameKey.dwExit		= KeyCheck(VK_ESCAPE);
 	g_GameKey.dwSpace		= KeyCheck(VK_SPACE);
+
+#ifdef _DEBUG
+		m_szTime = std::to_wstring(m_ptMouse.x);
+		m_szTime += L" ";
+		m_szTime += std::to_wstring(m_ptMouse.y);
+		m_szTime += L"\n";
+#endif
 }
 void    TInput::Render() 
-{
-	m_fTmpTimer += g_fSPF;
+{	
+	/*m_fTmpTimer += g_fSPF;
 	if (m_fTmpTimer > 1.0)
 	{
 #ifdef _DEBUG
@@ -57,7 +64,7 @@ void    TInput::Render()
 #endif
 		m_fTmpTimer -= 1.0;
 		OutputDebugString(m_szTime.c_str());
-	}
+	}*/
 }
 void    TInput::Release() {
 

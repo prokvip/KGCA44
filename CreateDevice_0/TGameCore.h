@@ -3,6 +3,7 @@
 #include "TDevice.h"
 #include "TTime.h"
 #include "TInput.h"
+#include "TDxWrite.h"
 #include <vector>
 #include <map>
 #include <set>
@@ -12,6 +13,7 @@ class TGameCore : public TWindow
 	TTime		m_GameTimer;
 	TInput		m_Input;
 	TDevice		m_DxDevice;
+	TDxWrite    m_DxWrite;
 public:
 	virtual void   Init() {};
 	virtual void   Frame() {};

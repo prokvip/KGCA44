@@ -1,28 +1,5 @@
 #include "TDevice.h"
-void DX_CHECK(HRESULT hr, const TCHAR* function)
-{
-    if (FAILED(hr))
-    {
-        LPWSTR output;
-        WCHAR buffer[256] = { 0, };
-        FormatMessage(
-            FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS |
-            FORMAT_MESSAGE_ALLOCATE_BUFFER,
-            NULL, hr,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&output, 0, NULL);
-        wsprintf(buffer, L"File=%ls\nLine=%d\nFuction=%ls", _T(__FILE__), __LINE__, function);
-        std::wstring msg = buffer;
-        msg += L"\n";
-        msg += output;
 
-        std::wstring title = L"ERROR(";
-        title += std::to_wstring(hr);
-        title += L")";
-        MessageBox(NULL, msg.c_str(),
-            title.c_str(), MB_OK);
-    }
-}
 bool   TDevice::CreateDevice()
 {
     D3D_FEATURE_LEVEL pFeatureLevel;
@@ -32,7 +9,11 @@ bool   TDevice::CreateDevice()
     D3D_DRIVER_TYPE DriverType = D3D_DRIVER_TYPE_HARDWARE;
     // 화면 그래픽스의 기능을 기타 라이브러리로 사용하겠다. 
     HMODULE Software = NULL;
-    UINT Flags = 0;
+    UINT Flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT; // dwrite연동 필수
+#ifdef _DEBUG
+    Flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
     D3D_FEATURE_LEVEL pFeatureLevels = D3D_FEATURE_LEVEL_11_0;
     UINT FeatureLevels = 1;
     UINT SDKVersion = D3D11_SDK_VERSION;// 설치되어 있는 버전을 사용하겠다.
@@ -114,11 +95,16 @@ void   TDevice::Frame()
 {
     int a = 0;
 }
-void   TDevice::Render()
+void   TDevice::PreRender()
 {
     float ClearColor[] = { 0.0f, 0.0f,0.0f, 1.0f };
     m_pd3dContext->ClearRenderTargetView(m_pRTV, ClearColor);
-    // 게임드로우
+}
+void   TDevice::Render()
+{
+}
+void   TDevice::PostRender()
+{
     m_pSwapChain->Present(0, 0);
 }
 void   TDevice::Release()
