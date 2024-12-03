@@ -7,6 +7,7 @@ DWORD   TInput::KeyCheck(DWORD dwKey)
 	// 0x0001 : 눌러진 적이 있다.
 	// 0x8001 : 눌러진 적이 있고 현재 눌러졌다.
 	// 0X0000 : 눌러지지 않았다.
+
 	if (sKey & 0x8000 || sKey& 0x8001) // 1000 0000 0000 0000
 	{
 		if (m_dwKeyState[dwKey] == KEY_FREE ||

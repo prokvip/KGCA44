@@ -149,6 +149,7 @@
     <ClInclude Include="TDxWrite.h" />
     <ClInclude Include="TGameCore.h" />
     <ClInclude Include="TInput.h" />
+    <ClInclude Include="TObject.h" />
     <ClInclude Include="TSound.h" />
     <ClInclude Include="TStd.h" />
     <ClInclude Include="TTime.h" />
@@ -160,9 +161,13 @@
     <ClCompile Include="TDxWrite.cpp" />
     <ClCompile Include="TGameCore.cpp" />
     <ClCompile Include="TInput.cpp" />
+    <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TSound.cpp" />
     <ClCompile Include="TTime.cpp" />
     <ClCompile Include="TWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="VertexShader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

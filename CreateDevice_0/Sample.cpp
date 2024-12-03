@@ -1,6 +1,12 @@
 #include "Sample.h"
 void   Sample::Init() 
 {
+    m_pObject = new TObject2D;
+    if (m_pObject)
+    {
+        m_pObject->Create();
+        m_ObjList.emplace_back(m_pObject);
+    }
 }
 void   Sample::Frame()  
 {
@@ -12,19 +18,16 @@ void   Sample::Frame()
     {
         INT A = 0;
     }
+
+    m_pObject->Frame();
 }
 void   Sample::Render() 
 {    
-    //// 디바이스컨텍스트(화면에 뿌리는 허가권)
-    //HDC hc = GetDC(g_hWnd);
-    //RECT rt;
-    //GetClientRect(g_hWnd, &rt);
-    //DrawText(hc, L"AAa", -1, &rt, DT_LEFT | DT_VCENTER);
-    //ReleaseDC(g_hWnd,hc);
+    m_pObject->Render();
 }
 void   Sample::Release() 
 {
-  
+    m_pObject->Release();
 }
 
 //GameStart(800, 600);

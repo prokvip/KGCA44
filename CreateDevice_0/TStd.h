@@ -1,9 +1,15 @@
 #pragma once
 #include <windows.h>
 #include <d3d11.h>
+#include <d3dcompiler.h>
 #include <tchar.h> // _T("") == L""
 #include <string>
+#include <vector>
+#include <list>
+#include <map>
+#include <algorithm>
 #pragma comment(lib,"d3d11.lib") // 加己 眠啊辆加己 
+#pragma comment(lib,"d3dcompiler.lib") // 加己 眠啊辆加己 
 
 
 

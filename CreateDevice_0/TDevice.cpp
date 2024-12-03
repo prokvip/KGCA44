@@ -1,5 +1,11 @@
 #include "TDevice.h"
 
+ID3D11Device*           TDevice::m_pd3dDevice = nullptr;  // 积己
+ID3D11DeviceContext*    TDevice::m_pd3dContext = nullptr; // 款康,包府
+IDXGISwapChain*         TDevice::m_pSwapChain = nullptr;
+ID3D11RenderTargetView* TDevice::m_pRTV = nullptr;
+D3D11_VIEWPORT			TDevice::m_MainVP;
+
 bool   TDevice::CreateDevice()
 {
     D3D_FEATURE_LEVEL pFeatureLevel;
