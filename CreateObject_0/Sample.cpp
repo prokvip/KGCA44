@@ -1,26 +1,11 @@
 #include "Sample.h"
-#include "WICTextureLoader.h"
-// 속성->C/C++->일반->추가 포함 디렉토리(./Inc)
-void   Sample::Load(std::wstring texName)
-{    
-    HRESULT hr = DirectX::CreateWICTextureFromFile(
-        TDevice::m_pd3dDevice,
-        texName.c_str(),
-        &m_pTexture,
-        &m_pTexSRV   );
-    if (FAILED(hr))
-    {
-        DX_CHECK(hr, _T(__FUNCTION__));
-    }
-}
+
 void   Sample::Init() 
 {
-    Load(L"kgcalogo.bmp");
-
     m_pObject = std::make_shared<TObject2D>();
     if (m_pObject)
     {
-        m_pObject->Create();
+        m_pObject->Create(L"kgca08.bmp");
         m_ObjList.emplace_back(m_pObject);
     }
 }
@@ -42,8 +27,7 @@ void   Sample::Frame()
 }
 void   Sample::Render() 
 {    
-    TDevice::m_pd3dContext->PSSetShaderResources(
-            0, 1, &m_pTexSRV );
+   
     for (auto data : m_ObjList)
     {
         data->Render();
@@ -55,8 +39,7 @@ void   Sample::Release()
     {
         data->Release();
     }
-    if(m_pTexture)m_pTexture->Release();
-    if (m_pTexSRV)m_pTexSRV->Release();
+    
 }
 
 //GameStart(800, 600);

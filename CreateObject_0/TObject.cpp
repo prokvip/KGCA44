@@ -1,11 +1,29 @@
 #include "TObject.h"
 #include "TDevice.h"
+#include "WICTextureLoader.h"
+// 속성->C/C++->일반->추가 포함 디렉토리(./Inc)
+bool   TObject::LoadTexrture(std::wstring texName)
+{
+	HRESULT hr = DirectX::CreateWICTextureFromFile(
+		TDevice::m_pd3dDevice,
+		texName.c_str(),
+		&m_pTexture,
+		&m_pTexSRV);
+	if (FAILED(hr))
+	{
+		DX_CHECK(hr, _T(__FUNCTION__));
+		return false;
+	}
+	return true;
+}
 void	TObject::Init()
 {}
 void	TObject::Frame()
 {}
 void	TObject::Render()
 {
+	TDevice::m_pd3dContext->PSSetShaderResources(
+		0, 1, &m_pTexSRV);
 	TDevice::m_pd3dContext->VSSetShader(m_pVertexShader, nullptr, 0);
 	TDevice::m_pd3dContext->PSSetShader(m_pPixelShader, nullptr, 0);
 	TDevice::m_pd3dContext->IASetInputLayout(m_pInputLayout);
@@ -26,14 +44,21 @@ void	TObject::Render()
 }
 void	TObject::Release()
 {
+	if (m_pTexture)m_pTexture->Release();
+	if (m_pTexSRV)m_pTexSRV->Release();
+
 	if (m_pCode) m_pCode->Release();
 	if (m_pVertexShader) m_pVertexShader->Release();
 	if (m_pVertexBuffer) m_pVertexBuffer->Release();
 	if (m_pInputLayout) m_pInputLayout->Release();
 	if (m_pPixelShader) m_pPixelShader->Release();
 }
-bool	TObject::Create() 
+bool	TObject::Create(std::wstring texPath)
 {
+	if (!LoadTexrture(texPath))
+	{
+		return false;
+	}
 	SetVertexData();
 	if (!CreateVertexBuffer())
 	{
@@ -200,9 +225,9 @@ bool	TObject::CreateInputLayout()
 	return true;
 }
 
-bool	TObject2D::Create()
+bool	TObject2D::Create(std::wstring texName)
 {
-	TObject::Create();
+	TObject::Create(texName);
 	return true;
 }
 void	TObject2D::Init()
