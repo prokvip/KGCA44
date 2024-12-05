@@ -2,11 +2,11 @@
 
 void   Sample::Init() 
 {       
-    tObject pObject1 = std::make_shared<TObject2D>();
+    tObject pObject1 = std::make_shared<TMap>();
     pObject1->Create(L"kgca08.bmp");
     m_ObjList.emplace_back(pObject1);
 
-    tObject pObject2 = std::make_shared<TObject2D>();
+    tObject pObject2 = std::make_shared<THero>();
     TVertex2 tStart = { 400.0f, 300.0f };
     TVertex2 tEnd   = { 800.0f, 600.0f };
     pObject2->Create(L"kgcalogo.bmp", tStart, tEnd);

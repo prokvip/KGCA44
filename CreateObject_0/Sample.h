@@ -1,6 +1,14 @@
 #pragma once
 #include "TGameCore.h"
-#include "TObject.h"
+#include "TObject2D.h"
+class TMap : public TObject2D
+{
+
+};
+class THero : public TObject2D
+{
+
+};
 class Sample : public TGameCore
 {
 	using tObject = std::shared_ptr<TObject>;

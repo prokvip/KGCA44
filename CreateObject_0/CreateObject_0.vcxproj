@@ -151,6 +151,7 @@
     <ClInclude Include="TGameCore.h" />
     <ClInclude Include="TInput.h" />
     <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObject2D.h" />
     <ClInclude Include="TSound.h" />
     <ClInclude Include="TStd.h" />
     <ClInclude Include="TTime.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="TGameCore.cpp" />
     <ClCompile Include="TInput.cpp" />
     <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObject2D.cpp" />
     <ClCompile Include="TSound.cpp" />
     <ClCompile Include="TTime.cpp" />
     <ClCompile Include="TVertex.cpp" />

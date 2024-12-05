@@ -262,20 +262,3 @@ TObject::TObject()
 TObject::~TObject()
 {
 }
-bool	TObject2D::Create(std::wstring texName,
-	TVertex2 s,TVertex2 t)
-{
-	TObject::Create(texName,s,t);
-	return true;
-}
-void	TObject2D::Init()
-{}
-void	TObject2D::Frame() {
-	TObject::Frame();
-}
-void	TObject2D::Render() {
-	TObject::Render();
-}
-void	TObject2D::Release() {
-	TObject::Release();
-}

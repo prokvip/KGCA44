@@ -37,16 +37,3 @@ public:
 	TObject();
 	virtual ~TObject();
 };
-
-class TObject2D : public TObject
-{
-public:
-	virtual bool	Create(
-		std::wstring texName,
-		TVertex2 s,
-		TVertex2 t) override; // »ý¼º
-	virtual void	Init()override;
-	virtual void	Frame()override;
-	virtual void	Render() override;
-	virtual void	Release()override;
-};
