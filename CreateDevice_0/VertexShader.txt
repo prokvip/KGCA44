@@ -9,5 +9,5 @@ float4 VS( float2 p : KGCA) : SV_POSITION
 // ret(R,G,B,A)
 float4 PS( float4 p : SV_POSITION) : SV_TARGET
 {
-	return float4(0,0,1,1);
+	return float4(0,1,1,1);
 }
