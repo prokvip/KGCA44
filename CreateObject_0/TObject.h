@@ -8,7 +8,7 @@ class TObject
 	ID3D11PixelShader*  m_pPixelShader = nullptr;
 	ID3D11InputLayout*  m_pInputLayout = nullptr;
 
-	std::vector<PC_VERTEX>    m_vVertexList;
+	std::vector<PCT_VERTEX>    m_vVertexList;
 public:
 	virtual bool	Create() ; // 持失
 		virtual bool	CreateVertexBuffer(); // 持失

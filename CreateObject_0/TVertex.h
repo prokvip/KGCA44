@@ -21,4 +21,10 @@ struct PC_VERTEX
 	TVertex2 v;
 	TVertex4 c;
 };
+struct PCT_VERTEX
+{
+	TVertex2 v;
+	TVertex4 c;
+	TVertex2 t;
+};
 

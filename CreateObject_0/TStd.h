@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <algorithm>
+#include <memory>
 #pragma comment(lib,"d3d11.lib") // 加己 眠啊辆加己 
 #pragma comment(lib,"d3dcompiler.lib") // 加己 眠啊辆加己 
 

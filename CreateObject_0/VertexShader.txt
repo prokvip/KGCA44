@@ -4,13 +4,16 @@
 struct VS_Out
 {
 	float4 p : SV_POSITION;
-	float4 c : KGCA;
+	float4 c : COLOR;
+	float2 t : TEXCOORD0;
 };
-VS_Out VS( float2 p : POS, float4 c : COLOR) 
+VS_Out VS( float2 p : POS, float4 c : COLOR, 
+           float2 t : TEX) 
 {
 	VS_Out vsOut = (VS_Out)0;
 	vsOut.p = float4(p.x, p.y, 0.0f, 1.0f);
 	vsOut.c = c;
+	vsOut.t = t;
 	return vsOut;
 }
 
@@ -19,9 +22,14 @@ struct PS_Out
 {
 	float4 c : SV_TARGET;
 };
+
+Texture2D  g_txDiffuseA : register(t0);// SRV
+SamplerState   sample : register(s0);
+
 PS_Out PS( VS_Out PS_In) 
 {
 	PS_Out psOut = (PS_Out)0;
-	psOut.c = PS_In.c;
+	float4 texColor = g_txDiffuseA.Sample(sample,PS_In.t);
+	psOut.c = texColor;//PS_In.c;
 	return psOut;
 }

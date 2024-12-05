@@ -12,7 +12,7 @@ void	TObject::Render()
 
 	// 정점버퍼에서 Offsets에서 시작하여
 	// Strides크기로 정점을 정점쉐이더로 전달해라.
-	UINT Strides = sizeof(PC_VERTEX);
+	UINT Strides = sizeof(PCT_VERTEX);
 	UINT Offsets = 0;
 	TDevice::m_pd3dContext->IASetVertexBuffers(
 		0,
@@ -72,6 +72,9 @@ void    TObject::SetVertexData()
 	m_vVertexList[2].c = { 0.0f,0.0f,1.0f,1.0f };	
 	m_vVertexList[4].c = { 1.0f,1.0f,1.0f,1.0f };
 
+	m_vVertexList[0].t = { 0.0f,0.0f };	m_vVertexList[1].t = { 1.0f,0.0f };
+	m_vVertexList[2].t = { 0.0f,1.0f };	m_vVertexList[4].t = { 1.0f,1.0f };
+
 	m_vVertexList[3] = m_vVertexList[1];
 	m_vVertexList[5] = m_vVertexList[2];
 }
@@ -93,7 +96,7 @@ bool	TObject::CreateVertexBuffer()
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
-	bd.ByteWidth = sizeof(PC_VERTEX)* m_vVertexList.size();
+	bd.ByteWidth = sizeof(PCT_VERTEX)* m_vVertexList.size();
 	// 읽고쓰기권한 설정(CPU X,X, GPU 0,0)
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -178,6 +181,7 @@ bool	TObject::CreateInputLayout()
 		// 0~8
 		{ "POS",  0, DXGI_FORMAT_R32G32_FLOAT,		 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR",0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0 },		
+		{ "TEX",  0, DXGI_FORMAT_R32G32_FLOAT,       0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT szNumCounter = sizeof(layout) / sizeof(layout[0]);
