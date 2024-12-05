@@ -53,12 +53,8 @@ void	TObject::Release()
 	if (m_pInputLayout) m_pInputLayout->Release();
 	if (m_pPixelShader) m_pPixelShader->Release();
 }
-bool	TObject::Create(std::wstring texPath)
+bool	TObject::Create()
 {
-	if (!LoadTexrture(texPath))
-	{
-		return false;
-	}
 	SetVertexData();
 	if (!CreateVertexBuffer())
 	{
@@ -78,6 +74,25 @@ bool	TObject::Create(std::wstring texPath)
 	}
 	return true;
 }
+bool	TObject::Create(std::wstring texPath)
+{
+	if (!LoadTexrture(texPath))
+	{
+		return false;
+	}
+	return Create();
+}
+bool	TObject::Create(std::wstring texPath,
+						TVertex2 s,
+						TVertex2 t)
+{
+	m_rtScreen = { s.x, s.y, t.x- s.x, t.y- s.y };
+	if (!LoadTexrture(texPath))
+	{
+		return false;
+	}
+	return Create();
+}
 void    TObject::SetVertexData()
 {
 	// Á¤±ÔÈ­ÀåÄ¡(NDC)ÁÂÇ¥°è(x,y)	
@@ -88,10 +103,26 @@ void    TObject::SetVertexData()
 	// Á÷°¢ÁÂÇ¥°è  <-> º¯È¯  <-> NDCÁÂÇ¥°è
 	// NDCÁÂÇ¥°è  <-> º¯È¯  <-> Á÷°¢ÁÂÇ¥°è
 	m_vVertexList.resize(6);
-	m_vVertexList[0].v = { -1.0f,1.0f };
+	TVertex2 s = { m_rtScreen.x, m_rtScreen.y };
+	// NDC <- Screen
+	s.x = m_rtScreen.x / g_WindowSize.x; // 0 ~1
+	s.y = m_rtScreen.y / g_WindowSize.y; // 0 ~1
+	s.x = s.x * 2.0f - 1.0f;
+	s.y = -(s.y * 2.0f - 1.0f);
+	TVertex2 t;
+	t.x = (m_rtScreen.x + m_rtScreen.w) / g_WindowSize.x;
+	t.y = (m_rtScreen.y + m_rtScreen.h) / g_WindowSize.y;
+	t.x = t.x * 2.0f - 1.0f;
+	t.y = (t.y * 2.0f - 1.0f)*-1.0f;
+	m_vVertexList[0].v = s;
+	m_vVertexList[1].v = { t.x, s.y };
+	m_vVertexList[2].v = { s.x, t.y };
+	m_vVertexList[4].v = t; 
+	/*m_vVertexList[0].v = { -1.0f,1.0f };
 	m_vVertexList[1].v = { 1.0f, 1.0f };
 	m_vVertexList[2].v = { -1.0f,-1.0f };		
-	m_vVertexList[4].v = { 1.0f,-1.0f };
+	m_vVertexList[4].v = { 1.0f,-1.0f };*/
+
 	m_vVertexList[0].c = { 1.0f,0.0f,0.0f,1.0f};		
 	m_vVertexList[1].c = { 0.0f,1.0f,0.0f,1.0f };
 	m_vVertexList[2].c = { 0.0f,0.0f,1.0f,1.0f };	
@@ -224,10 +255,17 @@ bool	TObject::CreateInputLayout()
 	}
 	return true;
 }
-
-bool	TObject2D::Create(std::wstring texName)
+TObject::TObject()
 {
-	TObject::Create(texName);
+	m_rtScreen = {0.0f, 0.0f, (float)g_WindowSize.x, (float)g_WindowSize.y};
+}
+TObject::~TObject()
+{
+}
+bool	TObject2D::Create(std::wstring texName,
+	TVertex2 s,TVertex2 t)
+{
+	TObject::Create(texName,s,t);
 	return true;
 }
 void	TObject2D::Init()

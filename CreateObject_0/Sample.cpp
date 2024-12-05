@@ -1,13 +1,16 @@
 #include "Sample.h"
 
 void   Sample::Init() 
-{
-    m_pObject = std::make_shared<TObject2D>();
-    if (m_pObject)
-    {
-        m_pObject->Create(L"kgca08.bmp");
-        m_ObjList.emplace_back(m_pObject);
-    }
+{       
+    tObject pObject1 = std::make_shared<TObject2D>();
+    pObject1->Create(L"kgca08.bmp");
+    m_ObjList.emplace_back(pObject1);
+
+    tObject pObject2 = std::make_shared<TObject2D>();
+    TVertex2 tStart = { 400.0f, 300.0f };
+    TVertex2 tEnd   = { 800.0f, 600.0f };
+    pObject2->Create(L"kgcalogo.bmp", tStart, tEnd);
+    m_ObjList.emplace_back(pObject2);
 }
 void   Sample::Frame()  
 {
@@ -26,8 +29,7 @@ void   Sample::Frame()
     }
 }
 void   Sample::Render() 
-{    
-   
+{       
     for (auto data : m_ObjList)
     {
         data->Render();
