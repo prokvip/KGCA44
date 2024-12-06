@@ -14,9 +14,8 @@ class Sample : public TGameCore
 {
 	using tObject = std::shared_ptr<TObject>;
 	std::vector<tObject>    m_ObjList;
-
-	TSound		m_Sound;
-	TSound		m_SoundEffect;
+	TSound* m_pSound = nullptr;
+	TSound* m_pSoundEffect = nullptr;
 public:
 	virtual void   Init() override;
 	virtual void   Frame() override;

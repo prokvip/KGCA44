@@ -82,8 +82,9 @@ void	TSound::VolumeDown(float fVolume)
 		m_pChannel->setVolume(m_fVolume);
 	}
 }
-bool		TSound::Load(std::wstring filename)
+bool		TSound::Load(FMOD::System* pSystem, std::wstring filename)
 {
+	m_pSystem = pSystem;
 	FMOD_RESULT hr = m_pSystem->createSound(
 		to_wm(filename).c_str(),
 		FMOD_DEFAULT, 0,
@@ -96,12 +97,7 @@ bool		TSound::Load(std::wstring filename)
 }
 void		TSound::Init()
 {
-	FMOD_RESULT hr = FMOD::System_Create(
-				&m_pSystem);
-	if (hr== FMOD_OK)
-	{
-		m_pSystem->init(32, FMOD_INIT_NORMAL, 0);
-	}	
+		
 }
 void		TSound::Frame()
 {
@@ -132,6 +128,91 @@ void		TSound::Render()
 }
 void		TSound::Release()
 {
+	if (m_pSound)
+	{
+		m_pSound->release();
+		m_pSound = nullptr;
+	}
+
+	
+}
+void TSoundManager::Frame()
+{
+	for (auto sound : maplist)
+	{
+		sound.second->Frame();
+	}
+}
+void TSoundManager::Render()
+{
+	for (auto sound : maplist)
+	{
+		sound.second->Render();
+	}
+}
+
+TSound* TSoundManager::Load(std::wstring filename)
+{
+	if (m_pSystem == nullptr)
+	{
+		FMOD_RESULT hr = FMOD::System_Create(
+			&m_pSystem);
+		if (hr == FMOD_OK)
+		{
+			m_pSystem->init(32, FMOD_INIT_NORMAL, 0);
+		}
+	}
+
+	auto data = GetPtr(filename);
+	if (data != nullptr)
+	{
+		return data;
+	}
+	auto key = SplitPath(filename);
+	TSound* pSound = new TSound(key);
+	
+	if (pSound->Load(m_pSystem, filename))
+	{
+		maplist.insert(std::make_pair(key, pSound));
+	}
+	else
+	{
+		delete pSound;
+		pSound = nullptr;
+	}
+	return pSound;
+}
+std::wstring TSoundManager::SplitPath(std::wstring file)
+{
+	TCHAR szFileName[256];
+	TCHAR Drive[MAX_PATH];
+	TCHAR Dir[MAX_PATH];
+	TCHAR FName[MAX_PATH];
+	TCHAR Ext[MAX_PATH];
+	_tsplitpath_s(file.c_str(), Drive, Dir, FName, Ext);
+
+	std::wstring key = FName;
+	key += Ext;
+	return key;
+}
+TSound* TSoundManager::GetPtr(std::wstring key)
+{
+	auto data = maplist.find(key);
+	if (data != maplist.end())
+	{
+		return data->second;
+	}
+	return nullptr;
+}
+
+TSoundManager::~TSoundManager()
+{
+	for (auto sound : maplist)
+	{
+		sound.second->Release();
+		delete sound.second;
+	}
+	maplist.clear();
 	if (m_pSystem)
 	{
 		m_pSystem->close();

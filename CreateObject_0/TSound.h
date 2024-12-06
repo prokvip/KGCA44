@@ -5,6 +5,7 @@
 #pragma comment(lib, "fmod_vc.lib")
 class TSound
 {
+	std::wstring m_csName;
 public:
 	FMOD::System*  m_pSystem = nullptr;
 	FMOD::Sound*   m_pSound = nullptr;
@@ -20,10 +21,36 @@ public:
 	void	VolumeUp(float fVolume);
 	void	VolumeDown(float fVolume);
 public:
-	virtual bool		Load(std::wstring filename);
+	virtual bool		Load(  FMOD::System* pSystem,
+								std::wstring filename);
 	virtual void		Init();
 	virtual void		Frame();
 	virtual void		Render();
 	virtual void		Release();
+public:
+	TSound() : m_csName(L"none") {}
+	TSound(std::wstring key) : m_csName(key) {}
 };
 
+class TSoundManager
+{
+	FMOD::System* m_pSystem = nullptr;
+public:
+	//static TSoundManager mgr;
+	// ΩÃ±€≈Ê ∆–≈œ
+	static TSoundManager& GetInstance()
+	{
+		static TSoundManager mgr;
+		return mgr;
+	}	
+	TSound* Load(std::wstring filename);
+	TSound* GetPtr(std::wstring key);
+	std::wstring SplitPath(std::wstring file);
+	void		Frame();
+	void		Render();
+private:
+	std::map<std::wstring, TSound*> maplist;
+	TSoundManager() {}
+public:
+	~TSoundManager();
+};

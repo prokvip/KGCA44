@@ -2,12 +2,10 @@
 
 void   Sample::Init() 
 {   
-    m_Sound.Init();
-    m_Sound.Load(L"abel_leaf.asf");
-    m_SoundEffect.Init();
-    m_SoundEffect.Load(L"GunShot.mp3");
-    m_Sound.Play();
-    
+    TSoundManager& mgr = TSoundManager::GetInstance();
+    m_pSound = mgr.Load(L"abel_leaf.asf");
+    m_pSoundEffect = mgr.Load(L"GunShot.mp3");
+    m_pSound->Play();
 
     tObject pObject1 = std::make_shared<TMap>();
     pObject1->Create(L"kgca08.bmp");
@@ -21,26 +19,26 @@ void   Sample::Init()
 }
 void   Sample::Frame()  
 {
-    m_Sound.Frame();
+    TSoundManager::GetInstance().Frame();
     if (g_GameKey.dwWkey == KEY_PUSH)
     {
-        m_SoundEffect.PlayEffect();
+        m_pSoundEffect->PlayEffect();
     }
     if (g_GameKey.dwSkey == KEY_PUSH)
     {
-        m_SoundEffect.Stop();
+        m_pSoundEffect->Stop();
     }
     if (g_GameKey.dwAkey == KEY_PUSH)
     {
-        m_Sound.Paused();
+        m_pSound->Paused();
     }
     if (g_GameKey.dwLeftClick == KEY_HOLD)
     {
-        m_Sound.VolumeUp(g_fSPF*0.33f);
+        m_pSound->VolumeUp(g_fSPF*0.33f);
     }
     if (g_GameKey.dwRightClick == KEY_HOLD)
     {
-        m_Sound.VolumeDown(g_fSPF * 0.33f);
+        m_pSound->VolumeDown(g_fSPF * 0.33f);
     }
 
     for (auto data : m_ObjList)
@@ -52,13 +50,14 @@ void   Sample::Frame()
     fTime += g_fSPF;
     if (fTime > 1.0f)
     {
-        m_DxWrite.Add(m_Sound.m_csBuffer);
+        m_DxWrite.Add(m_pSound->m_csBuffer);
         fTime = 0.0f;
     }
 }
 void   Sample::Render() 
 {       
-    m_Sound.Render();   
+    TSoundManager::GetInstance().Render();
+
     for (auto data : m_ObjList)
     {
         data->Render();
@@ -69,7 +68,6 @@ void   Sample::Render()
 }
 void   Sample::Release() 
 {
-    m_Sound.Release();
     for (auto data : m_ObjList)
     {
         data->Release();
