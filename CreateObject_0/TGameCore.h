@@ -10,6 +10,7 @@
 #include <algorithm>
 class TGameCore : public TWindow
 {	
+public:
 	TTime		m_GameTimer;
 	TInput		m_Input;
 	TDevice		m_DxDevice;

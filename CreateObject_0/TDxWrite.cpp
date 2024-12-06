@@ -1,5 +1,16 @@
 #include "TDxWrite.h"
 #include "TStd.h"
+
+int		TDxWrite::Add(std::wstring msg)
+{
+	UINT iNumsize = m_msgList.size();
+	if (iNumsize > 5)
+	{
+		m_msgList.pop_front();
+	}
+	m_msgList.emplace_back(msg);
+	return iNumsize;
+}
 HRESULT   TDxWrite::Create(IDXGISurface* pBackBuffer)
 {
 	HRESULT hr;
@@ -79,26 +90,19 @@ void   TDxWrite::Frame()
 
 }
 void   TDxWrite::Render()
+{	
+}
+void   TDxWrite::DirectDraw(D2D1_RECT_F layoutRect, 
+			std::wstring msg, D2D1::ColorF Color)
 {
-	//if (m_pd2dRT)
-	//{
-	//	m_pd2dRT->BeginDraw();
-	//		std::wstring msg = L"fdfdsafas";
-	//		RECT rc;
-	//		GetClientRect(g_hWnd, &rc);
-
-	//		D2D1_RECT_F layoutRect = D2D1::RectF(
-	//			static_cast<FLOAT>(rc.left),
-	//			static_cast<FLOAT>(rc.top),
-	//			static_cast<FLOAT>(rc.right),
-	//			static_cast<FLOAT>(rc.bottom));
-	//		D2D1_COLOR_F Color = D2D1::ColorF(1,1,0,1);
-	//		//m_pColorBrush->SetColor(Color);
-	//		m_pd2dRT->DrawText(msg.c_str(),
-	//			msg.size(), m_pTextFormat20, &layoutRect,
-	//			m_pColorBrush);
-	//	m_pd2dRT->EndDraw();
-	//}
+	m_pd2dRT->BeginDraw();
+	if (m_pd2dRT)
+	{
+		//D2D1_COLOR_F Color = D2D1::ColorF(1,1,0,1);
+		m_pColorBrush->SetColor(Color);
+		m_pd2dRT->DrawText(msg.c_str(), msg.size(), m_pTextFormat20, &layoutRect, m_pColorBrush);
+	}
+	m_pd2dRT->EndDraw();
 }
 void   TDxWrite::Draw(D2D1_RECT_F layoutRect, std::wstring msg, D2D1::ColorF Color)
 {
@@ -115,6 +119,12 @@ void   TDxWrite::PreRender()
 }
 void   TDxWrite::PostRender()
 {
+	D2D1_RECT_F rt = { 300.0f, 0.0f, 800.0f, 600.0f };
+	for (auto data : m_msgList)
+	{
+		rt.top += 20;
+		Draw(rt, data);
+	}
 	if (m_pd2dRT) m_pd2dRT->EndDraw();
 }
 void   TDxWrite::Release()

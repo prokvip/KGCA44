@@ -9,11 +9,27 @@
 #include <map>
 #include <algorithm>
 #include <memory>
+#include <atlconv.h>  // A2W
 #pragma comment(lib,"d3d11.lib") // 加己 眠啊辆加己 
 #pragma comment(lib,"d3dcompiler.lib") // 加己 眠啊辆加己 
+#ifndef _DEBUG
+    #pragma comment(lib, "DirectXTK_R.lib")
+#else
+    #pragma comment(lib, "DirectXTK_d.lib")
+#endif
 
 
+static std::wstring to_mw(const std::string& _src)
+{
+    USES_CONVERSION;
+    return std::wstring(A2W(_src.c_str()));
+};
 
+static std::string to_wm(const std::wstring& _src)
+{
+    USES_CONVERSION;
+    return std::string(W2A(_src.c_str()));
+};
 struct TGameKey
 {
 	//DWORD frontMove;// w or VK_UP
