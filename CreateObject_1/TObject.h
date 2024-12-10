@@ -8,6 +8,7 @@ struct TRect
 };
 class TObject
 {
+public:
 	ID3D11Buffer*		m_pVertexBuffer=nullptr;	
 	ID3D11Buffer*		m_pIndexBuffer = nullptr;
 	ID3D11VertexShader* m_pVertexShader = nullptr;

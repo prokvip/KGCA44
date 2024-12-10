@@ -70,8 +70,9 @@ bool TGameCore::GameRun()
         if(!MessageProcess())
         {
             CoreFrame();
-            CoreRender();
+            CoreRender();           
         }
+        
     }	
     CoreRelease();
 	return true;

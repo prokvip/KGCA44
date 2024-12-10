@@ -104,9 +104,11 @@ void   TDevice::Frame()
 }
 void   TDevice::PreRender()
 {
-    float ClearColor[] = { 0.0f, 0.0f,0.0f, 1.0f };
+    float ClearColor[] = { 1.0f, 0.0f,0.0f, 1.0f };
     m_pd3dContext->ClearRenderTargetView(m_pRTV, ClearColor);
     m_pd3dContext->PSSetSamplers(0, 1, &TDxState::m_pLinearSS);
+    m_pd3dContext->OMSetBlendState(
+        TDxState::m_pAlphaBlend, 0, -1);
 }
 void   TDevice::Render()
 {
