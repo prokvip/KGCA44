@@ -78,9 +78,9 @@ void   Sample::Render()
     {
         data->Render();
     }*/
-   /* m_ObjList[0]->Render();
+    m_ObjList[0]->Render();
     TDevice::m_pd3dContext->PSSetSamplers(0, 1, &TDxState::m_pPointSS);
-    m_ObjList[1]->Render();*/
+    m_ObjList[1]->Render();
 
     D2D1_RECT_F rt = { 0.0f, 350.0f, 800.0f, 600.0f };
     m_DxWrite.DirectDraw(rt, L"Sample::Render");
