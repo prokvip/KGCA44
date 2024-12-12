@@ -16,6 +16,11 @@ void   TGameCore::CoreInit()
     }
 
     TDxState::Create();
+    I_Shader.Init();
+    if (I_Shader.g_pDefaultShader != nullptr)
+    {
+        I_InputLayout.Init(I_Shader.g_pDefaultShader->m_pCode);
+    }
     Init();
 }
 void   TGameCore::CoreFrame() 

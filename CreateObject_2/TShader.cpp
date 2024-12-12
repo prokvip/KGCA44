@@ -1,5 +1,7 @@
 #include "TShader.h"
 #include "TDevice.h"
+TShader* TShaderManager::g_pDefaultShader = nullptr;
+
 bool		TShader::Load(std::wstring filename)
 {
 	if (!LoadVertexShader(filename))
@@ -95,6 +97,11 @@ void TShader::Release()
 	m_pPixelShader = nullptr;
 	m_pCode = nullptr;
 }
+void     TShaderManager::Init()
+{
+	g_pDefaultShader = Load(
+		L"../../data/shader/Default.txt");	
+}
 TShader* TShaderManager::Load(std::wstring filename)
 {
 	auto data = GetPtr(filename);
@@ -145,6 +152,6 @@ TShaderManager::~TShaderManager()
 	{
 		sound.second->Release();
 		delete sound.second;
-	}
+	}	
 	maplist.clear();
 }

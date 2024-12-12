@@ -153,6 +153,7 @@
     <ClInclude Include="TDxWrite.h" />
     <ClInclude Include="TGameCore.h" />
     <ClInclude Include="TInput.h" />
+    <ClInclude Include="TInputLayout.h" />
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TObject2D.h" />
     <ClInclude Include="TShader.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="TDxWrite.cpp" />
     <ClCompile Include="TGameCore.cpp" />
     <ClCompile Include="TInput.cpp" />
+    <ClCompile Include="TInputLayout.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TObject2D.cpp" />
     <ClCompile Include="TShader.cpp" />

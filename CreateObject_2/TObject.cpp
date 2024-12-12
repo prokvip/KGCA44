@@ -2,6 +2,35 @@
 #include "TDevice.h"
 
 // 속성->C/C++->일반->추가 포함 디렉토리(./Inc)
+TObject& TObject::SetShader(TShader* pData)
+{
+	if (pData == nullptr)
+	{
+		m_pShader = I_Shader.g_pDefaultShader;
+	}
+	else
+	{
+		m_pShader = pData;
+	}
+	return *this;
+}
+TObject& TObject::SetTexture(TTexture* pData)
+{
+	m_pTexture = pData;
+	return *this;
+}
+TObject& TObject::SetLayout(TInputLayout* pData)
+{
+	if (pData == nullptr)
+	{
+		m_pInputLayout = I_InputLayout.g_pInputLayout;
+	}
+	else
+	{
+		m_pInputLayout = pData;
+	}
+	return *this;
+}
 bool   TObject::LoadTexrture(std::wstring texName)
 {
 	m_pTexture = I_Tex.Load(texName);	
@@ -23,7 +52,8 @@ void	TObject::Render()
 		m_pShader->m_pVertexShader, nullptr, 0);
 	TDevice::m_pd3dContext->PSSetShader(
 		m_pShader->m_pPixelShader, nullptr, 0);
-	TDevice::m_pd3dContext->IASetInputLayout(m_pInputLayout);
+	TDevice::m_pd3dContext->IASetInputLayout(
+		m_pInputLayout->Get());
 
 	// 정점버퍼에서 Offsets에서 시작하여
 	// Strides크기로 정점을 정점쉐이더로 전달해라.
@@ -49,7 +79,6 @@ void	TObject::Release()
 {
 	if (m_pVertexBuffer) m_pVertexBuffer->Release();
 	if (m_pIndexBuffer) m_pIndexBuffer->Release();
-	if (m_pInputLayout) m_pInputLayout->Release();	
 }
 bool	TObject::Create()
 {
@@ -226,31 +255,16 @@ bool	TObject::CreatePixelShader()
 }
 bool	TObject::CreateInputLayout() 
 {
-	if (m_pShader == nullptr)
-	{
-		return true;
-	}
-	const D3D11_INPUT_ELEMENT_DESC layout[] =
+	if (m_pShader == nullptr) return true;
+	 D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		// 0~8
 		{ "POS",  0, DXGI_FORMAT_R32G32_FLOAT,		 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0 },		
+		{ "COLOR",0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEX",  0, DXGI_FORMAT_R32G32_FLOAT,       0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
-
-	UINT szNumCounter = sizeof(layout) / sizeof(layout[0]);
-		
-	HRESULT hr = TDevice::m_pd3dDevice->CreateInputLayout(
-		layout,
-		szNumCounter,
-		m_pShader->m_pCode->GetBufferPointer(),
-		m_pShader->m_pCode->GetBufferSize(),
-	&m_pInputLayout);
-	if (FAILED(hr))
-	{
-		DX_CHECK(hr, _T(__FUNCTION__));
-		return false;
-	}
+	UINT  iNumCnt = sizeof(layout) / sizeof(layout[0]);
+	m_pInputLayout = I_InputLayout.Load(m_pShader->m_pCode,layout, 3, L"PCT");
 	return true;
 }
 TObject::TObject()

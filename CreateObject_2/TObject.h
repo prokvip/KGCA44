@@ -3,7 +3,7 @@
 #include "TDxState.h"
 #include "TSound.h"
 #include "TTexture.h"
-#include "TShader.h"
+#include "TInputLayout.h"
 struct TRect
 {
 	float   x, y;
@@ -23,12 +23,15 @@ public:
 	TShader*			m_pShader = nullptr;	
 	//TShader*			m_pPixelShader = nullptr;
 	TTexture*			m_pTexture = nullptr;
-	ID3D11InputLayout* m_pInputLayout = nullptr;
+	TInputLayout*		m_pInputLayout = nullptr;
 	std::vector<PCT_VERTEX>    m_vVertexList;
 	std::vector<DWORD>		   m_vIndexList;
 	TRect						m_rtScreen;
 	TLoadResData				m_LoadResData;
 public:
+	TObject& SetShader(TShader* pShader= nullptr);
+	TObject& SetTexture(TTexture* );
+	TObject& SetLayout(TInputLayout* pInputLayout=nullptr);
 	//virtual bool SetLayout( TShader* pShader,
 	//						g_VertexLayout[0]);
 	virtual bool	Create();   

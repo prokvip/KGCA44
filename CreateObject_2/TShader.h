@@ -29,7 +29,7 @@ class TPShader : public TShader
 class TShaderManager
 {
 public:
-
+	static TShader*				g_pDefaultShader;
 	// ΩÃ±€≈Ê ∆–≈œ
 	static TShaderManager& GetInstance()
 	{
@@ -39,6 +39,7 @@ public:
 	TShader* Load(std::wstring filename);
 	TShader* GetPtr(std::wstring key);
 	std::wstring SplitPath(std::wstring file);
+	void		Init();
 	void		Frame();
 	void		Render();
 private:
