@@ -163,12 +163,13 @@ TSound* TSoundManager::Load(std::wstring filename)
 		}
 	}
 
-	auto data = GetPtr(filename);
+	auto key = SplitPath(filename);
+	auto data = GetPtr(key);
 	if (data != nullptr)
 	{
 		return data;
 	}
-	auto key = SplitPath(filename);
+	
 	TSound* pSound = new TSound(key);
 	
 	if (pSound->Load(m_pSystem, filename))

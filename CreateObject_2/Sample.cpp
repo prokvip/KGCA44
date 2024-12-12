@@ -10,9 +10,6 @@ void   Sample::Init()
     m_pSound->Play();
 
     tObject pObject1 = std::make_shared<TMap>();
-    /*TLoadResData resData;
-    resData.texPathName = L"../../data/texture/Board.png";
-    resData.texShaderName = L"../../data/shader/Default.txt";*/
     if (pObject1->Create())
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/Board.png");
@@ -36,39 +33,41 @@ void   Sample::Init()
 void   Sample::Frame()  
 {
     TSoundManager::GetInstance().Frame();
-    if (g_GameKey.dwWkey == KEY_PUSH)
+    if (m_pSoundEffect && m_pSound)
     {
-        m_pSoundEffect->PlayEffect();
-    }
-    if (g_GameKey.dwSkey == KEY_PUSH)
-    {
-        m_pSoundEffect->Stop();
-    }
-    if (g_GameKey.dwAkey == KEY_PUSH)
-    {
-        m_pSound->Paused();
-    }
-    if (g_GameKey.dwLeftClick == KEY_HOLD)
-    {
-        m_pSound->VolumeUp(g_fSPF*0.33f);
-    }
-    if (g_GameKey.dwRightClick == KEY_HOLD)
-    {
-        m_pSound->VolumeDown(g_fSPF * 0.33f);
+        if (g_GameKey.dwWkey == KEY_PUSH)
+        {
+            m_pSoundEffect->PlayEffect();
+        }
+        if (g_GameKey.dwSkey == KEY_PUSH)
+        {
+            m_pSoundEffect->Stop();
+        }
+        if (g_GameKey.dwAkey == KEY_PUSH)
+        {
+            m_pSound->Paused();
+        }
+        if (g_GameKey.dwLeftClick == KEY_HOLD)
+        {
+            m_pSound->VolumeUp(g_fSPF * 0.33f);
+        }
+        if (g_GameKey.dwRightClick == KEY_HOLD)
+        {
+            m_pSound->VolumeDown(g_fSPF * 0.33f);
+        }
+        static float fTime = 0.0f;
+        fTime += g_fSPF;
+        if (fTime > 1.0f)
+        {
+            m_DxWrite.Add(m_pSound->m_csBuffer);
+            fTime = 0.0f;
+        }
     }
 
     for (auto data : m_ObjList)
     {
         data->Frame();
-    }
-
-    static float fTime = 0.0f;
-    fTime += g_fSPF;
-    if (fTime > 1.0f)
-    {
-        m_DxWrite.Add(m_pSound->m_csBuffer);
-        fTime = 0.0f;
-    }
+    }    
 }
 void   Sample::Render() 
 {       

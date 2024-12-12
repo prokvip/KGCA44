@@ -23,12 +23,13 @@ void TTexture::Release()
 }
 TTexture* TTextureManager::Load(std::wstring filename)
 {
-	auto data = GetPtr(filename);
+	auto key = SplitPath(filename);
+	auto data = GetPtr(key);
 	if (data != nullptr)
 	{
 		return data;
 	}
-	auto key = SplitPath(filename);
+
 	TTexture* pData = new TTexture(key);
 
 	if (pData->Load(filename))

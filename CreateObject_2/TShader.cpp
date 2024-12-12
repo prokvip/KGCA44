@@ -104,12 +104,13 @@ void     TShaderManager::Init()
 }
 TShader* TShaderManager::Load(std::wstring filename)
 {
-	auto data = GetPtr(filename);
+	auto key = SplitPath(filename);
+	auto data = GetPtr(key);
 	if (data != nullptr)
 	{
 		return data;
 	}
-	auto key = SplitPath(filename);
+	
 	TShader* pData = new TShader(key);
 
 	if (pData->Load(filename))
