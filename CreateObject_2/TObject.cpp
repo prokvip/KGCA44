@@ -45,7 +45,7 @@ void	TObject::Init()
 {}
 void	TObject::Frame()
 {}
-void	TObject::Render()
+void	TObject::PreRender()
 {
 	TDevice::m_pd3dContext->PSSetShaderResources(
 		0, 1, &m_pTexture->m_pTexSRV);
@@ -67,14 +67,22 @@ void	TObject::Render()
 		&Strides,
 		&Offsets);
 	TDevice::m_pd3dContext->IASetIndexBuffer(
-				m_pIndexBuffer, 
-				DXGI_FORMAT_R32_UINT, 0);
+		m_pIndexBuffer,
+		DXGI_FORMAT_R32_UINT, 0);
 	TDevice::m_pd3dContext->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	if( m_pIndexBuffer == nullptr)
+}
+void	TObject::Render()
+{	
+	PreRender();
+	PostRender();
+}
+void	TObject::PostRender()
+{
+	if (m_pIndexBuffer == nullptr)
 		TDevice::m_pd3dContext->Draw(m_vVertexList.size(), 0);
 	else
-		TDevice::m_pd3dContext->DrawIndexed(m_vIndexList.size(),0, 0);
+		TDevice::m_pd3dContext->DrawIndexed(m_vIndexList.size(), 0, 0);
 }
 void	TObject::Release()
 {

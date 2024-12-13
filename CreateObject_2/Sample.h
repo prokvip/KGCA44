@@ -13,6 +13,7 @@ class Sample : public TGameCore
 	TSound* m_pSound = nullptr;
 	TSound* m_pSoundEffect = nullptr;
 	std::vector<RECT_ARRAY>  m_rtSpriteList;
+	std::vector<T_STR_VECTOR> m_szSpriteList;
 public:
 	void   AddEffect(TVertex2 tStart, TVertex2 tEnd);
 	bool GameDataLoad(W_STR filename);

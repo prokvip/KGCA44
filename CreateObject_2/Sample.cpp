@@ -16,17 +16,39 @@ bool Sample::GameDataLoad(W_STR filename)
     for (int iCnt = 0; iCnt < iNumSprite; iCnt++)
     {
         int iNumFrame = 0;
+        int iType = 0;
+        float fLife = 0.0f;
         _fgetts(pBuffer, _countof(pBuffer), fp_src);
-        _stscanf_s(pBuffer, _T("%s %d"), pTemp, (unsigned int)_countof(pTemp), &iNumFrame);
+        _stscanf_s(pBuffer, _T("%s %d %d %f"), pTemp,
+            (unsigned int)_countof(pTemp), &iNumFrame, &iType, &fLife);
         //m_rtSpriteList[iCnt].resize(iNumFrame);
 
-        RECT rt;
-        for (int iFrame = 0; iFrame < iNumFrame; iFrame++)
+        if (iType == 0)
         {
-            _fgetts(pBuffer, _countof(pBuffer), fp_src);
-            _stscanf_s(pBuffer, _T("%s %d %d %d %d"), pTemp, (unsigned int)_countof(pTemp),
-                &rt.left, &rt.top, &rt.right, &rt.bottom);
-            m_rtSpriteList[iCnt].push_back(rt);
+            RECT rt;
+            for (int iFrame = 0; iFrame < iNumFrame; iFrame++)
+            {
+                _fgetts(pBuffer, _countof(pBuffer), fp_src);
+                _stscanf_s(pBuffer, _T("%s %d %d %d %d"), pTemp, (unsigned int)_countof(pTemp),
+                    &rt.left, &rt.top, &rt.right, &rt.bottom);
+                m_rtSpriteList[iCnt].push_back(rt);
+            }
+        }
+        if (iType == 1)
+        {
+            TCHAR pTexFileName[256] = { 0 };    
+            T_STR_VECTOR strVector;
+            for (int iFrame = 0; iFrame < iNumFrame; iFrame++)
+            {
+                _fgetts(pBuffer, _countof(pBuffer), fp_src);
+                _stscanf_s(pBuffer, _T("%s %s"),
+                    pTemp, (unsigned int)_countof(pTemp),
+                    pTexFileName, (unsigned int)_countof(pTexFileName));
+                
+                I_Tex.Load(pTexFileName);
+                strVector.push_back(I_Tex.SplitPath(pTexFileName));              
+            }
+            m_szSpriteList.push_back(strVector);
         }
     }
     fclose(fp_src);
@@ -65,7 +87,7 @@ void   Sample::Init()
     tStart.x = 400.0f;
     tStart.y = 100.0f;
     TVertex2 tEnd2 = { tStart.x + 42.0f, tStart.y + 60.0f };
-    //AddEffect(tStart, tEnd2);
+    AddEffect(tStart, tEnd2);
 }
 void   Sample::AddEffect(TVertex2 tStart, TVertex2 tEnd)
 {
@@ -78,8 +100,17 @@ void   Sample::AddEffect(TVertex2 tStart, TVertex2 tEnd)
     data.m_fLifeTime = 1.0f;
     data.m_fOffsetTime = 0.1f;
     UINT iSprite = rand() % 3;
-    data.m_iNumAnimFrame = m_rtSpriteList[iSprite].size();
-    data.m_rtList = m_rtSpriteList[iSprite];
+    data.m_iType = 1;// rand() % m_szSpriteList[0].size();
+    if (data.m_iType == 0)
+    {
+        data.m_iNumAnimFrame = m_rtSpriteList[iSprite].size();
+        data.m_rtList = m_rtSpriteList[iSprite];
+    }
+    if (data.m_iType == 1)
+    {
+        data.m_iNumAnimFrame = m_szSpriteList[0].size();
+        data.m_szList = m_szSpriteList[0];
+    }
     pObject3->SetData(data);
     if (pObject3->Create(resData, tStart, tEnd))
     {
@@ -128,7 +159,7 @@ void   Sample::Frame()
     if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {
         TVertex2 tStart = { m_Input.m_ptMouse.x, m_Input.m_ptMouse.y };
-        TVertex2 tEnd = { tStart.x + 42.0f, tStart.y + 60.0f };
+        TVertex2 tEnd = { tStart.x + 100.0f, tStart.y + 100.0f };
         AddEffect(tStart, tEnd);
     }
 
@@ -147,6 +178,7 @@ void   Sample::Frame()
             iter = m_EffectList.erase(iter);
         }
     }
+
 }
 void   Sample::Render() 
 {       

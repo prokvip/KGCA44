@@ -50,7 +50,9 @@ public:
 public:
 	virtual void	Init();
 	virtual void	Frame();
+	virtual void	PreRender();
 	virtual void	Render();
+	virtual void	PostRender();
 	virtual void	Release();
 public:
 	TObject();
