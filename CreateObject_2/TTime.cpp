@@ -9,7 +9,7 @@ void    TTime::Init()
 }
 void    TTime::Frame()
 {
-    m_iGameFrame++;
+    m_iTmpGameFrame++;
 	m_EndClock = system_clock::now();
     duration<float> sec = m_EndClock - m_StartClock;
     //microseconds sec = duration_cast<microseconds>(durationClock);
@@ -18,8 +18,9 @@ void    TTime::Frame()
     m_fTmpTimer += m_fSecondPerFrame;    
     if (m_fTmpTimer > 1.0)
     {
+        m_iGameFrame = m_iTmpGameFrame;
         m_fTmpTimer -= 1.0;
-        m_iGameFrame = 0;
+        m_iTmpGameFrame = 0;        
     }
     m_StartClock= m_EndClock;
 

@@ -5,13 +5,15 @@ bool		TTexture::Load(std::wstring filename)
 	HRESULT hr = DirectX::CreateWICTextureFromFile(
 		TDevice::m_pd3dDevice,
 		filename.c_str(),
-		&m_pTexture,
+		(ID3D11Resource**)&m_pTexture,
 		&m_pTexSRV);
 	if (FAILED(hr))
 	{
 		DX_CHECK(hr, _T(__FUNCTION__));
 		return false;
 	}
+	
+	m_pTexture->GetDesc(&m_TexDesc);
 	return true;
 }
 void TTexture::Release()

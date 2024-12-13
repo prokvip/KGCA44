@@ -61,16 +61,29 @@ void   Sample::Init()
         m_ObjList.emplace_back(pObject2);
     }
 
-    tObject pObject3 = std::make_shared<TEffectObj>();
+    auto pObject3 = std::make_shared<TEffectObj>();
     tStart.x = 400.0f;
     tStart.y = 100.0f;
     TVertex2 tEnd2 = { tStart.x + 42.0f, tStart.y + 60.0f };
+    //AddEffect(tStart, tEnd2);
+}
+void   Sample::AddEffect(TVertex2 tStart, TVertex2 tEnd)
+{
+    auto pObject3 = std::make_shared<TEffectObj>();
+    TLoadResData resData;
     resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
     resData.texShaderName = L"../../data/shader/Default.txt";
-    ((TEffectObj*)pObject3.get())->m_rtList = m_rtSpriteList[2];
-    if (pObject3->Create(resData, tStart, tEnd2))
-    {        
-        m_ObjList.emplace_back(pObject3);
+    TEffectData data;
+    data.m_bLoop = true;
+    data.m_fLifeTime = 1.0f;
+    data.m_fOffsetTime = 0.1f;
+    UINT iSprite = rand() % 3;
+    data.m_iNumAnimFrame = m_rtSpriteList[iSprite].size();
+    data.m_rtList = m_rtSpriteList[iSprite];
+    pObject3->SetData(data);
+    if (pObject3->Create(resData, tStart, tEnd))
+    {
+        m_EffectList.emplace_back(pObject3);
     }
 }
 void   Sample::Frame()  
@@ -111,6 +124,29 @@ void   Sample::Frame()
     {
         data->Frame();
     }    
+
+    if (g_GameKey.dwMiddleClick == KEY_HOLD)
+    {
+        TVertex2 tStart = { m_Input.m_ptMouse.x, m_Input.m_ptMouse.y };
+        TVertex2 tEnd = { tStart.x + 42.0f, tStart.y + 60.0f };
+        AddEffect(tStart, tEnd);
+    }
+
+    for (auto iter = std::begin(m_EffectList);
+           iter != m_EffectList.end();)
+    {
+        TEffectObj* pObj = (TEffectObj*)iter->get();
+        if (pObj->m_bDead == false)
+        {
+            pObj->Frame();
+            iter++;
+        }
+        else
+        {
+            pObj->Release();
+            iter = m_EffectList.erase(iter);
+        }
+    }
 }
 void   Sample::Render() 
 {       
@@ -122,8 +158,12 @@ void   Sample::Render()
     }*/
     m_ObjList[0]->Render();
     TDevice::m_pd3dContext->PSSetSamplers(0, 1, &TDxState::m_pPointSS);
-    m_ObjList[1]->Render();
-    m_ObjList[2]->Render();
+    m_ObjList[1]->Render();    
+
+    for (auto data : m_EffectList)
+    {
+        data->Render();
+    }
 
     D2D1_RECT_F rt = { 0.0f, 350.0f, 800.0f, 600.0f };
     m_DxWrite.DirectDraw(rt, L"Sample::Render");
@@ -134,7 +174,10 @@ void   Sample::Release()
     {
         data->Release();
     }
-    
+    for (auto data : m_EffectList)
+    {
+        data->Release();
+    }
 }
 
 //GameStart(800, 600);

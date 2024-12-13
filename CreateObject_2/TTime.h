@@ -14,6 +14,7 @@ class TBaseClass
 class TTime : public TBaseClass
 {
 public:
+	int		m_iTmpGameFrame = 0;//1초에 돌아간 프레임 측정
 	int		m_iGameFrame = 0;//1초에 돌아간 프레임 측정.
 	float   m_fGameTimer = 0.0f;// 게임 실행 시간 측정
 	float   m_fSecondPerFrame = 0.0f;// 1프레임의 경과시간

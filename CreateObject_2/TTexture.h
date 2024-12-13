@@ -5,7 +5,8 @@ class TTexture
 {
 public:
 	std::wstring   m_csName;
-	ID3D11Resource* m_pTexture = nullptr;
+	D3D11_TEXTURE2D_DESC m_TexDesc;
+	ID3D11Texture2D* m_pTexture = nullptr;
 	ID3D11ShaderResourceView* m_pTexSRV = nullptr;
 	virtual  bool  Load(std::wstring filename);
 	virtual  void  Release();

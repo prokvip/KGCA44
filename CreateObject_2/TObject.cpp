@@ -38,6 +38,7 @@ bool   TObject::LoadTexrture(std::wstring texName)
 	{		
 		return false;
 	}
+
 	return true;
 }
 void	TObject::Init()

@@ -9,10 +9,12 @@ class Sample : public TGameCore
 {
 	using tObject = std::shared_ptr<TObject>;
 	std::vector<tObject>    m_ObjList;
+	std::list<tObject>    m_EffectList;
 	TSound* m_pSound = nullptr;
 	TSound* m_pSoundEffect = nullptr;
 	std::vector<RECT_ARRAY>  m_rtSpriteList;
 public:
+	void   AddEffect(TVertex2 tStart, TVertex2 tEnd);
 	bool GameDataLoad(W_STR filename);
 	virtual void   Init() override;
 	virtual void   Frame() override;
