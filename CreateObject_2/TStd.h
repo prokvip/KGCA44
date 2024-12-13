@@ -19,6 +19,27 @@
 #endif
 
 
+
+#define randf(x) (x*rand()/(float)RAND_MAX)
+#define randf2(x,off) (off+x*rand()/(float)RAND_MAX)
+#define randstep(fMin,fMax) (fMin+((float)fMax-(float)fMin)*rand()/(float)RAND_MAX)
+#define clamp(x,MinX,MaxX) if (x>MaxX) x=MaxX; else if (x<MinX) x=MinX;
+using namespace std;
+
+typedef basic_string<TCHAR> T_STR;
+typedef basic_string<wchar_t> W_STR;
+typedef basic_string<char>  C_STR;
+typedef vector<T_STR>		T_STR_VECTOR;
+typedef basic_string<TCHAR>::iterator	T_ITOR;
+typedef basic_string<wchar_t>::iterator	W_ITOR;
+typedef basic_string<char>::iterator	C_ITOR;
+typedef vector<T_STR>		T_ARRAY_ITOR;
+typedef vector<DWORD>				DWORD_VECTOR;
+typedef	vector< DWORD >::iterator	DWORD_VECTOR_ITOR;
+typedef list<DWORD>					DWORD_LIST;
+typedef list<DWORD>::iterator		DWORD_LIST_ITOR;
+typedef list< HANDLE >				HANDLE_LIST;
+typedef	list< HANDLE >::iterator	HANDLE_LIST_ITOR;
 static std::wstring to_mw(const std::string& _src)
 {
     USES_CONVERSION;
@@ -44,6 +65,8 @@ struct TGameKey
 	DWORD dwExit;
 	DWORD dwSpace;
 };
+
+enum { KEY_FREE = 0, KEY_PUSH, KEY_HOLD, KEY_UP };
 
 extern POINT g_WindowSize;
 extern HWND  g_hWnd;

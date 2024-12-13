@@ -151,9 +151,12 @@
     <ClInclude Include="TDevice.h" />
     <ClInclude Include="TDxState.h" />
     <ClInclude Include="TDxWrite.h" />
+    <ClInclude Include="TEffectObj.h" />
     <ClInclude Include="TGameCore.h" />
+    <ClInclude Include="THeroObj.h" />
     <ClInclude Include="TInput.h" />
     <ClInclude Include="TInputLayout.h" />
+    <ClInclude Include="TMapObj.h" />
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TObject2D.h" />
     <ClInclude Include="TShader.h" />
@@ -169,9 +172,12 @@
     <ClCompile Include="TDevice.cpp" />
     <ClCompile Include="TDxState.cpp" />
     <ClCompile Include="TDxWrite.cpp" />
+    <ClCompile Include="TEffectObj.cpp" />
     <ClCompile Include="TGameCore.cpp" />
+    <ClCompile Include="THeroObj.cpp" />
     <ClCompile Include="TInput.cpp" />
     <ClCompile Include="TInputLayout.cpp" />
+    <ClCompile Include="TMapObj.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TObject2D.cpp" />
     <ClCompile Include="TShader.cpp" />
@@ -182,6 +188,7 @@
     <ClCompile Include="TWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="SpriteData.txt" />
     <Text Include="VertexShader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

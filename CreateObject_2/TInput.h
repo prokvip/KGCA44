@@ -2,7 +2,7 @@
 #include "TStd.h"
 // 1번 윈도우 메시지
 // 2번 윈도우 API(함수)
-enum { KEY_FREE=0, KEY_PUSH, KEY_HOLD, KEY_UP};
+
 class TInput
 {
 public:
