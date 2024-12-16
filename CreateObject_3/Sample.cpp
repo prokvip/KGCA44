@@ -63,13 +63,16 @@ void   Sample::Init()
     m_pSoundEffect = mgr.Load(L"../../data/sound/GunShot.mp3");
     m_pSound->Play();
 
-    tObject pObject1 = std::make_shared<TMapObj>();
+    auto pObject1 = std::make_shared<TMapObj>();
     if (pObject1->Create())
     {
-        TTexture* pTex = I_Tex.Load(L"../../data/texture/Board.png");
+        TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
         pObject1->SetTexture(pTex).
             SetShader().
             SetLayout();
+        TRect rt = { 0.0f, 0.0f, 800.0f, 600.0f };
+        pObject1->m_rtScreen =rt;
+        pObject1->UpdateVertexData();
         m_ObjList.emplace_back(pObject1);
     }
 

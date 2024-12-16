@@ -190,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\data\shader\BlendMask.txt" />
+    <Text Include="..\..\data\shader\Default.txt" />
     <Text Include="..\..\data\shader\DefaultBlack.txt" />
     <Text Include="..\..\data\shader\DefaultMask.txt" />
     <Text Include="SpriteData.txt" />
