@@ -152,7 +152,7 @@ void   Sample::Frame()
 
     if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {
-        TVertex2 tStart = { m_Input.m_ptMouse.x, m_Input.m_ptMouse.y };
+        TVertex2 tStart = { m_Input.m_ptMouse.x-50, m_Input.m_ptMouse.y-50 };
         TVertex2 tEnd = { tStart.x + 100.0f, tStart.y + 100.0f };
         AddEffect(tStart, tEnd);
 
