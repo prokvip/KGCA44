@@ -19,7 +19,7 @@ void   TGameCore::CoreInit()
     I_Shader.Init();
     if (I_Shader.g_pDefaultShader != nullptr)
     {
-        I_InputLayout.Init(I_Shader.g_pDefaultShader->m_pCode);
+        I_InputLayout.Init(I_Shader.g_pDefaultShader->m_pCode.Get());
     }
     Init();
 }

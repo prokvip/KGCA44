@@ -1,8 +1,9 @@
 #include "TDxState.h"
 #include "TDevice.h"
-ID3D11SamplerState* TDxState::m_pLinearSS =nullptr;
-ID3D11SamplerState* TDxState::m_pPointSS = nullptr;
-ID3D11BlendState* TDxState::m_pAlphaBlend = nullptr;
+ComPtr<ID3D11SamplerState> TDxState::m_pLinearSS = nullptr;
+ComPtr<ID3D11SamplerState> TDxState::m_pPointSS = nullptr;
+ComPtr<ID3D11BlendState> TDxState::m_pAlphaBlend = nullptr;
+
 void  TDxState::Create()
 {
 	D3D11_BLEND_DESC bd;
@@ -36,7 +37,7 @@ void  TDxState::Create()
 		D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	HRESULT hr = TDevice::m_pd3dDevice->CreateBlendState(&bd,
-		&m_pAlphaBlend);
+		m_pAlphaBlend.GetAddressOf());
 	if (FAILED(hr))
 	{
 
@@ -50,13 +51,15 @@ void  TDxState::Create()
     sd.AddressU= D3D11_TEXTURE_ADDRESS_WRAP;
     sd.AddressV= D3D11_TEXTURE_ADDRESS_WRAP;
     sd.AddressW= D3D11_TEXTURE_ADDRESS_WRAP;    
-	 hr = TDevice::m_pd3dDevice->CreateSamplerState(&sd, &m_pLinearSS);
+	 hr = TDevice::m_pd3dDevice->CreateSamplerState(&sd, 
+		 m_pLinearSS.GetAddressOf());
 	if (FAILED(hr))
 	{
 
 	}
 	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	hr = TDevice::m_pd3dDevice->CreateSamplerState(&sd, &m_pPointSS);
+	hr = TDevice::m_pd3dDevice->CreateSamplerState(&sd, 
+		m_pPointSS.GetAddressOf());
 	if (FAILED(hr))
 	{
 
@@ -65,7 +68,4 @@ void  TDxState::Create()
 
 void  TDxState::Release()
 {
-	if (m_pLinearSS)m_pLinearSS->Release();
-	if (m_pPointSS)m_pPointSS->Release();
-	if (m_pAlphaBlend)m_pAlphaBlend->Release();
 }

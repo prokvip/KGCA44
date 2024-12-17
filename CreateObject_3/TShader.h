@@ -4,9 +4,9 @@ class TShader
 {
 public:
 	std::wstring   m_csName;
-	ID3D11VertexShader* m_pVertexShader = nullptr;
-	ID3DBlob* m_pCode;
-	ID3D11PixelShader* m_pPixelShader = nullptr;
+	ComPtr<ID3D11VertexShader> m_pVertexShader = nullptr;
+	ComPtr<ID3DBlob> m_pCode;
+	ComPtr<ID3D11PixelShader>  m_pPixelShader = nullptr;
 	virtual  bool  Load(std::wstring filename);
 	virtual  bool  LoadVertexShader(std::wstring filename);
 	virtual  bool  LoadPixelShader(std::wstring filename);

@@ -50,9 +50,9 @@ void	TObject::PreRender()
 	TDevice::m_pd3dContext->PSSetShaderResources(
 		0, 1, &m_pTexture->m_pTexSRV);
 	TDevice::m_pd3dContext->VSSetShader(
-		m_pShader->m_pVertexShader, nullptr, 0);
+		m_pShader->m_pVertexShader.Get(), nullptr, 0);
 	TDevice::m_pd3dContext->PSSetShader(
-		m_pShader->m_pPixelShader, nullptr, 0);
+		m_pShader->m_pPixelShader.Get(), nullptr, 0);
 	TDevice::m_pd3dContext->IASetInputLayout(
 		m_pInputLayout->Get());
 
@@ -63,11 +63,11 @@ void	TObject::PreRender()
 	TDevice::m_pd3dContext->IASetVertexBuffers(
 		0,
 		1,
-		&m_pVertexBuffer,
+		m_pVertexBuffer.GetAddressOf(),
 		&Strides,
 		&Offsets);
 	TDevice::m_pd3dContext->IASetIndexBuffer(
-		m_pIndexBuffer,
+		m_pIndexBuffer.Get(),
 		DXGI_FORMAT_R32_UINT, 0);
 	TDevice::m_pd3dContext->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -86,8 +86,7 @@ void	TObject::PostRender()
 }
 void	TObject::Release()
 {
-	if (m_pVertexBuffer) m_pVertexBuffer->Release();
-	if (m_pIndexBuffer) m_pIndexBuffer->Release();
+	
 }
 bool	TObject::Create()
 {
@@ -196,7 +195,7 @@ bool	TObject::CreateVertexBuffer()
 	ZeroMemory(&sd, sizeof(sd));
 	sd.pSysMem = &m_vVertexList.at(0);
 	HRESULT hr = TDevice::m_pd3dDevice->CreateBuffer(
-		&bd, &sd,	&m_pVertexBuffer);
+		&bd, &sd,	m_pVertexBuffer.GetAddressOf());
 	if (FAILED(hr))
 	{
 		return false;
@@ -225,7 +224,7 @@ bool	TObject::CreateIndexBuffer()
 	ZeroMemory(&sd, sizeof(sd));
 	sd.pSysMem = &m_vIndexList.at(0);
 	HRESULT hr = TDevice::m_pd3dDevice->CreateBuffer(
-		&bd, &sd, &m_pIndexBuffer);
+		&bd, &sd, m_pIndexBuffer.GetAddressOf());
 	if (FAILED(hr))
 	{
 		return false;
@@ -273,7 +272,7 @@ bool	TObject::CreateInputLayout()
 		{ "TEX",  0, DXGI_FORMAT_R32G32_FLOAT,       0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	UINT  iNumCnt = sizeof(layout) / sizeof(layout[0]);
-	m_pInputLayout = I_InputLayout.Load(m_pShader->m_pCode,layout, 3, L"PCT");
+	m_pInputLayout = I_InputLayout.Load(m_pShader->m_pCode.Get(),layout, 3, L"PCT");
 	return true;
 }
 TObject::TObject()

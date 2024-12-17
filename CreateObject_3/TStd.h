@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <atlconv.h>  // A2W
+#include <wrl.h> // windows runtime c++ template library
 #pragma comment(lib,"d3d11.lib") // 加己 眠啊辆加己 
 #pragma comment(lib,"d3dcompiler.lib") // 加己 眠啊辆加己 
 #ifndef _DEBUG
@@ -24,7 +25,9 @@
 #define randf2(x,off) (off+x*rand()/(float)RAND_MAX)
 #define randstep(fMin,fMax) (fMin+((float)fMax-(float)fMin)*rand()/(float)RAND_MAX)
 #define clamp(x,MinX,MaxX) if (x>MaxX) x=MaxX; else if (x<MinX) x=MinX;
+
 using namespace std;
+using namespace Microsoft::WRL;
 
 typedef basic_string<TCHAR> T_STR;
 typedef basic_string<wchar_t> W_STR;

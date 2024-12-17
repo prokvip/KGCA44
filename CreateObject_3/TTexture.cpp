@@ -3,14 +3,14 @@
 bool		TTexture::Load(std::wstring filename)
 {
 	HRESULT hr = DirectX::CreateWICTextureFromFile(
-		TDevice::m_pd3dDevice,
+		TDevice::m_pd3dDevice.Get(),
 		filename.c_str(),
 		(ID3D11Resource**)&m_pTexture,
 		&m_pTexSRV);
 	if (FAILED(hr))
 	{
 		hr = DirectX::CreateDDSTextureFromFile(
-			TDevice::m_pd3dDevice,
+			TDevice::m_pd3dDevice.Get(),
 			filename.c_str(),
 			(ID3D11Resource**)&m_pTexture,
 			&m_pTexSRV);

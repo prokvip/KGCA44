@@ -1,10 +1,10 @@
 #include "TDevice.h"
 #include "TDxState.h"
 
-ID3D11Device*           TDevice::m_pd3dDevice = nullptr;  // 积己
-ID3D11DeviceContext*    TDevice::m_pd3dContext = nullptr; // 款康,包府
-IDXGISwapChain*         TDevice::m_pSwapChain = nullptr;
-ID3D11RenderTargetView* TDevice::m_pRTV = nullptr;
+ComPtr<ID3D11Device> TDevice::m_pd3dDevice = nullptr;  // 积己
+ComPtr<ID3D11DeviceContext>     TDevice::m_pd3dContext = nullptr; // 款康,包府
+ComPtr<IDXGISwapChain>          TDevice::m_pSwapChain = nullptr;
+ComPtr<ID3D11RenderTargetView>  TDevice::m_pRTV = nullptr;
 D3D11_VIEWPORT			TDevice::m_MainVP;
 
 bool   TDevice::CreateDevice()
@@ -52,10 +52,10 @@ bool   TDevice::CreateDevice()
         SDKVersion,
         &scd,
         // 馆券蔼
-        &m_pSwapChain,
-        &m_pd3dDevice,
+        m_pSwapChain.GetAddressOf(),
+        m_pd3dDevice.GetAddressOf(),
         &pFeatureLevel,//D3D_FEATURE_LEVEL_11_0
-        &m_pd3dContext);
+        m_pd3dContext.GetAddressOf());
 
     if (FAILED(hr))
     {
@@ -73,7 +73,7 @@ bool   TDevice::CreateDevice()
         return false;
     }
     hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL,
-        &m_pRTV);
+        m_pRTV.GetAddressOf());
     pBackBuffer->Release();
     if (FAILED(hr))
     {
@@ -89,7 +89,8 @@ bool   TDevice::CreateDevice()
     m_MainVP.TopLeftY = 0;
 
     m_pd3dContext->RSSetViewports(1, &m_MainVP);
-    m_pd3dContext->OMSetRenderTargets(1, &m_pRTV, NULL);
+    m_pd3dContext->OMSetRenderTargets(1, m_pRTV.GetAddressOf(), NULL);
+    return true;
 }
 void   TDevice::Init()
 {
@@ -105,10 +106,10 @@ void   TDevice::Frame()
 void   TDevice::PreRender()
 {
     float ClearColor[] = { 1.0f, 0.0f,0.0f, 1.0f };
-    m_pd3dContext->ClearRenderTargetView(m_pRTV, ClearColor);
-    m_pd3dContext->PSSetSamplers(0, 1, &TDxState::m_pLinearSS);
+    m_pd3dContext->ClearRenderTargetView(m_pRTV.Get(), ClearColor);
+    m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pLinearSS.GetAddressOf());
     m_pd3dContext->OMSetBlendState(
-        TDxState::m_pAlphaBlend, 0, -1);
+        TDxState::m_pAlphaBlend.Get(), 0, -1);
 }
 void   TDevice::Render()
 {
@@ -118,9 +119,5 @@ void   TDevice::PostRender()
     m_pSwapChain->Present(0, 0);
 }
 void   TDevice::Release()
-{
-    if (m_pRTV)m_pRTV->Release();
-    if (m_pd3dDevice)m_pd3dDevice->Release();
-    if (m_pd3dContext)m_pd3dContext->Release();
-    if (m_pSwapChain)m_pSwapChain->Release();
+{    
 }

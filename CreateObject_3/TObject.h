@@ -18,8 +18,8 @@ struct TLoadResData
 class TObject
 {
 public:
-	ID3D11Buffer*		m_pVertexBuffer=nullptr;	
-	ID3D11Buffer*		m_pIndexBuffer = nullptr;
+	ComPtr<ID3D11Buffer> m_pVertexBuffer=nullptr;	
+	ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 	TShader*			m_pShader = nullptr;	
 	//TShader*			m_pPixelShader = nullptr;
 	TTexture*			m_pTexture = nullptr;

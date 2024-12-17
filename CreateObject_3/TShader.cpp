@@ -17,19 +17,19 @@ bool		TShader::Load(std::wstring filename)
 bool		TShader::LoadPixelShader(std::wstring filename)
 {
 	// hlsl  컴파일
-	ID3DBlob* pErrorCode = nullptr;
+	ComPtr<ID3DBlob> pErrorCode = nullptr;
 	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #if _DEBUG
 	flags |= D3DCOMPILE_DEBUG;
 	flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 	// hlsl  컴파일
-	ID3DBlob* pCode = nullptr;
+	ComPtr<ID3DBlob> pCode = nullptr;
 	HRESULT hr = D3DCompileFromFile(filename.c_str(),
 		nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS", "ps_5_0", flags, 0,
-		&pCode,
-		&pErrorCode);
+		pCode.GetAddressOf(),
+		pErrorCode.GetAddressOf());
 	if (FAILED(hr))
 	{
 		MessageBoxA(g_hWnd,
@@ -41,21 +41,18 @@ bool		TShader::LoadPixelShader(std::wstring filename)
 		pCode->GetBufferPointer(),
 		pCode->GetBufferSize(),
 		nullptr,
-		&m_pPixelShader);
+		m_pPixelShader.GetAddressOf());
 	if (FAILED(hr))
 	{
 		DX_CHECK(hr, _T(__FUNCTION__));
 		return false;
-	}
-
-	if (pCode) pCode->Release();
-	if (pErrorCode) pErrorCode->Release();
+	}	
 	return true;
 }
 bool		TShader::LoadVertexShader(std::wstring filename)
 {
 	// hlsl  컴파일
-	ID3DBlob* pErrorCode = nullptr;
+	ComPtr<ID3DBlob> pErrorCode = nullptr;
 	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #if _DEBUG
 	flags |= D3DCOMPILE_DEBUG;
@@ -65,8 +62,8 @@ bool		TShader::LoadVertexShader(std::wstring filename)
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS", "vs_5_0", flags, 0,
-		&m_pCode,
-		&pErrorCode);
+		m_pCode.GetAddressOf(),
+		pErrorCode.GetAddressOf());
 	if (FAILED(hr))
 	{
 		MessageBoxA(g_hWnd,
@@ -78,21 +75,16 @@ bool		TShader::LoadVertexShader(std::wstring filename)
 		m_pCode->GetBufferPointer(),
 		m_pCode->GetBufferSize(),
 		nullptr,
-		&m_pVertexShader);
+		m_pVertexShader.GetAddressOf());
 	if (FAILED(hr))
 	{
 		DX_CHECK(hr, _T(__FUNCTION__));
 		return false;
-	}
-
-	if (pErrorCode) pErrorCode->Release();
+	}	
 	return true;
 }
 void TShader::Release()
 {
-	if (m_pVertexShader) m_pVertexShader->Release();
-	if (m_pPixelShader) m_pPixelShader->Release();
-	if (m_pCode) m_pCode->Release();
 	m_pVertexShader = nullptr;
 	m_pPixelShader = nullptr;
 	m_pCode = nullptr;

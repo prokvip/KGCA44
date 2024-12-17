@@ -2,7 +2,7 @@
 #include "TShader.h"
 class TInputLayout
 {
-	ID3D11InputLayout* m_pInputLayout = nullptr;
+	ComPtr< ID3D11InputLayout> m_pInputLayout = nullptr;
 public:
 	std::wstring   m_csName;	
 	virtual  bool  Load(ID3DBlob* pCode,

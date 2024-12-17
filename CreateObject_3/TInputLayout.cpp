@@ -15,7 +15,7 @@ bool		TInputLayout::Load(ID3DBlob* pCode,
 		szNumCounter,
 		pCode->GetBufferPointer(),
 		pCode->GetBufferSize(),
-		&m_pInputLayout);
+		m_pInputLayout.GetAddressOf());
 	if (FAILED(hr))
 	{
 		DX_CHECK(hr, _T(__FUNCTION__));
@@ -25,11 +25,10 @@ bool		TInputLayout::Load(ID3DBlob* pCode,
 }
 ID3D11InputLayout* TInputLayout::Get()
 {
-	return m_pInputLayout;
+	return m_pInputLayout.Get();
 }
 void TInputLayout::Release()
-{
-	if (m_pInputLayout) m_pInputLayout->Release();
+{	
 	m_pInputLayout = nullptr;
 }
 void     TTInputLayoutManager::Init(ID3DBlob* pCode)

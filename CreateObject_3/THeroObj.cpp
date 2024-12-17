@@ -44,7 +44,7 @@ void THeroObj::Frame()
 
 	// gpu°¡ ´ã´ç
 	TDevice::m_pd3dContext->UpdateSubresource(
-		m_pVertexBuffer, 0, nullptr,
+		m_pVertexBuffer.Get(), 0, nullptr,
 		&m_vVertexList.at(0), 0, 0);
 }
 void THeroObj::SetVertexData()

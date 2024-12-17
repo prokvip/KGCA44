@@ -25,7 +25,7 @@ void TMapObj::Frame()
 	//m_vVertexList[2].t = { tStart / xSize, 1.0f };
 	//m_vVertexList[3].t = { tEnd / xSize, 1.0f }; */
 	TDevice::m_pd3dContext->UpdateSubresource(
-		m_pVertexBuffer, 0, nullptr,
+		m_pVertexBuffer.Get(), 0, nullptr,
 		&m_vVertexList.at(0), 0, 0);
 }
 void TMapObj::UpdateVertexData()
@@ -40,7 +40,7 @@ void TMapObj::UpdateVertexData()
 	m_vVertexList[2].t = { 0.0f,140.0f / ySize };
 	m_vVertexList[3].t = { 1.0f,140.0f / ySize };
 	TDevice::m_pd3dContext->UpdateSubresource(
-		m_pVertexBuffer, 0, nullptr,
+		m_pVertexBuffer.Get(), 0, nullptr,
 		&m_vVertexList.at(0), 0, 0);*/
 }
 void TMapObj::SetVertexData()

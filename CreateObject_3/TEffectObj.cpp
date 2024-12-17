@@ -78,7 +78,7 @@ void TEffectObj::Frame()
 		m_pCurrentTexture = I_Tex.GetPtr(m_Data.m_szList[m_iAnimFrame]);
 	}
 	TDevice::m_pd3dContext->UpdateSubresource(
-		m_pVertexBuffer, 0, nullptr,
+		m_pVertexBuffer.Get(), 0, nullptr,
 		&m_vVertexList.at(0), 0, 0);
 }
 void TEffectObj::Render()

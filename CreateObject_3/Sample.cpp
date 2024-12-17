@@ -220,7 +220,7 @@ void   Sample::Render()
         data->Render();
     }*/
     m_ObjList[0]->Render();
-    //TDevice::m_pd3dContext->PSSetSamplers(0, 1, &TDxState::m_pPointSS);
+    //TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
 
     TDevice::m_pd3dContext->PSSetShaderResources(
         1, 1, &m_pBitmap1Mask->m_pTexSRV);
