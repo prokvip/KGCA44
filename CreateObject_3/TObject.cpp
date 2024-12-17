@@ -128,7 +128,7 @@ bool	TObject::Create(TLoadResData data,
 						TVertex2 t)
 {
 	m_LoadResData = data;
-	m_rtScreen = { s.x, s.y, t.x- s.x, t.y- s.y };
+	m_srtScreen.SetP( s, t );
 	if (!LoadTexrture(m_LoadResData.texPathName))
 	{
 		return false;
@@ -145,15 +145,15 @@ void    TObject::SetVertexData()
 	// Á÷°¢ÁÂÇ¥°è  <-> º¯È¯  <-> NDCÁÂÇ¥°è
 	// NDCÁÂÇ¥°è  <-> º¯È¯  <-> Á÷°¢ÁÂÇ¥°è
 	m_vVertexList.resize(4);
-	TVertex2 s = { m_rtScreen.x, m_rtScreen.y };
+	TVertex2 s = { m_srtScreen.x, m_srtScreen.y };
 	// NDC <- Screen
-	s.x = m_rtScreen.x / g_WindowSize.x; // 0 ~1
-	s.y = m_rtScreen.y / g_WindowSize.y; // 0 ~1
+	s.x = m_srtScreen.x / g_WindowSize.x; // 0 ~1
+	s.y = m_srtScreen.y / g_WindowSize.y; // 0 ~1
 	s.x = s.x * 2.0f - 1.0f;
 	s.y = -(s.y * 2.0f - 1.0f);
 	TVertex2 t;
-	t.x = (m_rtScreen.x + m_rtScreen.w) / g_WindowSize.x;
-	t.y = (m_rtScreen.y + m_rtScreen.h) / g_WindowSize.y;
+	t.x = (m_srtScreen.x + m_srtScreen.w) / g_WindowSize.x;
+	t.y = (m_srtScreen.y + m_srtScreen.h) / g_WindowSize.y;
 	t.x = t.x * 2.0f - 1.0f;
 	t.y = (t.y * 2.0f - 1.0f)*-1.0f;
 	m_vVertexList[0].v = s;
@@ -277,7 +277,7 @@ bool	TObject::CreateInputLayout()
 }
 TObject::TObject()
 {
-	m_rtScreen = {0.0f, 0.0f, (float)g_WindowSize.x, (float)g_WindowSize.y};
+	m_srtScreen.SetS(0.0f, 0.0f, (float)g_WindowSize.x, (float)g_WindowSize.y);
 }
 TObject::~TObject()
 {

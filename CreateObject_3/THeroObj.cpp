@@ -12,29 +12,29 @@ void THeroObj::Frame()
 	float fSpeed = 100.0f;
 	if (g_GameKey.dwWkey == KEY_HOLD)
 	{
-		m_rtScreen.y -= fSpeed * g_fSPF;
+		m_srtScreen.y -= fSpeed * g_fSPF;
 	}
 	if (g_GameKey.dwSkey == KEY_HOLD)
 	{
-		m_rtScreen.y += fSpeed * g_fSPF;
+		m_srtScreen.y += fSpeed * g_fSPF;
 	}
 	if (g_GameKey.dwAkey == KEY_HOLD)
 	{
-		m_rtScreen.x -= fSpeed * g_fSPF;
+		m_srtScreen.x -= fSpeed * g_fSPF;
 	}
 	if (g_GameKey.dwDkey == KEY_HOLD)
 	{
-		m_rtScreen.x += fSpeed * g_fSPF;
+		m_srtScreen.x += fSpeed * g_fSPF;
 	}
-	TVertex2 s = { m_rtScreen.x, m_rtScreen.y };
+	TVertex2 s = { m_srtScreen.x, m_srtScreen.y };
 	// NDC <- Screen
-	s.x = m_rtScreen.x / g_WindowSize.x; // 0 ~1
-	s.y = m_rtScreen.y / g_WindowSize.y; // 0 ~1
+	s.x = m_srtScreen.x / g_WindowSize.x; // 0 ~1
+	s.y = m_srtScreen.y / g_WindowSize.y; // 0 ~1
 	s.x = s.x * 2.0f - 1.0f;
 	s.y = -(s.y * 2.0f - 1.0f);
 	TVertex2 t;
-	t.x = (m_rtScreen.x + m_rtScreen.w) / g_WindowSize.x;
-	t.y = (m_rtScreen.y + m_rtScreen.h) / g_WindowSize.y;
+	t.x = (m_srtScreen.x + m_srtScreen.w) / g_WindowSize.x;
+	t.y = (m_srtScreen.y + m_srtScreen.h) / g_WindowSize.y;
 	t.x = t.x * 2.0f - 1.0f;
 	t.y = (t.y * 2.0f - 1.0f) * -1.0f;
 	m_vVertexList[0].v = s;
@@ -52,7 +52,8 @@ void THeroObj::SetVertexData()
 	TObject::SetVertexData();
 	float xSize = 400;
 	float ySize = 300;
-	TRect rt = { 90.0f, 1.0f, 132.0f, 61.0f };
+	TRect rt;
+	rt.SetP(90.0f, 1.0f, 132.0f, 61.0f );
 	m_vVertexList[0].t = { rt.x / xSize,rt.y / ySize };
 	m_vVertexList[1].t = { rt.w / xSize,rt.y / ySize };
 	m_vVertexList[2].t = { rt.x / xSize,rt.h / ySize };

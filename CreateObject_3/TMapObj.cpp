@@ -45,14 +45,16 @@ void TMapObj::UpdateVertexData()
 }
 void TMapObj::SetVertexData()
 {
-	m_iNumRow = 9;
-	m_iNumCol = 9;
+	m_iNumRow = 19;
+	m_iNumCol = 19;
 	m_iNumCellRow = m_iNumRow - 1;
 	m_iNumCellCol = m_iNumCol - 1;
 	m_iNumVertex = m_iNumRow * m_iNumCol;
 	m_iNumIndex = m_iNumCellRow * m_iNumCellCol * 2 * 3;
 	//TObject::SetVertexData();	
 	m_vVertexList.resize(m_iNumRow * m_iNumCol);
+	m_vScreenList.resize(m_iNumRow * m_iNumCol);
+	m_Cells.resize(m_iNumCellRow * m_iNumCellCol);
 	// 0  1  2  
 	// 3  4  5 
 	// 6  7  8
@@ -64,8 +66,10 @@ void TMapObj::SetVertexData()
 	{
 		for (UINT iCol = 0; iCol < m_iNumCol; iCol++)
 		{
-			float x = iCol * g_WindowSize.x / (m_iNumCol-1);
-			float y = iRow * g_WindowSize.y / (m_iNumRow-1);
+			float x = iCol * g_WindowSize.x / (m_iNumCol - 1);
+			float y = iRow * g_WindowSize.y / (m_iNumRow - 1);
+			m_vScreenList[iRow * m_iNumRow + iCol].x = x;
+			m_vScreenList[iRow * m_iNumRow + iCol].y = y;
 			m_vVertexList[iRow * m_iNumRow + iCol].v = ScreenToNDC(x, y, g_WindowSize);
 			m_vVertexList[iRow * m_iNumRow + iCol].c = { iCol / 2.0f, iRow / 2.0f, 1.0f,1.0f };
 			m_vVertexList[iRow * m_iNumRow + iCol].t.x = iCol;
@@ -96,11 +100,20 @@ void TMapObj::SetIndexData()
 			m_vIndexList[iIndex + 4] = m_vIndexList[iIndex + 1];
 			m_vIndexList[iIndex + 5] = iNextRow * m_iNumCol + iNextCol;
 
+			UINT iCell = iRowCell * m_iNumCellCol + iColCell;
+			float x1 = m_vScreenList[m_vIndexList[iIndex + 0]].x;
+			float y1 = m_vScreenList[m_vIndexList[iIndex + 1]].y;
+			float x2 = m_vScreenList[m_vIndexList[iIndex + 1]].x;
+			float y2 = m_vScreenList[m_vIndexList[iIndex + 2]].y;
+			m_Cells[iCell].rt.SetP(x1,y1, x2, y2);
+			m_Cells[iCell].iTexID = 0;
 			iIndex += 6;
+
+
 		}
 	}
 
-	m_pTexs[0] = I_Tex.Load(L"../../data/texture/bitmap1.bmp");
+	m_pTexs[0] = I_Tex.Load(L"../../data/texture/gg.bmp");
 	m_pTexs[1] = I_Tex.Load(L"../../data/texture/bitmap2.bmp");
 	m_pTexs[2] = I_Tex.Load(L"../../data/texture/hero.png");
 	m_pTexs[3] = I_Tex.Load(L"../../data/texture/kgcalogo.bmp");
@@ -115,7 +128,7 @@ void	TMapObj::PostRender()
 		srand(time(NULL));
 		for (int iCell = 0; iCell < m_iNumCellRow* m_iNumCellCol; iCell++)
 		{
-			UINT iTex = rand() % 4;
+			UINT iTex = m_Cells[iCell].iTexID;// rand() % 4;
 			TDevice::m_pd3dContext->PSSetShaderResources(
 				0, 1, &m_pTexs[iTex]->m_pTexSRV);
 			TDevice::m_pd3dContext->DrawIndexed(6,6*iCell, 0);

@@ -149,6 +149,7 @@
     <ClInclude Include="..\..\data\shader\stdShader.h" />
     <ClInclude Include="Sample.h" />
     <ClInclude Include="stdShader.h" />
+    <ClInclude Include="TCollision.h" />
     <ClInclude Include="TDevice.h" />
     <ClInclude Include="TDxState.h" />
     <ClInclude Include="TDxWrite.h" />
@@ -170,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample.cpp" />
+    <ClCompile Include="TCollision.cpp" />
     <ClCompile Include="TDevice.cpp" />
     <ClCompile Include="TDxState.cpp" />
     <ClCompile Include="TDxWrite.cpp" />

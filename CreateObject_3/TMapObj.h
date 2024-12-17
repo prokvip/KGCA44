@@ -1,5 +1,10 @@
 #pragma once
 #include "TObject2D.h"
+struct TCell
+{
+	TRect  rt;
+	UINT   iTexID;
+};
 class TMapObj : public TObject2D
 {
 	TTexture* m_pTexs[4];
@@ -9,6 +14,9 @@ class TMapObj : public TObject2D
 	UINT  m_iNumCellCol;
 	UINT  m_iNumVertex;
 	UINT  m_iNumIndex;
+public:
+	std::vector<TCell>  m_Cells;
+
 public:
 	virtual void SetVertexData() override;
 	virtual void SetIndexData() override;

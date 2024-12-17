@@ -63,20 +63,20 @@ void   Sample::Init()
     m_pSoundEffect = mgr.Load(L"../../data/sound/GunShot.mp3");
     m_pSound->Play();
 
-    auto pObject1 = std::make_shared<TMapObj>();
-    if (pObject1->Create())
+    m_pMap = std::make_shared<TMapObj>();
+    if (m_pMap->Create())
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
-        pObject1->SetTexture(pTex).
+        m_pMap->SetTexture(pTex).
             SetShader().
             SetLayout();
-        TRect rt = { 0.0f, 0.0f, 800.0f, 600.0f };
-        pObject1->m_rtScreen =rt;
-        pObject1->UpdateVertexData();
-        m_ObjList.emplace_back(pObject1);
+        TRect rt;
+        rt.SetS(0.0f, 0.0f, 800.0f, 600.0f);
+        m_pMap->m_srtScreen =rt;
+        m_pMap->UpdateVertexData();
     }
 
-    tObject pObject2 = std::make_shared<THeroObj>();
+    m_pHero = std::make_shared<THeroObj>();
     TVertex2 tStart = { 400.0f, 300.0f };
     TVertex2 tEnd = { tStart.x + 42.0f, tStart.y + 60.0f };
     TLoadResData resData;
@@ -84,9 +84,8 @@ void   Sample::Init()
     //resData.texShaderName = L"../../data/shader/Default.txt";
     resData.texPathName = L"../../data/texture/bitmap1.bmp";
     resData.texShaderName = L"../../data/shader/BlendMask.txt";
-    if (pObject2->Create(resData, tStart, tEnd))
-    {
-        m_ObjList.emplace_back(pObject2);
+    if (m_pHero->Create(resData, tStart, tEnd))
+    {        
     }
 
     auto pObject3 = std::make_shared<TEffectObj>();
@@ -143,48 +142,28 @@ void   Sample::AddEffectSingle(TVertex2 tStart, TVertex2 tEnd)
 }
 void   Sample::Frame()  
 {
-    TSoundManager::GetInstance().Frame();
-    if (m_pSoundEffect && m_pSound)
-    {
-        if (g_GameKey.dwWkey == KEY_PUSH)
-        {
-            m_pSoundEffect->PlayEffect();
-        }
-        if (g_GameKey.dwSkey == KEY_PUSH)
-        {
-            m_pSoundEffect->Stop();
-        }
-        if (g_GameKey.dwAkey == KEY_PUSH)
-        {
-            m_pSound->Paused();
-        }
-        if (g_GameKey.dwLeftClick == KEY_HOLD)
-        {
-            m_pSound->VolumeUp(g_fSPF * 0.33f);
-        }
-        if (g_GameKey.dwRightClick == KEY_HOLD)
-        {
-            m_pSound->VolumeDown(g_fSPF * 0.33f);
-        }
-        static float fTime = 0.0f;
-        fTime += g_fSPF;
-        if (fTime > 1.0f)
-        {
-            m_DxWrite.Add(m_pSound->m_csBuffer);
-            fTime = 0.0f;
-        }
-    }
+    m_pMap->Frame();
+    m_pHero->Frame();
 
     for (auto data : m_ObjList)
     {
         data->Frame();
     }    
 
-    if (g_GameKey.dwMiddleClick == KEY_PUSH)
+    if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {
         TVertex2 tStart = { m_Input.m_ptMouse.x, m_Input.m_ptMouse.y };
         TVertex2 tEnd = { tStart.x + 100.0f, tStart.y + 100.0f };
         AddEffect(tStart, tEnd);
+
+        for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
+        {
+            if (TCollision::CheckRectToPoint(
+                m_pMap->m_Cells[iCell].rt, m_Input.m_ptMouse))
+            {
+                m_pMap->m_Cells[iCell].iTexID = 2;
+            }
+        }
         /*UINT iType = rand() / 3;
         if(iType ==0 )
             AddEffectSingle(tStart, tEnd, std::shared_ptr<TE1>());
@@ -214,23 +193,20 @@ void   Sample::Frame()
 void   Sample::Render() 
 {       
     TSoundManager::GetInstance().Render();
+    m_pMap->Render();
 
-    /*for (auto data : m_ObjList)
+    TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
+    TDevice::m_pd3dContext->PSSetShaderResources(1, 1, &m_pBitmap1Mask->m_pTexSRV);
+    m_pHero->Render();
+ 
+    for (auto data : m_ObjList)
     {
         data->Render();
-    }*/
-    m_ObjList[0]->Render();
-    //TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
-
-    TDevice::m_pd3dContext->PSSetShaderResources(
-        1, 1, &m_pBitmap1Mask->m_pTexSRV);
-    m_ObjList[1]->Render();    
-
+    }
     for (auto data : m_EffectList)
     {
         data->Render();
     }
-
     D2D1_RECT_F rt = { 0.0f, 350.0f, 800.0f, 600.0f };
     m_DxWrite.DirectDraw(rt, L"Sample::Render");
 }
@@ -244,6 +220,9 @@ void   Sample::Release()
     {
         data->Release();
     }
+
+    m_pHero->Release();
+    m_pMap->Release();
 }
 
 //GameStart(800, 600);

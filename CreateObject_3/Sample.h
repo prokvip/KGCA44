@@ -9,6 +9,10 @@ class Sample : public TGameCore
 {
 	TTexture*		m_pBitmap1Mask = nullptr;
 	using tObject = std::shared_ptr<TObject>;
+	
+	std::shared_ptr<TMapObj>	m_pMap = nullptr;
+	std::shared_ptr<THeroObj>	m_pHero = nullptr;
+
 	std::vector<tObject>    m_ObjList;
 	std::list<tObject>    m_EffectList;
 	TSound* m_pSound = nullptr;

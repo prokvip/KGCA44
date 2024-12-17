@@ -1,5 +1,5 @@
 #pragma once
-#include "TStd.h"
+#include <Windows.h>
 struct TVertex2
 {
 	float x, y;

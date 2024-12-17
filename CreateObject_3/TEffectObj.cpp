@@ -14,11 +14,11 @@ void TEffectObj::SetData(TEffectData data)
 
 void TEffectObj::Frame()
 {
-	TVertex2 s = ScreenToNDC(m_rtScreen.x, m_rtScreen.y, g_WindowSize);
-	TVertex2 e = ScreenToNDC(m_rtScreen.x + m_rtScreen.w,m_rtScreen.y + m_rtScreen.h, g_WindowSize);
+	TVertex2 s = ScreenToNDC(m_srtScreen.x, m_srtScreen.y, g_WindowSize);
+	TVertex2 e = ScreenToNDC(m_srtScreen.x2,m_srtScreen.y2,g_WindowSize);
 	if (m_Data.m_iType == 0)
 	{
-		e = ScreenToNDC(m_rtScreen.x + m_rtList[m_iAnimFrame].right, m_rtScreen.y + m_rtList[m_iAnimFrame].bottom, g_WindowSize);
+		e = ScreenToNDC(m_srtScreen.x + m_rtList[m_iAnimFrame].right, m_srtScreen.y + m_rtList[m_iAnimFrame].bottom, g_WindowSize);
 	}
 	m_vVertexList[0].v = s;
 	m_vVertexList[1].v = { e.x, s.y };
@@ -58,10 +58,11 @@ void TEffectObj::Frame()
 	}
 	if (m_Data.m_iType == 0)
 	{
-		TRect rt = { m_rtList[m_iAnimFrame].left,
-			m_rtList[m_iAnimFrame].top,
-			m_rtList[m_iAnimFrame].right,
-			m_rtList[m_iAnimFrame].bottom };
+		TRect rt;
+		rt.SetS(m_rtList[m_iAnimFrame].left,
+				m_rtList[m_iAnimFrame].top,
+				m_rtList[m_iAnimFrame].right,
+				m_rtList[m_iAnimFrame].bottom);
 
 		if (m_pTexture)
 		{
@@ -100,10 +101,11 @@ void TEffectObj::SetVertexData()
 	{
 		float xSize = 400;
 		float ySize = 300;
-		TRect rt = { m_rtList[0].left,
-			m_rtList[0].top,
-			m_rtList[0].right,
-			m_rtList[0].bottom };
+		TRect rt;
+		rt.SetS(m_rtList[0].left,
+				m_rtList[0].top,
+				m_rtList[0].right,
+				m_rtList[0].bottom);
 		m_vVertexList[0].t = { rt.x / xSize,rt.y / ySize };
 		m_vVertexList[1].t = { (rt.x + rt.w) / xSize,rt.y / ySize };
 		m_vVertexList[2].t = { rt.x / xSize,(rt.y + rt.h) / ySize };
