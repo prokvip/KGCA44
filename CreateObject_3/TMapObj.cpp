@@ -1,6 +1,13 @@
 #include "TMapObj.h"
 #include "TDevice.h"
 #include <time.h>
+TMapObj::TMapObj()
+{
+}
+TMapObj::TMapObj(UINT iCellX, UINT iCellY)
+{
+	SetCellCounter(iCellX, iCellY);
+}
 void TMapObj::Frame()
 {
 	//srand(time(NULL));
@@ -31,22 +38,14 @@ void TMapObj::Frame()
 void TMapObj::UpdateVertexData()
 {
 	if (m_pTexture == nullptr) return;
-	
-	/*UINT xSize = m_pTexture->m_TexDesc.Width;
-	UINT ySize = m_pTexture->m_TexDesc.Height;
-	
-	m_vVertexList[0].t = { 0.0f,0.0f };
-	m_vVertexList[1].t = { 1.0f,0.0f };
-	m_vVertexList[2].t = { 0.0f,140.0f / ySize };
-	m_vVertexList[3].t = { 1.0f,140.0f / ySize };
-	TDevice::m_pd3dContext->UpdateSubresource(
-		m_pVertexBuffer.Get(), 0, nullptr,
-		&m_vVertexList.at(0), 0, 0);*/
+}
+void TMapObj::SetCellCounter(UINT iRow, UINT iCol)
+{
+	m_iNumRow = iRow + 1;
+	m_iNumCol = iCol + 1;
 }
 void TMapObj::SetVertexData()
 {
-	m_iNumRow = 10;
-	m_iNumCol = 10;
 	m_iNumCellRow = m_iNumRow - 1;
 	m_iNumCellCol = m_iNumCol - 1;
 	m_iNumVertex = m_iNumRow * m_iNumCol;

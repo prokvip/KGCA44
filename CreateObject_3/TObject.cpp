@@ -45,6 +45,9 @@ void	TObject::Init()
 {}
 void	TObject::Frame()
 {}
+void	TObject::Transform(TVertex2 vCamera)
+{
+}
 void	TObject::PreRender()
 {
 	TDevice::m_pd3dContext->PSSetShaderResources(
@@ -136,40 +139,7 @@ bool	TObject::Create(TLoadResData data,
 	return Create();
 }
 void    TObject::SetVertexData()
-{
-	// Á¤±ÔÈ­ÀåÄ¡(NDC)ÁÂÇ¥°è(x,y)	
-	// v0:-1,1     0,1          v1:1, 1
-	//    -1,0     0,0          1, 0
-	// v2:1,-1     0,-1         v3:1,-1
-	// È­¸éÁÂÇ¥°è  <-> º¯È¯  <-> Á÷°¢ÁÂÇ¥°è
-	// Á÷°¢ÁÂÇ¥°è  <-> º¯È¯  <-> NDCÁÂÇ¥°è
-	// NDCÁÂÇ¥°è  <-> º¯È¯  <-> Á÷°¢ÁÂÇ¥°è
-	m_vVertexList.resize(4);
-	TVertex2 s = { m_srtScreen.x, m_srtScreen.y };
-	// NDC <- Screen
-	s.x = m_srtScreen.x / g_ptClientSize.x; // 0 ~1
-	s.y = m_srtScreen.y / g_ptClientSize.y; // 0 ~1
-	s.x = s.x * 2.0f - 1.0f;
-	s.y = -(s.y * 2.0f - 1.0f);
-	TVertex2 t;
-	t.x = (m_srtScreen.x + m_srtScreen.w) / g_ptClientSize.x;
-	t.y = (m_srtScreen.y + m_srtScreen.h) / g_ptClientSize.y;
-	t.x = t.x * 2.0f - 1.0f;
-	t.y = (t.y * 2.0f - 1.0f)*-1.0f;
-	m_vVertexList[0].v = s;
-	m_vVertexList[1].v = { t.x, s.y };
-	m_vVertexList[2].v = { s.x, t.y };
-	m_vVertexList[3].v = t; 
-
-	m_vVertexList[0].c = { 1.0f,0.0f,0.0f,1.0f};		
-	m_vVertexList[1].c = { 0.0f,1.0f,0.0f,1.0f };
-	m_vVertexList[2].c = { 0.0f,0.0f,1.0f,1.0f };	
-	m_vVertexList[3].c = { 1.0f,1.0f,1.0f,1.0f };
-
-	m_vVertexList[0].t = { 0.0f,0.0f };	
-	m_vVertexList[1].t = { 1.0f,0.0f };
-	m_vVertexList[2].t = { 0.0f,1.0f };
-	m_vVertexList[3].t = { 1.0f,1.0f };
+{	
 }
 bool	TObject::CreateVertexBuffer() 
 {
@@ -203,13 +173,7 @@ bool	TObject::CreateVertexBuffer()
 	return true;
 }
 void    TObject::SetIndexData()
-{
-	m_vIndexList.resize(6);
-	m_vIndexList[0] = 0;	m_vIndexList[1] = 1;
-	m_vIndexList[2] = 2;
-	m_vIndexList[3] = 2;
-	m_vIndexList[4] = 1;
-	m_vIndexList[5] = 3;
+{	
 }
 bool	TObject::CreateIndexBuffer()
 {	

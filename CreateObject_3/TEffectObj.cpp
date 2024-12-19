@@ -96,11 +96,11 @@ void TEffectObj::Render()
 }
 void TEffectObj::SetVertexData()
 {
-	TObject::SetVertexData();
-	if (m_Data.m_iType == 0)
+	TObject2D::SetVertexData();
+	if (m_Data.m_iType == 0 && m_pTexture)
 	{
-		float xSize = 400;
-		float ySize = 300;
+		float xSize = m_pTexture->m_TexDesc.Width;
+		float ySize = m_pTexture->m_TexDesc.Height;
 		TRect rt;
 		rt.SetS(m_rtList[0].left,
 				m_rtList[0].top,

@@ -63,7 +63,7 @@ void   Sample::Init()
     m_pSoundEffect = mgr.Load(L"../../data/sound/GunShot.mp3");
     m_pSound->Play();
 
-    m_pMap = std::make_shared<TMapObj>();
+    m_pMap = std::make_shared<TMapObj>(1,1);
     if (m_pMap->Create())
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
@@ -142,8 +142,11 @@ void   Sample::AddEffectSingle(TVertex2 tStart, TVertex2 tEnd)
 }
 void   Sample::Frame()  
 {
+   
     m_pMap->Frame();
     m_pHero->Frame();
+
+    m_vCamera.x = m_pHero->m_srtScreen.x;
 
     for (auto data : m_ObjList)
     {
@@ -193,18 +196,22 @@ void   Sample::Frame()
 void   Sample::Render() 
 {       
     TSoundManager::GetInstance().Render();
+    m_pMap->Transform(m_vCamera);
     m_pMap->Render();
 
     TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
     TDevice::m_pd3dContext->PSSetShaderResources(1, 1, &m_pBitmap1Mask->m_pTexSRV);
+    m_pHero->Transform(m_vCamera);
     m_pHero->Render();
  
     for (auto data : m_ObjList)
     {
+        data->Transform(m_vCamera);
         data->Render();
     }
     for (auto data : m_EffectList)
     {
+        data->Transform(m_vCamera);
         data->Render();
     }
     D2D1_RECT_F rt = { 0.0f, 350.0f, 800.0f, 600.0f };

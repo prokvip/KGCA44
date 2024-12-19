@@ -7,6 +7,7 @@
 using RECT_ARRAY = std::vector<RECT>;
 class Sample : public TGameCore
 {
+	TVertex2        m_vCamera = { 400.0f, 300.0f };
 	TTexture*		m_pBitmap1Mask = nullptr;
 	using tObject = std::shared_ptr<TObject>;
 	
