@@ -13,6 +13,10 @@ struct TLoadResData
 class TObject
 {
 public:
+	TVector2		m_vPos;
+	TVector2		m_vDir;
+	float			m_fSpeed;
+public:
 	ComPtr<ID3D11Buffer> m_pVertexBuffer=nullptr;	
 	ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 	TShader*			m_pShader = nullptr;	

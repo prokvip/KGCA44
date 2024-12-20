@@ -2,40 +2,29 @@
 #include "TDevice.h"
 void TNpcObj::Frame()
 {
-	if (m_srtScreen.x > g_ptClientSize.x - 50.0f )
+	if (m_vPos.x > m_pMap->m_srtScreen.x2 - m_srtScreen.w)
 	{
 		m_vDir.x *= -1.0f;
-		m_srtScreen.x = g_ptClientSize.x - 50.0f;
+		m_vPos.x = m_pMap->m_srtScreen.x2 - m_srtScreen.w;
 	}
-	if (m_srtScreen.x < 0.0f)
+	if (m_vPos.x < 0.0f)
 	{
 		m_vDir.x *= -1.0f;
-		m_srtScreen.x = 0.0f;
+		m_vPos.x = 0.0f;
 	}
-	if (m_srtScreen.y > g_ptClientSize.y - 50.0f)
+	if (m_vPos.y > m_pMap->m_srtScreen.y2 - m_srtScreen.h)
 	{
 		m_vDir.y *= -1.0f;		
-		m_srtScreen.y = g_ptClientSize.y - 50.0f;
+		m_vPos.y = m_pMap->m_srtScreen.y2 - m_srtScreen.h;
 	}
-	if (m_srtScreen.y < 0.0f)
+	if (m_vPos.y < 0.0f)
 	{
 		m_vDir.y *= -1.0f;
-		m_srtScreen.y = 0.0f;
+		m_vPos.y = 0.0f;
 	}
 	// v = v + d*s : 직선의 벡터의 방정식
-	//m_vPos = m_vPos + m_vDir * (g_fSPF * m_fSpeed);
-	m_srtScreen.x = m_srtScreen.x + m_vDir.x * (g_fSPF * m_fSpeed);
-	m_srtScreen.y = m_srtScreen.y + m_vDir.y * (g_fSPF * m_fSpeed);
-
-
-	TVector2 s = { m_srtScreen.x, m_srtScreen.y };
-	TVector2 t;
-	t.x = m_srtScreen.x + m_srtScreen.w;
-	t.y = m_srtScreen.y + m_srtScreen.h;
-	m_vScreenList[0] = s;
-	m_vScreenList[1] = { t.x, s.y };
-	m_vScreenList[2] = { s.x, t.y };
-	m_vScreenList[3] = t;
+	m_vPos = m_vPos + m_vDir * (g_fSPF * m_fSpeed);
+	SetPos(m_vPos);
 }
 void TNpcObj::SetVertexData()
 {

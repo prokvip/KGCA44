@@ -82,6 +82,27 @@ void    TObject2D::SetIndexData()
 	m_vIndexList[4] = 1;
 	m_vIndexList[5] = 3;
 }
+void TObject2D::SetPos(TVector2 p)
+{
+	m_vPos = p;
+	m_srtScreen.x = p.x;
+	m_srtScreen.y = p.y;
+	UpdatePosition();
+}
+void TObject2D::UpdatePosition()
+{
+	m_srtScreen.x = m_vPos.x;
+	m_srtScreen.y = m_vPos.y;
+
+	TVector2 s = { m_srtScreen.x, m_srtScreen.y };
+	TVector2 t;
+	t.x = m_srtScreen.x + m_srtScreen.w;
+	t.y = m_srtScreen.y + m_srtScreen.h;
+	m_vScreenList[0] = s;
+	m_vScreenList[1] = { t.x, s.y };
+	m_vScreenList[2] = { s.x, t.y };
+	m_vScreenList[3] = t;
+}
 TObject2D::TObject2D()
 {	
 	m_fSpeed = 100.0f;

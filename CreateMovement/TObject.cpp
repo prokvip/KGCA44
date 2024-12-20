@@ -132,6 +132,8 @@ bool	TObject::Create(TLoadResData data,
 {
 	m_LoadResData = data;
 	m_srtScreen.SetP( s, t );
+	m_vPos.x = s.x;
+	m_vPos.y = s.y;
 	if (!LoadTexrture(m_LoadResData.texPathName))
 	{
 		return false;
@@ -242,6 +244,9 @@ bool	TObject::CreateInputLayout()
 TObject::TObject()
 {
 	m_srtScreen.SetS(0.0f, 0.0f, (float)g_ptClientSize.x, (float)g_ptClientSize.y);
+	m_vPos.x = 0.0f;
+	m_vPos.y = 0.0f;
+	m_fSpeed = 100.0f;
 }
 TObject::~TObject()
 {

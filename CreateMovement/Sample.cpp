@@ -54,6 +54,69 @@ bool Sample::GameDataLoad(W_STR filename)
     fclose(fp_src);
     return true;
 }
+bool Sample::CreateMap()
+{
+    TRect rt;
+    rt.SetS(0.0f, 0.0f, 200.0f, 200.0f);
+    m_pMap = std::make_shared<TMapObj>(rt, 1, 1);
+    if (m_pMap->Create())
+    {
+        TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
+        m_pMap->SetTexture(pTex).
+            SetShader().
+            SetLayout();
+    }
+    return true;
+}
+bool Sample::CreateHero()
+{
+    tPoint vMapCenter = m_pMap->m_srtScreen.tCenter;
+    m_pHero = std::make_shared<THeroObj>();
+    m_pHero->SetMap(m_pMap.get());
+    TVector2 tStart = { vMapCenter.x, vMapCenter.y };
+    TVector2 tEnd = { tStart.x + 42.0f, tStart.y + 60.0f };
+    TLoadResData resData;
+    //resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
+    //resData.texShaderName = L"../../data/shader/Default.txt";
+    resData.texPathName = L"../../data/texture/bitmap1.bmp";
+    resData.texShaderName = L"../../data/shader/BlendMask.txt";
+    if (m_pHero->Create(resData, tStart, tEnd))
+    {
+    }
+    return true;
+}
+bool Sample::CreateNPC()
+{
+    // npc
+    TRect rtWorldMap = m_pMap->m_srtScreen;
+    for (int iNpc = 0; iNpc < 100; iNpc++)
+    {
+        auto npcobj = std::make_shared<TNpcObj>();
+        npcobj->SetMap(m_pMap.get());
+        TVector2 tStart(100.0f + (rand() % (UINT)(rtWorldMap.w - 100.0f)),
+            100.0f + (rand() % (UINT)(rtWorldMap.h - 100.0f)));
+        TVector2 tEnd(tStart.x + 42.0f, tStart.y + 60.0f);
+        TLoadResData resData;
+        resData.texPathName = L"../../data/texture/bitmap1.bmp";
+        resData.texShaderName = L"../../data/shader/BlendMask.txt";
+        if (npcobj->Create(resData, tStart, tEnd))
+        {
+            m_NpcList.emplace_back(npcobj);
+        }
+    }
+    return true;
+}
+bool Sample::CreateEffect()
+{
+    auto pObject3 = std::make_shared<TEffectObj>();
+    //pObject3->SetMap(m_pMap.get());
+    TVector2 tStart;
+    tStart.x = 400.0f;
+    tStart.y = 100.0f;
+    TVector2 tEnd2 = { tStart.x + 42.0f, tStart.y + 60.0f };
+    AddEffect(tStart, tEnd2);
+    return true;
+}
 void   Sample::Init()
 {
     m_pBitmap1Mask = I_Tex.Load(L"../../data/texture/bitmap2.bmp");
@@ -63,52 +126,10 @@ void   Sample::Init()
     m_pSoundEffect = mgr.Load(L"../../data/sound/GunShot.mp3");
     m_pSound->Play();
 
-    m_pMap = std::make_shared<TMapObj>(1,1);
-    if (m_pMap->Create())
-    {
-        TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
-        m_pMap->SetTexture(pTex).
-            SetShader().
-            SetLayout();
-        TRect rt;
-        rt.SetS(0.0f, 0.0f, 800.0f, 600.0f);
-        m_pMap->m_srtScreen =rt;
-        m_pMap->UpdateVertexData();
-    }
-
-    m_pHero = std::make_shared<THeroObj>();
-    TVector2 tStart = { 400.0f, 300.0f };
-    TVector2 tEnd = { tStart.x + 42.0f, tStart.y + 60.0f };
-    TLoadResData resData;
-    //resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
-    //resData.texShaderName = L"../../data/shader/Default.txt";
-    resData.texPathName = L"../../data/texture/bitmap1.bmp";
-    resData.texShaderName = L"../../data/shader/BlendMask.txt";
-    if (m_pHero->Create(resData, tStart, tEnd))
-    {        
-    }
-
-    // npc
-    for (int iNpc = 0; iNpc < 10; iNpc++)
-    {
-        auto npcobj = std::make_shared<TNpcObj>();
-        TVector2 tStart(100.0f+rand()%600, 
-            100.0f + rand() % 400);
-        TVector2 tEnd(tStart.x + 42.0f, tStart.y + 60.0f );
-        TLoadResData resData;
-        resData.texPathName = L"../../data/texture/bitmap1.bmp";
-        resData.texShaderName = L"../../data/shader/BlendMask.txt";
-        if (npcobj->Create(resData, tStart, tEnd))
-        {
-            m_NpcList.emplace_back(npcobj);
-        }
-    }
-
-    auto pObject3 = std::make_shared<TEffectObj>();
-    tStart.x = 400.0f;
-    tStart.y = 100.0f;
-    TVector2 tEnd2 = { tStart.x + 42.0f, tStart.y + 60.0f };
-    AddEffect(tStart, tEnd2);
+    CreateMap();
+    CreateHero();
+    CreateNPC();
+    CreateEffect();    
 }
 void   Sample::AddEffect(TVector2 tStart, TVector2 tEnd)
 {

@@ -1,8 +1,10 @@
 #pragma once
-#include "TObject2D.h"
+#include "TMapObj.h"
 class TNpcObj : public TObject2D
 {
+	TMapObj* m_pMap = nullptr;
 public:
+	void SetMap(TMapObj* pMap) { m_pMap = pMap; }
 	virtual void Frame() override;
 	virtual void SetVertexData();
 	TNpcObj()

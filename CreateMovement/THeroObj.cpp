@@ -9,31 +9,24 @@ void THeroObj::Frame()
 				// 100 * 0.01f;
 	// 10 frame  = 1초 동안에 100이동하자.
 				// 100 * 0.1f;
-	float fSpeed = 100.0f;
 	if (g_GameKey.dwWkey == KEY_HOLD)
 	{
-		m_srtScreen.y -= fSpeed * g_fSPF;
+		m_vPos.y -= m_fSpeed * g_fSPF;
 	}
 	if (g_GameKey.dwSkey == KEY_HOLD)
 	{
-		m_srtScreen.y += fSpeed * g_fSPF;
+		m_vPos.y += m_fSpeed * g_fSPF;
 	}
 	if (g_GameKey.dwAkey == KEY_HOLD)
 	{
-		m_srtScreen.x -= fSpeed * g_fSPF;
+		m_vPos.x -= m_fSpeed * g_fSPF;
 	}
 	if (g_GameKey.dwDkey == KEY_HOLD)
 	{
-		m_srtScreen.x += fSpeed * g_fSPF;
+		m_vPos.x += m_fSpeed * g_fSPF;
 	}
-	TVector2 s = { m_srtScreen.x, m_srtScreen.y };
-	TVector2 t;
-	t.x = m_srtScreen.x + m_srtScreen.w;
-	t.y = m_srtScreen.y + m_srtScreen.h;
-	m_vScreenList[0] = s;
-	m_vScreenList[1] = { t.x, s.y };
-	m_vScreenList[2] = { s.x, t.y };
-	m_vScreenList[3] = t;
+
+	UpdatePosition();
 }
 void THeroObj::SetVertexData()
 {
