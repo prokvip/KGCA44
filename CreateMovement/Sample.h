@@ -10,7 +10,7 @@ class Sample : public TGameCore
 {
 	TVector2        m_vCamera = { 400.0f, 300.0f };
 	TTexture*		m_pBitmap1Mask = nullptr;
-	using tObject = std::shared_ptr<TObject>;
+	using tObject = std::shared_ptr<TObject2D>;
 	
 	std::shared_ptr<TMapObj>	m_pMap = nullptr;
 	std::shared_ptr<THeroObj>	m_pHero = nullptr;

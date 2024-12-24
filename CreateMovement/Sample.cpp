@@ -57,7 +57,7 @@ bool Sample::GameDataLoad(W_STR filename)
 bool Sample::CreateMap()
 {
     TRect rt;
-    rt.SetS(0.0f, 0.0f, 200.0f, 200.0f);
+    rt.SetS(0.0f, 0.0f, 800.0f, 600.0f);
     m_pMap = std::make_shared<TMapObj>(rt, 1, 1);
     if (m_pMap->Create())
     {
@@ -70,7 +70,7 @@ bool Sample::CreateMap()
 }
 bool Sample::CreateHero()
 {
-    tPoint vMapCenter = m_pMap->m_srtScreen.tCenter;
+    TVector2 vMapCenter = m_pMap->m_srtScreen.tCenter;
     m_pHero = std::make_shared<THeroObj>();
     m_pHero->SetMap(m_pMap.get());
     TVector2 tStart = { vMapCenter.x, vMapCenter.y };
@@ -89,7 +89,7 @@ bool Sample::CreateNPC()
 {
     // npc
     TRect rtWorldMap = m_pMap->m_srtScreen;
-    for (int iNpc = 0; iNpc < 100; iNpc++)
+    for (int iNpc = 0; iNpc < 200; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->SetMap(m_pMap.get());
@@ -188,8 +188,40 @@ void   Sample::Frame()
 
     for (auto data : m_NpcList)
     {
-        data->Frame();
+        if(!data->m_bDead)   data->Frame();
     }    
+    // collision
+    for (UINT iNpc1=0; iNpc1 <  m_NpcList.size(); iNpc1++)
+    {       
+        if (m_NpcList[iNpc1]->m_bDead) continue;
+        //if (TCollision::CheckRectToRect(
+        /*if (TCollision::CheckSphereToSphere(
+            m_NpcList[iNpc1]->m_Sphere,
+            m_pHero->m_Sphere))*/
+        TSphere s;
+        s.vCenter = { (float)m_Input.m_ptMouse.x,  (float)m_Input.m_ptMouse.y };
+        s.fRadius = 100.0f;
+        if (g_GameKey.dwLeftClick == KEY_PUSH)
+        {
+            if (TCollision::CheckSphereToPoint(
+                s,
+                m_NpcList[iNpc1]->m_Sphere.vCenter))
+            {
+                m_NpcList[iNpc1]->m_bDead = true;
+            }
+        }
+        /*for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
+        {
+            if (iNpc1 == iNpc2) continue;
+            if (m_NpcList[iNpc2]->m_bDead) continue;
+            if (TCollision::CheckRectToRect(
+                m_NpcList[iNpc1]->m_srtScreen, 
+                m_NpcList[iNpc2]->m_srtScreen ))
+            {
+                m_NpcList[iNpc1]->m_bDead = true;
+            }
+        }*/
+    }
 
     if (g_GameKey.dwLeftClick == KEY_HOLD)
     {
@@ -244,6 +276,7 @@ void   Sample::Render()
  
     for (auto data : m_NpcList)
     {
+        if (data->m_bDead) continue;
         data->Transform(m_vCamera);
         data->Render();
     }
