@@ -70,18 +70,17 @@ bool Sample::CreateMap()
 }
 bool Sample::CreateHero()
 {
-    //TVector2 vMapCenter = m_pMap->m_srtScreen.tCenter;
     m_pHero = std::make_shared<THeroObj>();
-    //m_pHero->SetMap(m_pMap.get());
-    TVector2 tStart = { 400.0f, 300.0f };
-    TVector2 tEnd = { tStart.x + 42.0f, tStart.y + 60.0f };
+    m_pHero->SetMap(m_pMap.get());
+    TVector2 vPos = { 400.0f, 300.0f };
+    TVector2 tEnd = { vPos.x + 42.0f, vPos.y + 60.0f };
     TLoadResData resData;
     //resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
     //resData.texShaderName = L"../../data/shader/Default.txt";
     resData.texPathName = L"../../data/texture/bitmap1.bmp";
     resData.texShaderName = L"../../data/shader/BlendMask.txt";
     m_pHero->m_pMeshRender = &TGameCore::m_MeshRender;
-    if (m_pHero->Create(resData, tStart, tEnd))
+    if (m_pHero->Create(resData, vPos, tEnd))
     {
     }
     return true;
@@ -95,14 +94,17 @@ bool Sample::CreateNPC()
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
         npcobj->SetMap(m_pMap.get());
-        TVector2 tStart(100.0f + (rand() % (UINT)(rtWorldMap.w - 100.0f)),
+        TVector2 vPos(100.0f + (rand() % (UINT)(rtWorldMap.w - 100.0f)),
             100.0f + (rand() % (UINT)(rtWorldMap.h - 100.0f)));
-        TVector2 tEnd(tStart.x + 42.0f, tStart.y + 60.0f);
+        TVector2 tEnd(vPos.x + 42.0f, vPos.y + 60.0f);
         TLoadResData resData;
         resData.texPathName = L"../../data/texture/bitmap1.bmp";
         resData.texShaderName = L"../../data/shader/BlendMask.txt";
-        if (npcobj->Create(resData, tStart, tEnd))
+        
+        if (npcobj->Create(resData, vPos, tEnd))
         {
+            npcobj->SetScale(30.0f, 30.0f );
+            npcobj->SetRotation(T_Pi);
             m_NpcList.emplace_back(npcobj);
         }
     }
@@ -110,13 +112,10 @@ bool Sample::CreateNPC()
 }
 bool Sample::CreateEffect()
 {
-    auto pObject3 = std::make_shared<TEffectObj>();
-    //pObject3->SetMap(m_pMap.get());
-    TVector2 tStart;
-    tStart.x = 400.0f;
-    tStart.y = 100.0f;
-    TVector2 tEnd2 = { tStart.x + 42.0f, tStart.y + 60.0f };
-    AddEffect(tStart, tEnd2);
+    auto pObject3 = std::make_shared<TEffectObj>();  
+    TVector2 vPos = { 400.0f, 100.0f };
+    TVector2 tEnd = { vPos.x + 300, vPos.y + 300.0f };
+    AddEffect(vPos, tEnd);
     return true;
 }
 void   Sample::Init()
@@ -133,7 +132,7 @@ void   Sample::Init()
     CreateNPC();
     CreateEffect();    
 }
-void   Sample::AddEffect(TVector2 tStart, TVector2 tEnd)
+void   Sample::AddEffect(TVector2 vPos, TVector2 tEnd)
 {
     auto pObject3 = std::make_shared<TEffectObj>();
     pObject3->m_pMeshRender = &TGameCore::m_MeshRender;
@@ -144,7 +143,7 @@ void   Sample::AddEffect(TVector2 tStart, TVector2 tEnd)
     TEffectData data;
     data.m_bLoop = true;
     data.m_fLifeTime = 1.0f;
-    data.m_fOffsetTime = 0.1f;
+    data.m_fOffsetTime = 0.01f;
     UINT iSprite = rand() % 3;
     data.m_iType = 1;// rand() % m_szSpriteList[0].size();
     if (data.m_iType == 0)
@@ -158,27 +157,7 @@ void   Sample::AddEffect(TVector2 tStart, TVector2 tEnd)
         data.m_szList = m_szSpriteList[0];
     }
     pObject3->SetData(data);
-    if (pObject3->Create(resData, tStart, tEnd))
-    {
-        m_EffectList.emplace_back(pObject3);
-    }
-}
-void   Sample::AddEffectSingle(TVector2 tStart, TVector2 tEnd)
-{
-    auto pObject3 = std::make_shared<TEffectObj>();
-    pObject3->m_pMeshRender = &TGameCore::m_MeshRender;
-
-    TLoadResData resData;
-    resData.texPathName = L"../../data/effect/5heng01_blue.dds";
-    resData.texShaderName = L"../../data/shader/DefaultBlack.txt";
-    TEffectData data;
-    data.m_bLoop = true;
-    data.m_fLifeTime = 1.0f;
-    data.m_fOffsetTime = 1.0f;
-    data.m_iType = 2;
-    data.m_iNumAnimFrame = 1;        
-    pObject3->SetData(data);
-    if (pObject3->Create(resData, tStart, tEnd))
+    if (pObject3->Create(resData, vPos, tEnd))
     {
         m_EffectList.emplace_back(pObject3);
     }
@@ -203,14 +182,13 @@ void   Sample::Frame()
         /*if (TCollision::CheckSphereToSphere(
             m_NpcList[iNpc1]->m_Sphere,
             m_pHero->m_Sphere))*/
-        TSphere s;
-        s.vCenter = { (float)m_Input.m_ptMouse.x,  (float)m_Input.m_ptMouse.y };
-        s.fRadius = 100.0f;
+        
+        TVector2 p = { (float)m_Input.m_ptMouse.x,  (float)m_Input.m_ptMouse.y };
+      
         if (g_GameKey.dwLeftClick == KEY_PUSH)
         {
             if (TCollision::CheckSphereToPoint(
-                s,
-                m_NpcList[iNpc1]->m_Sphere.vCenter))
+                m_NpcList[iNpc1]->m_Sphere, p))
             {
                 m_NpcList[iNpc1]->m_bDead = true;
             }
@@ -230,29 +208,23 @@ void   Sample::Frame()
 
     if (g_GameKey.dwLeftClick == KEY_HOLD)
     {
-        TVector2 tStart = { m_Input.m_ptMouse.x-50.0f, m_Input.m_ptMouse.y-50.0f };
-        TVector2 tEnd = { tStart.x + 100.0f, tStart.y + 100.0f };
-        AddEffect(tStart, tEnd);
+        TVector2 vPos = { (float)m_Input.m_ptMouse.x, 
+                            (float)m_Input.m_ptMouse.y };
+        TVector2 tEnd = { vPos.x + 200.0f,
+                          vPos.y + 200.0f };
+        AddEffect(vPos, tEnd);
 
         for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
         {
             if (TCollision::CheckRectToPoint(
                 m_pMap->m_Cells[iCell].rt, m_Input.m_ptMouse))
             {
-                m_pMap->m_Cells[iCell].iTexID = 2;
+                m_pMap->m_Cells[iCell].iTexID = rand() %4;
             }
         }
-        /*UINT iType = rand() / 3;
-        if(iType ==0 )
-            AddEffectSingle(tStart, tEnd, std::shared_ptr<TE1>());
-        if (iType == 1)
-            AddEffectSingle(tStart, tEnd, std::shared_ptr<TE2>());
-        if (iType == 2)
-            AddEffectSingle(tStart, tEnd, std::shared_ptr<TE3>());*/
     }
 
-    for (auto iter = std::begin(m_EffectList);
-           iter != m_EffectList.end();)
+    for (auto iter = std::begin(m_EffectList);  iter != m_EffectList.end();)
     {
         TEffectObj* pObj = (TEffectObj*)iter->get();
         if (pObj->m_bDead == false)

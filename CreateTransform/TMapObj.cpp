@@ -53,19 +53,19 @@ void TMapObj::Frame()
 	//	m_vVertexList[i].v.x += g_fSPF * cosf(g_fGT);
 	//}*/
 
-	//static float tStart = 0.0f;
+	//static float vPos = 0.0f;
 	//static float tEnd = 1000.0f;
-	//tStart += g_fSPF * 0.0f;
+	//vPos += g_fSPF * 0.0f;
 	//tEnd   += g_fSPF * 0.0f;
 	//UINT xSize = m_pTexture->m_TexDesc.Width;
 	//UINT ySize = m_pTexture->m_TexDesc.Height;
-	//m_vVertexList[0].t = { 0.0f,tStart / ySize };
-	//m_vVertexList[1].t = { 1.0f,tStart / ySize };
+	//m_vVertexList[0].t = { 0.0f,vPos / ySize };
+	//m_vVertexList[1].t = { 1.0f,vPos / ySize };
 	//m_vVertexList[2].t = { 0.0f,tEnd / ySize };
 	//m_vVertexList[3].t = { 1.0f,tEnd / ySize };
-	///*m_vVertexList[0].t = { tStart / xSize, 0.0f };
+	///*m_vVertexList[0].t = { vPos / xSize, 0.0f };
 	//m_vVertexList[1].t = { tEnd / xSize, 0.0f };
-	//m_vVertexList[2].t = { tStart / xSize, 1.0f };
+	//m_vVertexList[2].t = { vPos / xSize, 1.0f };
 	//m_vVertexList[3].t = { tEnd / xSize, 1.0f }; */
 	//TDevice::m_pd3dContext->UpdateSubresource(
 	//	m_pVertexBuffer.Get(), 0, nullptr,
@@ -152,10 +152,10 @@ void TMapObj::SetIndexData()
 		}
 	}
 
-	m_pTexs[0] = I_Tex.Load(L"../../data/texture/kgca08.bmp");
+	m_pTexs[0] = I_Tex.Load(L"../../data/texture/gg.bmp");
 	m_pTexs[1] = I_Tex.Load(L"../../data/texture/kgcalogo.bmp");
 	m_pTexs[2] = I_Tex.Load(L"../../data/texture/kgca08.bmp");
-	m_pTexs[3] = I_Tex.Load(L"../../data/texture/kgcalogo.jpg");
+	m_pTexs[3] = I_Tex.Load(L"../../data/texture/black.bmp");
 }
 bool	TMapObj::CreateVertexBuffer()
 {

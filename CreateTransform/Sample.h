@@ -21,9 +21,8 @@ class Sample : public TGameCore
 	std::vector<RECT_ARRAY>  m_rtSpriteList;
 	std::vector<T_STR_VECTOR> m_szSpriteList;
 public:
-	void   AddEffect(TVector2 tStart, TVector2 tEnd);
-	void   AddEffectSingle(TVector2 tStart, TVector2 tEnd);
-	bool GameDataLoad(W_STR filename);
+	void   AddEffect(TVector2 vPos, TVector2 tEnd);	
+	bool   GameDataLoad(W_STR filename);
 	virtual void   Init() override;
 	virtual void   Frame() override;
 	virtual void   Render() override;

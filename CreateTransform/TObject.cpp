@@ -1,11 +1,66 @@
 #include "TObject.h"
 #include "TDevice.h"
+void TObject::SetScale(float sx, float sy)
+{
+	m_vScale.x = sx;
+	m_vScale.y = sy;
+	m_matScale.Scale(m_vScale);
+}
+void TObject::SetRotation(float fRadian)
+{
+	m_fAngleRadian = fRadian;
+	m_matRotate.Rotate(m_fAngleRadian);
+}
+void TObject::SetPosition(TVector2 p)
+{
+	m_vPos = p;
+	m_matTrans.Trans(m_vPos);
+
+	m_srtScreen.SetS({ m_vPos.x- m_rtInit.w*0.5f, m_vPos.y - m_rtInit.h * 0.5f },
+					 { m_rtInit.w, m_rtInit.h });
+	m_Sphere.vCenter = m_srtScreen.tCenter;
+	m_Sphere.fRadius = m_srtScreen.fRadius;
+}
+void TObject::AddPosition(float x, float y)
+{
+	m_vPos.x += x;
+	m_vPos.y += y;
+	m_matTrans.Trans(m_vPos);
+}
+void TObject::AddPosition(TVector2 v)
+{
+	AddPosition(v.x, v.y);
+}
+void TObject::AddScale(float x, float y)
+{
+	m_vScale.x += x;
+	m_vScale.y += y;	
+	m_matScale.Scale(m_vScale);
+}
+void TObject::AddScale(TVector2 v)
+{
+	m_vScale.x += v.x;
+	m_vScale.y += v.y;
+	m_matScale.Scale(m_vScale);
+}
+void TObject::AddRotation(float angle)
+{
+	m_fAngleRadian += angle;
+	m_matRotate.Rotate(m_fAngleRadian);
+}
 void	TObject::Init()
 {}
 void	TObject::Frame()
 {}
 void	TObject::Transform(TVector2 vCamera)
 {
+	m_matWorld = m_matScale * m_matRotate * m_matTrans;
+	for (int i = 0; i < 4; i++)
+	{
+		m_vScreenList[i] =
+			m_pMeshRender->m_vScreenList[i] *
+			m_matWorld;
+	}
 }
 void	TObject::PreRender()
 {
@@ -107,21 +162,17 @@ bool	TObject::Create(TLoadResData data,
 						TVector2 t)
 {
 	m_LoadResData = data;
-	m_srtScreen.SetP( s, t );
+	float w = (t.x - s.x);
+	float h = (t.y - s.y);
+	m_rtInit.SetS({ s.x - w * 0.5f, s.y - h * 0.5f }, { w, h });
+	SetScale(m_rtInit.w / 2.0f,
+		     m_rtInit.h / 2.0f);
+	SetRotation(m_fAngleRadian);
+	SetPosition(s);
 	
-	//m_vScale = { (m_srtScreen.w / 2.0f),(m_srtScreen.w / 2.0f) };
-	//m_fRoation = 0.0f;
-
-	m_Sphere.vCenter = m_srtScreen.tCenter;	
-	m_Sphere.fRadius = m_srtScreen.fRadius;
 	m_vVertexList.resize(4);
 	m_vScreenList.resize(4);
-	m_vScreenList[0] = { m_srtScreen.x, m_srtScreen.y };
-	m_vScreenList[1] = { m_srtScreen.x2, m_srtScreen.y };
-	m_vScreenList[2] = { m_srtScreen.x, m_srtScreen.y2 };
-	m_vScreenList[3] = { m_srtScreen.x2, m_srtScreen.y2 };
-	m_vPos.x = s.x;
-	m_vPos.y = s.y;
+	
 	if (!LoadTexture(m_LoadResData.texPathName))
 	{
 		return false;

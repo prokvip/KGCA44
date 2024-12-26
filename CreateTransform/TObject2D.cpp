@@ -2,6 +2,7 @@
 #include "TDevice.h"
 void	TObject2D::Transform(TVector2 vCamera)
 {
+	TObject::Transform(vCamera);
 	TransformCamera(vCamera);
 	TransformNDC();
 	TDevice::m_pd3dContext->UpdateSubresource(
@@ -77,22 +78,7 @@ void    TObject2D::SetIndexData()
 {
 	
 }
-void TObject2D::SetPos(TVector2 p)
-{
-	m_vPos = p;	
-	UpdatePosition();
-}
-void TObject2D::UpdatePosition()
-{	
-	m_srtScreen.SetS(m_vPos,{ m_srtScreen.w, m_srtScreen.h });
-	m_Sphere.vCenter = m_srtScreen.tCenter;
-	m_Sphere.fRadius = m_srtScreen.fRadius;
 
-	m_vScreenList[0] = { m_srtScreen.x, m_srtScreen.y };
-	m_vScreenList[1] = { m_srtScreen.x2, m_srtScreen.y };
-	m_vScreenList[2] = { m_srtScreen.x, m_srtScreen.y2 };
-	m_vScreenList[3] = { m_srtScreen.x2, m_srtScreen.y2 };
-}
 TObject2D::TObject2D()
 {	
 	m_fSpeed = 100.0f;

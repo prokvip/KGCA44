@@ -2,29 +2,30 @@
 #include "TDevice.h"
 void TNpcObj::Frame()
 {
+	TVector2 vAdd = m_vPos;
 	if (m_vPos.x > m_pMap->m_srtScreen.x2 - m_srtScreen.w)
 	{
 		m_vDir.x *= -1.0f;
-		m_vPos.x = m_pMap->m_srtScreen.x2 - m_srtScreen.w;
+		vAdd.x = m_pMap->m_srtScreen.x2 - m_srtScreen.w;
 	}
 	if (m_vPos.x < 0.0f)
 	{
 		m_vDir.x *= -1.0f;
-		m_vPos.x = 0.0f;
+		vAdd.x = 0.0f;
 	}
 	if (m_vPos.y > m_pMap->m_srtScreen.y2 - m_srtScreen.h)
 	{
 		m_vDir.y *= -1.0f;		
-		m_vPos.y = m_pMap->m_srtScreen.y2 - m_srtScreen.h;
+		vAdd.y = m_pMap->m_srtScreen.y2 - m_srtScreen.h;
 	}
 	if (m_vPos.y < 0.0f)
 	{
 		m_vDir.y *= -1.0f;
-		m_vPos.y = 0.0f;
+		vAdd.y = 0.0f;
 	}
 	// v = v + d*s : 직선의 벡터의 방정식
-	m_vPos = m_vPos + m_vDir * (g_fSPF * m_fSpeed);
-	SetPos(m_vPos);
+	m_vPos = vAdd + m_vDir * (g_fSPF * m_fSpeed);
+	SetPosition(m_vPos);
 }
 void TNpcObj::SetVertexData()
 {

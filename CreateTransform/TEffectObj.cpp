@@ -11,19 +11,21 @@ void TEffectObj::SetData(TEffectData data)
 	m_bLoop			= m_Data.m_bLoop;
 	m_bDead			= false;
 }
-
 void TEffectObj::Frame()
 {
-	TVector2 s = ScreenToNDC(m_srtScreen.x, m_srtScreen.y, g_ptClientSize);
-	TVector2 e = ScreenToNDC(m_srtScreen.x2,m_srtScreen.y2,g_ptClientSize);
+	/*TVector2 s = ScreenToNDC(m_srtScreen.x, m_srtScreen.y, 
+		g_ptClientSize);
+	TVector2 e = ScreenToNDC(m_srtScreen.x2,m_srtScreen.y2,
+		g_ptClientSize);
 	if (m_Data.m_iType == 0)
 	{
-		e = ScreenToNDC(m_srtScreen.x + m_rtList[m_iAnimFrame].right, m_srtScreen.y + m_rtList[m_iAnimFrame].bottom, g_ptClientSize);
+		e = ScreenToNDC(m_srtScreen.x + m_rtList[m_iAnimFrame].right, 
+			            m_srtScreen.y + m_rtList[m_iAnimFrame].bottom, g_ptClientSize);
 	}
 	m_vVertexList[0].v = s;
 	m_vVertexList[1].v = { e.x, s.y };
 	m_vVertexList[2].v = { s.x, e.y };
-	m_vVertexList[3].v = e;	
+	m_vVertexList[3].v = e;	*/
 
 	m_fCurrentTime += g_fSPF;
 	m_fLifeTime -= g_fSPF;
@@ -77,17 +79,14 @@ void TEffectObj::Frame()
 	if (m_Data.m_iType == 1)
 	{
 		m_pCurrentTexture = I_Tex.GetPtr(m_Data.m_szList[m_iAnimFrame]);
-	}
-	/*TDevice::m_pd3dContext->UpdateSubresource(
-		m_pMeshRender->m_pVertexBuffer.Get(), 0, nullptr,
-		&m_vVertexList.at(0), 0, 0);*/
+	}	
 }
 void TEffectObj::Render()
 {
 	TDevice::m_pd3dContext->UpdateSubresource(
 		m_pMeshRender->m_pVertexBuffer.Get(), 0, nullptr,
 		&m_vVertexList.at(0), 0, 0);
-
+	// 텍스처 교체 스프라이트
 	if (m_Data.m_iType == 1)
 	{
 		PreRender();
