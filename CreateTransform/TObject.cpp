@@ -108,6 +108,10 @@ bool	TObject::Create(TLoadResData data,
 {
 	m_LoadResData = data;
 	m_srtScreen.SetP( s, t );
+	
+	//m_vScale = { (m_srtScreen.w / 2.0f),(m_srtScreen.w / 2.0f) };
+	//m_fRoation = 0.0f;
+
 	m_Sphere.vCenter = m_srtScreen.tCenter;	
 	m_Sphere.fRadius = m_srtScreen.fRadius;
 	m_vVertexList.resize(4);

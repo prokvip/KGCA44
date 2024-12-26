@@ -188,8 +188,8 @@ void   Sample::Frame()
     m_pMap->Frame();
     m_pHero->Frame();
 
-    m_vCamera.x = m_pHero->m_srtScreen.x;
-    m_vCamera.y = m_pHero->m_srtScreen.y;
+    m_vCamera.x = m_pHero->m_vPos.x;
+    m_vCamera.y = m_pHero->m_vPos.y;
 
     for (auto data : m_NpcList)
     {

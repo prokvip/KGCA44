@@ -159,6 +159,7 @@
     <ClInclude Include="TInput.h" />
     <ClInclude Include="TInputLayout.h" />
     <ClInclude Include="TMapObj.h" />
+    <ClInclude Include="TMatrix.h" />
     <ClInclude Include="TMeshRender.h" />
     <ClInclude Include="TNpcObj.h" />
     <ClInclude Include="TObject.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="TInput.cpp" />
     <ClCompile Include="TInputLayout.cpp" />
     <ClCompile Include="TMapObj.cpp" />
+    <ClCompile Include="TMatrix.cpp" />
     <ClCompile Include="TMeshRender.cpp" />
     <ClCompile Include="TNpcObj.cpp" />
     <ClCompile Include="TObject.cpp" />
