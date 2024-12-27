@@ -70,10 +70,10 @@ void TEffectObj::Frame()
 		{
 			float xSize = m_pTexture->m_TexDesc.Width;
 			float ySize = m_pTexture->m_TexDesc.Height;
-			m_vVertexList[0].t = { rt.x / xSize,rt.y / ySize };
-			m_vVertexList[1].t = { (rt.x + rt.w) / xSize,rt.y / ySize };
-			m_vVertexList[2].t = { rt.x / xSize,(rt.y + rt.h) / ySize };
-			m_vVertexList[3].t = { (rt.x + rt.w) / xSize,(rt.y + rt.h) / ySize };
+			m_vVertexList[0].t = { rt.v1.x / xSize,rt.v1.y / ySize };
+			m_vVertexList[1].t = { rt.v2.x / xSize,rt.v1.y / ySize };
+			m_vVertexList[2].t = { rt.v1.x / xSize,rt.v2.y / ySize };
+			m_vVertexList[3].t = { rt.v2.x / xSize,rt.v2.y / ySize };
 		}
 	}
 	if (m_Data.m_iType == 1)
@@ -116,9 +116,9 @@ void TEffectObj::SetVertexData()
 				m_rtList[0].top,
 				m_rtList[0].right,
 				m_rtList[0].bottom);
-		m_vVertexList[0].t = { rt.x / xSize,rt.y / ySize };
-		m_vVertexList[1].t = { (rt.x + rt.w) / xSize,rt.y / ySize };
-		m_vVertexList[2].t = { rt.x / xSize,(rt.y + rt.h) / ySize };
-		m_vVertexList[3].t = { (rt.x + rt.w) / xSize,(rt.y + rt.h) / ySize };
+		m_vVertexList[0].t = { rt.v1.x / xSize,rt.v1.y / ySize };
+		m_vVertexList[1].t = { rt.v2.x / xSize,rt.v1.y / ySize };
+		m_vVertexList[2].t = { rt.v1.x / xSize,rt.v2.y / ySize };
+		m_vVertexList[3].t = { rt.v2.x / xSize,rt.v2.y / ySize };
 	}
 }

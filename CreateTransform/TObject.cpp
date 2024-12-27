@@ -16,16 +16,16 @@ void TObject::SetPosition(TVector2 p)
 	m_vPos = p;
 	m_matTrans.Trans(m_vPos);
 	m_rtScreen.Move(m_vPos.x, m_vPos.y);
-	m_Sphere.vCenter = m_rtScreen.tCenter;
-	m_Sphere.fRadius = m_rtScreen.fRadius;
+	m_Sphere.vCenter = m_rtScreen.vc;
+	m_Sphere.fRadius = m_rtScreen.fR;
 }
 void TObject::AddPosition(float x, float y)
 {
 	m_vPos.x += x;
 	m_vPos.y += y;
 	m_rtScreen.Move(m_vPos.x, m_vPos.y);
-	m_Sphere.vCenter = m_rtScreen.tCenter;
-	m_Sphere.fRadius = m_rtScreen.fRadius;
+	m_Sphere.vCenter = m_rtScreen.vc;
+	m_Sphere.fRadius = m_rtScreen.fR;
 	m_matTrans.Trans(m_vPos);
 }
 void TObject::AddPosition(TVector2 v)
@@ -167,8 +167,8 @@ bool	TObject::Create(TLoadResData data,
 	float h = (t.y - s.y);
 	m_rtInit.SetS({ s.x - w * 0.5f, s.y - h * 0.5f }, { w, h });
 	m_rtScreen = m_rtInit;
-	SetScale(m_rtInit.w / 2.0f,
-		     m_rtInit.h / 2.0f);
+	SetScale(m_rtInit.vs.x / 2.0f,
+		     m_rtInit.vs.y / 2.0f);
 	SetRotation(m_fAngleRadian);
 	SetPosition(s);
 	

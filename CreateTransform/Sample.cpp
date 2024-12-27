@@ -3,8 +3,8 @@ TVector2 Sample::GetWorldMousePos()
 {
     TVector2 vPos = { (float)m_Input.m_ptMouse.x,
                           (float)m_Input.m_ptMouse.y };
-    vPos.x -= g_ptClientSize.x * 0.5f - m_vCamera.x;
-    vPos.y -= g_ptClientSize.y * 0.5f - m_vCamera.y;
+    vPos.x += m_vCamera.x - g_ptClientSize.x * 0.5f;
+    vPos.y += m_vCamera.y - g_ptClientSize.y * 0.5f;
     return vPos;
 }
 bool Sample::GameDataLoad(W_STR filename)
@@ -102,8 +102,8 @@ bool Sample::CreateNPC()
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
         npcobj->SetMap(m_pMap.get());
-        TVector2 vPos(100.0f + (rand() % (UINT)(rtWorldMap.w - 100.0f)),
-            100.0f + (rand() % (UINT)(rtWorldMap.h - 100.0f)));
+        TVector2 vPos(100.0f + (rand() % (UINT)(rtWorldMap.vs.x - 100.0f)),
+            100.0f + (rand() % (UINT)(rtWorldMap.vs.y - 100.0f)));
         TVector2 tEnd(vPos.x + 72.0f, vPos.y + 79.0f);
         TLoadResData resData;
         resData.texPathName = L"../../data/texture/bitmap1.bmp";
@@ -176,56 +176,62 @@ void   Sample::Frame()
     m_pHero->Frame();
 
     m_vCamera.x = m_pHero->m_vPos.x;
-    m_vCamera.y = m_pHero->m_vPos.y - 200.0f;
+    m_vCamera.y = m_pHero->m_vPos.y;
 
     for (auto data : m_NpcList)
     {
         if (!data->m_bDead)   data->Frame();
     }
     // collision
-    TVector2 p = GetWorldMousePos();
-    //if (g_GameKey.dwLeftClick == KEY_PUSH)
+    TVector2 vMouse = GetWorldMousePos();
+    TSphere s;
+    s.vCenter = vMouse;
+    s.fRadius = 100.0f;
+    for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
     {
-        TSphere s;
-        s.vCenter = p;
-        s.fRadius = 100.0f;
-        for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
+        if (m_NpcList[iNpc1]->m_bDead) continue;
+        if (g_GameKey.dwLeftClick == KEY_PUSH)
         {
-            if (m_NpcList[iNpc1]->m_bDead) continue;
-            //if (TCollision::CheckRectToRect(
-            if (TCollision::CheckSphereToSphere(
-                m_NpcList[iNpc1]->m_Sphere,
-                m_pHero->m_Sphere))
-            //if (TCollision::CheckSphereToPoint(
-                //m_NpcList[iNpc1]->m_Sphere, p))
+            if (TCollision::CheckSphereToPoint(
+                m_NpcList[iNpc1]->m_Sphere, vMouse))
             {
                 m_NpcList[iNpc1]->m_bDead = true;
             }
         }
-        /*for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
+
+        if (TCollision::CheckSphereToSphere(
+            m_NpcList[iNpc1]->m_Sphere,
+            m_pHero->m_Sphere))
+        {
+            m_NpcList[iNpc1]->m_bDead = true;
+        }
+
+        for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
         {
             if (iNpc1 == iNpc2) continue;
             if (m_NpcList[iNpc2]->m_bDead) continue;
             if (TCollision::CheckRectToRect(
                 m_NpcList[iNpc1]->m_rtScreen,
-                m_NpcList[iNpc2]->m_rtScreen ))
+                m_NpcList[iNpc2]->m_rtScreen))
             {
                 m_NpcList[iNpc1]->m_bDead = true;
             }
-        }*/
+        }
     }
-
+    
     if (g_GameKey.dwLeftClick == KEY_HOLD)
-    {
-        TVector2 vPos = GetWorldMousePos();
-        TVector2 tEnd = { vPos.x + 200.0f,
-                          vPos.y + 200.0f };
-        AddEffect(vPos, tEnd);
+    {        
+        TVector2 tEnd = { vMouse.x + 200.0f,
+                          vMouse.y + 200.0f };
+        AddEffect(vMouse, tEnd);
 
+    }
+    if (g_GameKey.dwRightClick == KEY_PUSH)
+    {       
         for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
         {
             if (TCollision::CheckRectToPoint(
-                m_pMap->m_Cells[iCell].rt, vPos))
+                m_pMap->m_Cells[iCell].rt, vMouse))
             {
                 m_pMap->m_Cells[iCell].iTexID++;
                 if (m_pMap->m_Cells[iCell].iTexID > 3)

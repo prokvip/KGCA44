@@ -15,9 +15,9 @@ void SRect::operator=(PRect& rt)
 }
 bool TCollision::CheckRectToPoint(TRect& rt, TVector2 pt)
 {
-	if (rt.x <= pt.x && pt.x <= rt.x2)
+	if (rt.v1.x <= pt.x && pt.x <= rt.v2.x)
 	{
-		if (rt.y <= pt.y && pt.y <= rt.y2)
+		if (rt.v1.y <= pt.y && pt.y <= rt.v2.y)
 		{
 			return true;
 		}
@@ -26,9 +26,9 @@ bool TCollision::CheckRectToPoint(TRect& rt, TVector2 pt)
 }
 bool TCollision::CheckRectToPoint(TRect& rt, POINT pt)
 {
-	if (rt.x <= pt.x && pt.x <= rt.x2)
+	if (rt.v1.x <= (float)pt.x && (float)pt.x <= rt.v2.x)
 	{
-		if (rt.y <= pt.y && pt.y <= rt.y2)
+		if (rt.v1.y <= (float)pt.y && (float)pt.y <= rt.v2.y)
 		{
 			return true;
 		}
@@ -48,15 +48,15 @@ bool TCollision::CheckRectToRect(TRect& rt1, TRect rt2)
 {
 	// size
 	TVector2 vMin, vMax;
-	vMin.x = min(rt1.x, rt2.x);
-	vMin.y = min(rt1.y, rt2.y);
-	vMax.x = max(rt1.x2, rt2.x2);
-	vMax.y = max(rt1.y2, rt2.y2);
+	vMin.x = min(rt1.v1.x, rt2.v1.x);
+	vMin.y = min(rt1.v1.y, rt2.v1.y);
+	vMax.x = max(rt1.v2.x, rt2.v2.x);
+	vMax.y = max(rt1.v2.y, rt2.v2.y);
 	TVector2 vSize, vObjectSize;
 	vSize.x = vMax.x - vMin.x;
 	vSize.y = vMax.y - vMin.y;
-	vObjectSize.x = rt1.w + rt2.w;
-	vObjectSize.y = rt1.h + rt2.h;
+	vObjectSize.x = rt1.vs.x + rt2.vs.x;
+	vObjectSize.y = rt1.vs.y + rt2.vs.y;
 	if (vSize.x <= vObjectSize.x &&
 		vSize.y <= vObjectSize.y)
 	{

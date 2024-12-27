@@ -17,29 +17,23 @@ struct PRect
 };
 struct TRect
 {
-	/*TVector2 vStart;
-	TVector2 vEnd;
-	TVector2 vSize;
-	TVector2 vHalf;
-	TVector2 vCenter;
-	float   fRadius;*/
+	TVector2 v1;
+	TVector2 v2;
+	TVector2 vs;
+	TVector2 vh;
+	TVector2 vc;
+	float    fR;
 
-	float   x, y;
-	float   x2, y2;
-	float   w, h;
-	float   fRadius;
-	TVector2  tCenter;
 	void    Move(float x, float y)
 	{
-		tCenter.x = x;
-		tCenter.y = y;
-		this->x = tCenter.x - (w / 2.0f);
-		this->y = tCenter.y - (h / 2.0f);
-		this->x2 = tCenter.x + (w / 2.0f);
-		this->y2 = tCenter.y + (h / 2.0f);		
-		TVector2 vMin = { this->x,this->y };
-		TVector2 vMax = { x2, y2 };
-		fRadius = (vMax - vMin).Length() * 0.5f;
+		vc.x = x;
+		vc.y = y;
+		v1 = vc - vh;		
+		v2 = vc + vh;		
+	}
+	void    Move(TVector2 p)
+	{
+		Move(p.x, p.y);
 	}
 	void    SetP(float x1, float y1, float x2, float y2)
 	{
@@ -49,25 +43,27 @@ struct TRect
 	{
 		SetS({ x1,y1 }, { w,h });
 	}
-	void    SetP(TVector2 v1, TVector2 v2)
+	void    SetP(TVector2 s, TVector2 e)
 	{
-		x = v1.x; y = v1.y;
-		this->x2 = v2.x; this->y2 = v2.y;
-		w = x2 - x;
-		h = y2 - y;
-		Move((x2 + x) / 2.0f, (y2 + y) / 2.0f);		
+		v1 = s;
+		v2 = e;
+		vs = v2 - v1;
+		vh = vs/2.0f;
+		fR = (v2 - v1).Length() * 0.5f;
+		Move( (v2+v1) / 2.0f);		
 	}
-	void    SetS(TVector2 v1, TVector2 v2)
+	void    SetS(TVector2 p, TVector2 s)
 	{
-		x = v1.x; y = v1.y;
-		this->w = v2.x; this->h = v2.y;
-		x2 = x + w;
-		y2 = y + h;
-		Move((x2 + x) / 2.0f, (y2 + y) / 2.0f);		
+		v1 = p;
+		vs = s;
+		v2 = v1 + vs;
+		vh = vs / 2.0f;
+		fR = (v2 - v1).Length() * 0.5f;
+		Move((v2+v1) / 2.0f);
 	}
 	TRect() 
 	{
-		x = y = x2 = y2 = w = h = 0.0f;
+		fR = 0.0f;
 	}
 };
 

@@ -14,8 +14,7 @@ TMapObj::TMapObj(UINT iCellX, UINT iCellY)
 TMapObj::TMapObj(TRect rt, UINT iCellX, UINT iCellY)
 {
 	m_rtScreen = rt;
-	m_vCellDistance.x = (rt.x2 - rt.x) / iCellX;
-	m_vCellDistance.y = (rt.y2 - rt.y) / iCellY;
+	m_vCellDistance = (rt.v2 - rt.v1) / iCellX;
 	SetCellCounter(iCellX, iCellY);
 }
 bool	TMapObj::Create()
