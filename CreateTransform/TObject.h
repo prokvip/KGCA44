@@ -17,7 +17,7 @@ public:
 	TVector2		m_vDir;
 	float			m_fSpeed;
 	bool			m_bDead = false;
-	TRect			m_srtScreen;
+	TRect			m_rtScreen;
 	TRect			m_rtInit;
 	TSphere			m_Sphere;
 	TLoadResData	m_LoadResData;

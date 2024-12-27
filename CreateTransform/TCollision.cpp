@@ -13,6 +13,17 @@ void SRect::operator=(PRect& rt)
 	this->w = rt.x2 - rt.x1;
 	this->h = rt.y2 - rt.y1;
 }
+bool TCollision::CheckRectToPoint(TRect& rt, TVector2 pt)
+{
+	if (rt.x <= pt.x && pt.x <= rt.x2)
+	{
+		if (rt.y <= pt.y && pt.y <= rt.y2)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 bool TCollision::CheckRectToPoint(TRect& rt, POINT pt)
 {
 	if (rt.x <= pt.x && pt.x <= rt.x2)

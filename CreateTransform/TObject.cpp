@@ -15,16 +15,17 @@ void TObject::SetPosition(TVector2 p)
 {
 	m_vPos = p;
 	m_matTrans.Trans(m_vPos);
-
-	m_srtScreen.SetS({ m_vPos.x- m_rtInit.w*0.5f, m_vPos.y - m_rtInit.h * 0.5f },
-					 { m_rtInit.w, m_rtInit.h });
-	m_Sphere.vCenter = m_srtScreen.tCenter;
-	m_Sphere.fRadius = m_srtScreen.fRadius;
+	m_rtScreen.Move(m_vPos.x, m_vPos.y);
+	m_Sphere.vCenter = m_rtScreen.tCenter;
+	m_Sphere.fRadius = m_rtScreen.fRadius;
 }
 void TObject::AddPosition(float x, float y)
 {
 	m_vPos.x += x;
 	m_vPos.y += y;
+	m_rtScreen.Move(m_vPos.x, m_vPos.y);
+	m_Sphere.vCenter = m_rtScreen.tCenter;
+	m_Sphere.fRadius = m_rtScreen.fRadius;
 	m_matTrans.Trans(m_vPos);
 }
 void TObject::AddPosition(TVector2 v)
@@ -165,6 +166,7 @@ bool	TObject::Create(TLoadResData data,
 	float w = (t.x - s.x);
 	float h = (t.y - s.y);
 	m_rtInit.SetS({ s.x - w * 0.5f, s.y - h * 0.5f }, { w, h });
+	m_rtScreen = m_rtInit;
 	SetScale(m_rtInit.w / 2.0f,
 		     m_rtInit.h / 2.0f);
 	SetRotation(m_fAngleRadian);
@@ -222,7 +224,7 @@ bool   TObject::LoadTexture(std::wstring texName)
 
 TObject::TObject()
 {
-	m_srtScreen.SetS(0.0f, 0.0f, (float)g_ptClientSize.x, (float)g_ptClientSize.y);
+	m_rtScreen.SetS(0.0f, 0.0f, (float)g_ptClientSize.x, (float)g_ptClientSize.y);
 	m_vPos.x = 0.0f;
 	m_vPos.y = 0.0f;
 	m_fSpeed = 100.0f;

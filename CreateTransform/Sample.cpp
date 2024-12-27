@@ -1,4 +1,12 @@
 #include "Sample.h"
+TVector2 Sample::GetWorldMousePos()
+{
+    TVector2 vPos = { (float)m_Input.m_ptMouse.x,
+                          (float)m_Input.m_ptMouse.y };
+    vPos.x -= g_ptClientSize.x * 0.5f - m_vCamera.x;
+    vPos.y -= g_ptClientSize.y * 0.5f - m_vCamera.y;
+    return vPos;
+}
 bool Sample::GameDataLoad(W_STR filename)
 {
     TCHAR pBuffer[256] = { 0 };
@@ -88,22 +96,22 @@ bool Sample::CreateHero()
 bool Sample::CreateNPC()
 {
     // npc
-    TRect rtWorldMap = m_pMap->m_srtScreen;
-    for (int iNpc = 0; iNpc < 200; iNpc++)
+    TRect rtWorldMap = m_pMap->m_rtScreen;
+    for (int iNpc = 0; iNpc < 100; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
         npcobj->SetMap(m_pMap.get());
         TVector2 vPos(100.0f + (rand() % (UINT)(rtWorldMap.w - 100.0f)),
             100.0f + (rand() % (UINT)(rtWorldMap.h - 100.0f)));
-        TVector2 tEnd(vPos.x + 42.0f, vPos.y + 60.0f);
+        TVector2 tEnd(vPos.x + 72.0f, vPos.y + 79.0f);
         TLoadResData resData;
         resData.texPathName = L"../../data/texture/bitmap1.bmp";
         resData.texShaderName = L"../../data/shader/BlendMask.txt";
         
         if (npcobj->Create(resData, vPos, tEnd))
         {
-            npcobj->SetScale(30.0f, 30.0f );
+            //npcobj->SetScale(30.0f, 30.0f );
             npcobj->SetRotation(T_Pi);
             m_NpcList.emplace_back(npcobj);
         }
@@ -162,33 +170,34 @@ void   Sample::AddEffect(TVector2 vPos, TVector2 tEnd)
         m_EffectList.emplace_back(pObject3);
     }
 }
-void   Sample::Frame()  
-{   
+void   Sample::Frame()
+{
     m_pMap->Frame();
     m_pHero->Frame();
 
     m_vCamera.x = m_pHero->m_vPos.x;
-    m_vCamera.y = m_pHero->m_vPos.y;
+    m_vCamera.y = m_pHero->m_vPos.y - 200.0f;
 
     for (auto data : m_NpcList)
     {
-        if(!data->m_bDead)   data->Frame();
-    }    
+        if (!data->m_bDead)   data->Frame();
+    }
     // collision
-    for (UINT iNpc1=0; iNpc1 <  m_NpcList.size(); iNpc1++)
-    {       
-        if (m_NpcList[iNpc1]->m_bDead) continue;
-        //if (TCollision::CheckRectToRect(
-        /*if (TCollision::CheckSphereToSphere(
-            m_NpcList[iNpc1]->m_Sphere,
-            m_pHero->m_Sphere))*/
-        
-        TVector2 p = { (float)m_Input.m_ptMouse.x,  (float)m_Input.m_ptMouse.y };
-      
-        if (g_GameKey.dwLeftClick == KEY_PUSH)
+    TVector2 p = GetWorldMousePos();
+    //if (g_GameKey.dwLeftClick == KEY_PUSH)
+    {
+        TSphere s;
+        s.vCenter = p;
+        s.fRadius = 100.0f;
+        for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
         {
-            if (TCollision::CheckSphereToPoint(
-                m_NpcList[iNpc1]->m_Sphere, p))
+            if (m_NpcList[iNpc1]->m_bDead) continue;
+            //if (TCollision::CheckRectToRect(
+            if (TCollision::CheckSphereToSphere(
+                m_NpcList[iNpc1]->m_Sphere,
+                m_pHero->m_Sphere))
+            //if (TCollision::CheckSphereToPoint(
+                //m_NpcList[iNpc1]->m_Sphere, p))
             {
                 m_NpcList[iNpc1]->m_bDead = true;
             }
@@ -198,8 +207,8 @@ void   Sample::Frame()
             if (iNpc1 == iNpc2) continue;
             if (m_NpcList[iNpc2]->m_bDead) continue;
             if (TCollision::CheckRectToRect(
-                m_NpcList[iNpc1]->m_srtScreen, 
-                m_NpcList[iNpc2]->m_srtScreen ))
+                m_NpcList[iNpc1]->m_rtScreen,
+                m_NpcList[iNpc2]->m_rtScreen ))
             {
                 m_NpcList[iNpc1]->m_bDead = true;
             }
@@ -208,8 +217,7 @@ void   Sample::Frame()
 
     if (g_GameKey.dwLeftClick == KEY_HOLD)
     {
-        TVector2 vPos = { (float)m_Input.m_ptMouse.x, 
-                            (float)m_Input.m_ptMouse.y };
+        TVector2 vPos = GetWorldMousePos();
         TVector2 tEnd = { vPos.x + 200.0f,
                           vPos.y + 200.0f };
         AddEffect(vPos, tEnd);
@@ -217,9 +225,13 @@ void   Sample::Frame()
         for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
         {
             if (TCollision::CheckRectToPoint(
-                m_pMap->m_Cells[iCell].rt, m_Input.m_ptMouse))
+                m_pMap->m_Cells[iCell].rt, vPos))
             {
-                m_pMap->m_Cells[iCell].iTexID = rand() %4;
+                m_pMap->m_Cells[iCell].iTexID++;
+                if (m_pMap->m_Cells[iCell].iTexID > 3)
+                {
+                    m_pMap->m_Cells[iCell].iTexID = 0;
+                }                
             }
         }
     }

@@ -51,10 +51,10 @@ void    TObject2D::SetVertexData()
 	//// Á÷°¢ÁÂÇ¥°è  <-> º¯È¯  <-> NDCÁÂÇ¥°è
 	//// NDCÁÂÇ¥°è  <-> º¯È¯  <-> Á÷°¢ÁÂÇ¥°è
 	//m_vScreenList.resize(4);
-	//m_vScreenList[0] = { m_srtScreen.x, m_srtScreen.y };
-	//m_vScreenList[1] = { m_srtScreen.x + m_srtScreen.w, m_srtScreen.y };
-	//m_vScreenList[2] = { m_srtScreen.x, m_srtScreen.y + m_srtScreen.h };
-	//m_vScreenList[3] = { m_srtScreen.x + m_srtScreen.w, m_srtScreen.y + m_srtScreen.h };
+	//m_vScreenList[0] = { m_rtScreen.x, m_rtScreen.y };
+	//m_vScreenList[1] = { m_rtScreen.x + m_rtScreen.w, m_rtScreen.y };
+	//m_vScreenList[2] = { m_rtScreen.x, m_rtScreen.y + m_rtScreen.h };
+	//m_vScreenList[3] = { m_rtScreen.x + m_rtScreen.w, m_rtScreen.y + m_rtScreen.h };
 	//
 	//m_vVertexList.resize(4);
 	//TVector2 s = m_vScreenList[0];

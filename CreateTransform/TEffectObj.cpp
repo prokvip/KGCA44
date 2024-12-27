@@ -13,14 +13,14 @@ void TEffectObj::SetData(TEffectData data)
 }
 void TEffectObj::Frame()
 {
-	/*TVector2 s = ScreenToNDC(m_srtScreen.x, m_srtScreen.y, 
+	/*TVector2 s = ScreenToNDC(m_rtScreen.x, m_rtScreen.y, 
 		g_ptClientSize);
-	TVector2 e = ScreenToNDC(m_srtScreen.x2,m_srtScreen.y2,
+	TVector2 e = ScreenToNDC(m_rtScreen.x2,m_rtScreen.y2,
 		g_ptClientSize);
 	if (m_Data.m_iType == 0)
 	{
-		e = ScreenToNDC(m_srtScreen.x + m_rtList[m_iAnimFrame].right, 
-			            m_srtScreen.y + m_rtList[m_iAnimFrame].bottom, g_ptClientSize);
+		e = ScreenToNDC(m_rtScreen.x + m_rtList[m_iAnimFrame].right, 
+			            m_rtScreen.y + m_rtList[m_iAnimFrame].bottom, g_ptClientSize);
 	}
 	m_vVertexList[0].v = s;
 	m_vVertexList[1].v = { e.x, s.y };

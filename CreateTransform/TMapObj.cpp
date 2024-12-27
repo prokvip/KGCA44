@@ -7,13 +7,13 @@ TMapObj::TMapObj()
 TMapObj::TMapObj(UINT iCellX, UINT iCellY)
 {
 	SetCellCounter(iCellX, iCellY);
-	m_srtScreen.SetS(0.0f, 0.0f, (float)g_ptClientSize.x, (float)g_ptClientSize.y );
+	m_rtScreen.SetS(0.0f, 0.0f, (float)g_ptClientSize.x, (float)g_ptClientSize.y );
 	m_vCellDistance.x = (float)g_ptClientSize.x / (float)m_iNumCellCol;
 	m_vCellDistance.y = (float)g_ptClientSize.y / (float)m_iNumCellRow;
 }
 TMapObj::TMapObj(TRect rt, UINT iCellX, UINT iCellY)
 {
-	m_srtScreen = rt;
+	m_rtScreen = rt;
 	m_vCellDistance.x = (rt.x2 - rt.x) / iCellX;
 	m_vCellDistance.y = (rt.y2 - rt.y) / iCellY;
 	SetCellCounter(iCellX, iCellY);

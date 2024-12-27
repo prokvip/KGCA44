@@ -32,5 +32,6 @@ public:
     bool CreateHero();
 	bool CreateNPC();
     bool CreateEffect();
+	TVector2 GetWorldMousePos();
 };
 
