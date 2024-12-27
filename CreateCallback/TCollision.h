@@ -23,14 +23,7 @@ struct TRect
 	TVector2 vh;// 가로,세로 절반크기
 	TVector2 vc;// 중심
 	float    fR;// 거리(대각선)
-	void    Size(float w, float h)
-	{
-		SetS( v1, { w,h });
-	}
-	void    Size(TVector2 s)
-	{
-		SetS(v1, s);
-	}
+
 	void    Move(float x, float y)
 	{
 		vc.x = x;

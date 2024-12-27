@@ -111,7 +111,7 @@ bool Sample::CreateNPC()
         
         if (npcobj->Create(resData, vStart, tEnd))
         {
-            npcobj->SetScale(30.0f, 30.0f );
+            //npcobj->SetScale(30.0f, 30.0f );
             npcobj->SetRotation(T_Pi);
             m_NpcList.emplace_back(npcobj);
         }
@@ -180,12 +180,7 @@ void   Sample::Frame()
 
     for (auto data : m_NpcList)
     {
-        if (!data->m_bDead)
-        {
-            data->SetScale(10.0f + ((cosf(g_fGT) * 0.5f + 0.5f ) * 30.0f),
-                           10.0f + ((cosf(g_fGT) * 0.5f + 0.5f) * 30.0f));
-            data->Frame();
-        }
+        if (!data->m_bDead)   data->Frame();
     }
     // collision
     TVector2 vMouse = GetWorldMousePos();
