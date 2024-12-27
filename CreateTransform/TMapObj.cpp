@@ -106,8 +106,8 @@ void TMapObj::SetVertexData()
 		{
 			float x = iCol * m_vCellDistance.x;
 			float y = iRow * m_vCellDistance.y;
-			m_vScreenList[iRow * m_iNumRow + iCol].x = x;
-			m_vScreenList[iRow * m_iNumRow + iCol].y = y;
+			m_vScreenList[iRow * m_iNumRow + iCol].x = m_rtScreen.v1.x + x;
+			m_vScreenList[iRow * m_iNumRow + iCol].y = m_rtScreen.v1.y + y;
 			m_vVertexList[iRow * m_iNumRow + iCol].v = ScreenToNDC(x, y, g_ptClientSize);
 			m_vVertexList[iRow * m_iNumRow + iCol].c = { iCol / 2.0f, iRow / 2.0f, 1.0f,1.0f };
 			m_vVertexList[iRow * m_iNumRow + iCol].t.x = iCol;
@@ -146,8 +146,6 @@ void TMapObj::SetIndexData()
 			m_Cells[iCell].rt.SetP(x1,y1, x2, y2);
 			m_Cells[iCell].iTexID = 0;
 			iIndex += 6;
-
-
 		}
 	}
 

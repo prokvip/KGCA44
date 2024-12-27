@@ -17,12 +17,12 @@ struct PRect
 };
 struct TRect
 {
-	TVector2 v1;
-	TVector2 v2;
-	TVector2 vs;
-	TVector2 vh;
-	TVector2 vc;
-	float    fR;
+	TVector2 v1;// 좌상귀
+	TVector2 v2;// 우하귀
+	TVector2 vs;// 가로,세로크기
+	TVector2 vh;// 가로,세로 절반크기
+	TVector2 vc;// 중심
+	float    fR;// 거리(대각선)
 
 	void    Move(float x, float y)
 	{

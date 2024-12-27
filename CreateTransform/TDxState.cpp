@@ -3,6 +3,8 @@
 ComPtr<ID3D11SamplerState> TDxState::m_pLinearSS = nullptr;
 ComPtr<ID3D11SamplerState> TDxState::m_pPointSS = nullptr;
 ComPtr<ID3D11BlendState> TDxState::m_pAlphaBlend = nullptr;
+ComPtr<ID3D11RasterizerState> TDxState::m_pRSSolid = nullptr;
+ComPtr<ID3D11RasterizerState> TDxState::m_pRSWireFrame = nullptr;
 
 void  TDxState::Create()
 {
@@ -60,6 +62,25 @@ void  TDxState::Create()
 	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	hr = TDevice::m_pd3dDevice->CreateSamplerState(&sd, 
 		m_pPointSS.GetAddressOf());
+	if (FAILED(hr))
+	{
+
+	}
+
+	// 레스터라이즈 상태
+	D3D11_RASTERIZER_DESC rsDesc;
+	ZeroMemory(&rsDesc, sizeof(rsDesc));
+	rsDesc.FillMode = D3D11_FILL_SOLID;
+	rsDesc.CullMode = D3D11_CULL_NONE;
+	hr = TDevice::m_pd3dDevice->CreateRasterizerState(
+		&rsDesc, m_pRSSolid.GetAddressOf());
+	if (FAILED(hr))
+	{
+
+	}
+	rsDesc.FillMode = D3D11_FILL_WIREFRAME;
+	hr = TDevice::m_pd3dDevice->CreateRasterizerState(
+		&rsDesc, m_pRSWireFrame.GetAddressOf());
 	if (FAILED(hr))
 	{
 

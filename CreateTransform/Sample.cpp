@@ -65,7 +65,7 @@ bool Sample::GameDataLoad(W_STR filename)
 bool Sample::CreateMap()
 {
     TRect rt;
-    rt.SetS(0.0f, 0.0f, 800.0f, 600.0f);
+    rt.SetP(-1000.0f, -1000.0f, +1000.0f, +1000.0f);
     m_pMap = std::make_shared<TMapObj>(rt, 10, 10);
     if (m_pMap->Create())
     {
@@ -80,15 +80,15 @@ bool Sample::CreateHero()
 {
     m_pHero = std::make_shared<THeroObj>();
     m_pHero->SetMap(m_pMap.get());
-    TVector2 vPos = { 400.0f, 300.0f };
-    TVector2 tEnd = { vPos.x + 42.0f, vPos.y + 60.0f };
+    TVector2 vStart = { 0.0f-21.0f, 0.0f-30.0f };
+    TVector2 tEnd = { vStart.x + 42.0f, vStart.y + 60.0f };
     TLoadResData resData;
     //resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
     //resData.texShaderName = L"../../data/shader/Default.txt";
     resData.texPathName = L"../../data/texture/bitmap1.bmp";
     resData.texShaderName = L"../../data/shader/BlendMask.txt";
     m_pHero->m_pMeshRender = &TGameCore::m_MeshRender;
-    if (m_pHero->Create(resData, vPos, tEnd))
+    if (m_pHero->Create(resData, vStart, tEnd))
     {
     }
     return true;
@@ -102,14 +102,14 @@ bool Sample::CreateNPC()
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
         npcobj->SetMap(m_pMap.get());
-        TVector2 vPos(100.0f + (rand() % (UINT)(rtWorldMap.vs.x - 100.0f)),
+        TVector2 vStart(100.0f + (rand() % (UINT)(rtWorldMap.vs.x - 100.0f)),
             100.0f + (rand() % (UINT)(rtWorldMap.vs.y - 100.0f)));
-        TVector2 tEnd(vPos.x + 72.0f, vPos.y + 79.0f);
+        TVector2 tEnd(vStart.x + 72.0f, vStart.y + 79.0f);
         TLoadResData resData;
         resData.texPathName = L"../../data/texture/bitmap1.bmp";
         resData.texShaderName = L"../../data/shader/BlendMask.txt";
         
-        if (npcobj->Create(resData, vPos, tEnd))
+        if (npcobj->Create(resData, vStart, tEnd))
         {
             //npcobj->SetScale(30.0f, 30.0f );
             npcobj->SetRotation(T_Pi);
@@ -121,9 +121,9 @@ bool Sample::CreateNPC()
 bool Sample::CreateEffect()
 {
     auto pObject3 = std::make_shared<TEffectObj>();  
-    TVector2 vPos = { 400.0f, 100.0f };
-    TVector2 tEnd = { vPos.x + 300, vPos.y + 300.0f };
-    AddEffect(vPos, tEnd);
+    TVector2 vStart = { 400.0f-150, 100.0f-150.0f };
+    TVector2 tEnd = { vStart.x + 300, vStart.y + 300.0f };
+    AddEffect(vStart, tEnd);
     return true;
 }
 void   Sample::Init()
@@ -140,7 +140,7 @@ void   Sample::Init()
     CreateNPC();
     CreateEffect();    
 }
-void   Sample::AddEffect(TVector2 vPos, TVector2 tEnd)
+void   Sample::AddEffect(TVector2 vStart, TVector2 tEnd)
 {
     auto pObject3 = std::make_shared<TEffectObj>();
     pObject3->m_pMeshRender = &TGameCore::m_MeshRender;
@@ -165,7 +165,7 @@ void   Sample::AddEffect(TVector2 vPos, TVector2 tEnd)
         data.m_szList = m_szSpriteList[0];
     }
     pObject3->SetData(data);
-    if (pObject3->Create(resData, vPos, tEnd))
+    if (pObject3->Create(resData, vStart, tEnd))
     {
         m_EffectList.emplace_back(pObject3);
     }
@@ -190,6 +190,7 @@ void   Sample::Frame()
     for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
     {
         if (m_NpcList[iNpc1]->m_bDead) continue;
+        // m_Sphere by vMouse 
         if (g_GameKey.dwLeftClick == KEY_PUSH)
         {
             if (TCollision::CheckSphereToPoint(
@@ -198,7 +199,7 @@ void   Sample::Frame()
                 m_NpcList[iNpc1]->m_bDead = true;
             }
         }
-
+        // m_Sphere by m_Sphere 
         if (TCollision::CheckSphereToSphere(
             m_NpcList[iNpc1]->m_Sphere,
             m_pHero->m_Sphere))
@@ -210,26 +211,31 @@ void   Sample::Frame()
         {
             if (iNpc1 == iNpc2) continue;
             if (m_NpcList[iNpc2]->m_bDead) continue;
+            // m_rtScreen by m_rtScreen 
             if (TCollision::CheckRectToRect(
                 m_NpcList[iNpc1]->m_rtScreen,
                 m_NpcList[iNpc2]->m_rtScreen))
             {
-                m_NpcList[iNpc1]->m_bDead = true;
+                //m_NpcList[iNpc1]->m_bDead = true;
             }
         }
     }
     
     if (g_GameKey.dwLeftClick == KEY_HOLD)
     {        
-        TVector2 tEnd = { vMouse.x + 200.0f,
-                          vMouse.y + 200.0f };
-        AddEffect(vMouse, tEnd);
+        TVector2 v1 = vMouse;
+        v1.x = vMouse.x - 100.0f;
+        v1.y = vMouse.y - 100.0f;
+        TVector2 tEnd = { v1.x + 200.0f,
+                          v1.y + 200.0f };
+        AddEffect(v1, tEnd);
 
     }
     if (g_GameKey.dwRightClick == KEY_PUSH)
     {       
         for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
         {
+            // TRect by vMouse 
             if (TCollision::CheckRectToPoint(
                 m_pMap->m_Cells[iCell].rt, vMouse))
             {

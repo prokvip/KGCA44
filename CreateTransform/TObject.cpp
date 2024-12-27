@@ -56,7 +56,7 @@ void	TObject::Frame()
 void	TObject::Transform(TVector2 vCamera)
 {
 	m_matWorld = m_matScale * m_matRotate * m_matTrans;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < m_vScreenList.size(); i++)
 	{
 		m_vScreenList[i] =
 			m_pMeshRender->m_vScreenList[i] *
@@ -160,17 +160,13 @@ bool	TObject::Create(TLoadResData data)
 }
 bool	TObject::Create(TLoadResData data,
 						TVector2 s,
-						TVector2 t)
+						TVector2 e)
 {
-	m_LoadResData = data;
-	float w = (t.x - s.x);
-	float h = (t.y - s.y);
-	m_rtInit.SetS({ s.x - w * 0.5f, s.y - h * 0.5f }, { w, h });
-	m_rtScreen = m_rtInit;
-	SetScale(m_rtInit.vs.x / 2.0f,
-		     m_rtInit.vs.y / 2.0f);
+	m_LoadResData = data;	
+	m_rtScreen.SetP(s,e);
+	SetScale(m_rtScreen.vh.x,m_rtScreen.vh.y);
 	SetRotation(m_fAngleRadian);
-	SetPosition(s);
+	SetPosition(m_rtScreen.vc);
 	
 	m_vVertexList.resize(4);
 	m_vScreenList.resize(4);

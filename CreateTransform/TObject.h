@@ -18,7 +18,6 @@ public:
 	float			m_fSpeed;
 	bool			m_bDead = false;
 	TRect			m_rtScreen;
-	TRect			m_rtInit;
 	TSphere			m_Sphere;
 	TLoadResData	m_LoadResData;
 	TShader*		m_pShader = nullptr;

@@ -17,6 +17,8 @@ public:
 	TDevice		m_DxDevice;
 	TDxWrite    m_DxWrite;
 	static TMeshRender m_MeshRender;
+
+	
 public:
 	virtual void   Init() {};
 	virtual void   Frame() {};

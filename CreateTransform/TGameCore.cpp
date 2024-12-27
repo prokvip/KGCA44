@@ -30,11 +30,17 @@ void   TGameCore::CoreInit()
     Init();
 }
 void   TGameCore::CoreFrame() 
-{     
-    m_DxDevice.Frame();
+{       
     m_GameTimer.Frame();
     m_Input.Frame();
     m_DxWrite.Frame();
+    m_DxDevice.Frame();
+
+    if (m_Input.KeyCheck('V') == KEY_PUSH)
+    {
+        TDevice::m_bWireFrame = !TDevice::m_bWireFrame;
+    }
+
     Frame();
 }
 void   TGameCore::CoreRender() 
