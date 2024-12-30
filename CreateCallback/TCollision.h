@@ -1,6 +1,18 @@
 #pragma once
 #include "TMatrix.h"
-
+class TObject;
+enum TCollisionType
+{
+	T_Block  = 0,
+	T_Overlap, // °ãÄ§
+	T_Ignore,  // ¹«½Ã
+};
+struct THitResult
+{
+	TObject* pObject;
+	TVector2 vPos;
+	TVector2 vDir;
+};
 struct PRect;
 
 struct SRect

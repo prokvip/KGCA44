@@ -154,6 +154,7 @@
     <ClInclude Include="TDxState.h" />
     <ClInclude Include="TDxWrite.h" />
     <ClInclude Include="TEffectObj.h" />
+    <ClInclude Include="TFiniteState.h" />
     <ClInclude Include="TGameCore.h" />
     <ClInclude Include="THeroObj.h" />
     <ClInclude Include="TInput.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="TDxState.cpp" />
     <ClCompile Include="TDxWrite.cpp" />
     <ClCompile Include="TEffectObj.cpp" />
+    <ClCompile Include="TFiniteState.cpp" />
     <ClCompile Include="TGameCore.cpp" />
     <ClCompile Include="THeroObj.cpp" />
     <ClCompile Include="TInput.cpp" />

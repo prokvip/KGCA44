@@ -2,17 +2,20 @@
 #include "TGameCore.h"
 #include "TWorld.h"
 #include "TSound.h"
+#include "TFiniteState.h"
 using RECT_ARRAY = std::vector<RECT>;
 class Sample : public TGameCore
 {
+	TFiniteStateMachine      m_fsm;
 	std::shared_ptr<TWorld>  m_pWorld;
 	TVector2        m_vCamera = { 400.0f, 300.0f };
 	TTexture*		m_pBitmap1Mask = nullptr;
 	using tObject = std::shared_ptr<TObject2D>;
+	using tNpc = std::shared_ptr<TNpcObj>;
 	
 	std::shared_ptr<TMapObj>	m_pMap = nullptr;
 	std::shared_ptr<THeroObj>	m_pHero = nullptr;
-	std::vector<tObject>		m_NpcList;
+	std::vector<tNpc>			m_NpcList;
 	std::list<tObject>			m_EffectList;
 	TSound* m_pSound = nullptr;
 	TSound* m_pSoundEffect = nullptr;

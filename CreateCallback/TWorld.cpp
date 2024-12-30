@@ -34,25 +34,38 @@ void TWorld::DeleteCollisionExecute(TObject* pOwner)
 }
 void   TWorld::Frame()
 {
+	// Ãæµ¹º¼·ý(TRect, TSphere)
+	// ¼±ÅÃº¼·ý(Mouse)
 	for (auto src : m_ObjectList)
 	{
 		TObject* pSrcObj = src.second;
 		if (pSrcObj->m_bDead) continue;
+		if (pSrcObj->m_iCollisionType ==
+			TCollisionType::T_Ignore)
+		{
+			continue;
+		}
 		for (auto dest : m_ObjectList)
 		{
 			if (src == dest) continue;			
 			TObject* pDestObj = dest.second;
 			if (pDestObj->m_bDead) continue;
-			if (TCollision::CheckSphereToSphere(
-				pSrcObj->m_Sphere,
-				pDestObj->m_Sphere))
+			if (pSrcObj->m_iCollisionType ==
+				TCollisionType::T_Ignore)
+			{
+				continue;
+			}
+			if (TCollision::CheckRectToRect(
+				pSrcObj->m_rtScreen,
+				pDestObj->m_rtScreen))
 			{
 				auto iter = m_fnCollisionExecute.find(
 					pSrcObj->m_iCollisionID);
 				if (iter != m_fnCollisionExecute.end())
 				{
+					THitResult ret;
 					CollisionFunction call = iter->second;
-					call(pDestObj, 999);
+					call(pDestObj, ret);
 				}
 			}
 		}

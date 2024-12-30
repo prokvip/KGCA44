@@ -1,8 +1,8 @@
 #include "THeroObj.h"
 #include "TDevice.h"
-void    THeroObj::HitOverlap(TObject* pObj, UINT iState)
+void    THeroObj::HitOverlap(TObject* pObj, THitResult hRes)
 {
-	int kk = 0;
+	
 };
 void THeroObj::Frame()
 {

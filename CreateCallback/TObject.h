@@ -2,12 +2,14 @@
 #include "TCollision.h"
 #include "TMeshRender.h"
 class TWorld;
+
 class TObject
 {
 public:
 	TMeshRender*	m_pMeshRender = nullptr;
 	UINT			m_iCollisionID;
 	TWorld*			m_pWorld=nullptr;
+	TCollisionType	m_iCollisionType = TCollisionType::T_Ignore;
 public:
 	TMatrix3   m_matScale;
 	TMatrix3   m_matRotate;
@@ -58,10 +60,7 @@ public:
 	virtual void	PostRender();
 	virtual void	Release();
 public:
-	virtual void    HitOverlap(TObject* pObj, UINT iState)
-	{
-		int k = 0;
-	};
+	virtual void    HitOverlap(TObject* pObj, THitResult hRet);
 public:
 	TObject();
 	virtual ~TObject();

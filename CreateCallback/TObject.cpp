@@ -1,6 +1,9 @@
 #include "TObject.h"
 #include "TDevice.h"
 #include "TWorld.h"
+void    TObject::HitOverlap(TObject* pObj, THitResult hRet)
+{	
+};
 void TObject::SetScale(float sx, float sy)
 {
 	m_vScale.x = sx;

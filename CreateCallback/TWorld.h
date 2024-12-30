@@ -6,7 +6,7 @@
 #include "TNpcObj.h"
 //void fun(object, UINT);
 //std::function<void ()>
-using CollisionFunction = std::function<void(TObject*, UINT)>;
+using CollisionFunction = std::function<void(TObject*, THitResult)>;
 class TWorld
 {
 public:

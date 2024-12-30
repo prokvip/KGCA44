@@ -102,6 +102,7 @@ bool Sample::CreateHero()
     m_pHero->m_pWorld = m_pWorld.get();
     if (m_pHero->Create(m_pWorld.get(), resData, vStart, tEnd))
     {
+        m_pHero->m_iCollisionType = TCollisionType::T_Overlap;
     }
    /* auto bindFun = std::bind(&TObject::HitOverlap,
                              m_pHero.get(),
@@ -116,13 +117,15 @@ bool Sample::CreateNPC()
 {
     // npc
     TRect rtWorldMap = m_pMap->m_rtScreen;
-    for (int iNpc = 0; iNpc < 1; iNpc++)
+    for (int iNpc = 0; iNpc < 100; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
         npcobj->SetMap(m_pMap.get());
-        TVector2 vStart(100.0f + (rand() % (UINT)(rtWorldMap.vs.x - 100.0f)),
-            100.0f + (rand() % (UINT)(rtWorldMap.vs.y - 100.0f)));
+        npcobj->StartFSM(&m_fsm);
+        TVector2 vStart(
+            rtWorldMap.v1.x + (rand() % (UINT)(rtWorldMap.vs.x - 100.0f)),
+            rtWorldMap.v1.y + (rand() % (UINT)(rtWorldMap.vs.y - 100.0f)));
         TVector2 tEnd(vStart.x + 72.0f, vStart.y + 79.0f);
         TLoadResData resData;
         resData.texPathName = L"../../data/texture/bitmap1.bmp";
@@ -130,8 +133,10 @@ bool Sample::CreateNPC()
         
         if (npcobj->Create(m_pWorld.get(), resData, vStart, tEnd))
         {
+            npcobj->m_fSpeed = 50.0f + (rand() % 200);
+            npcobj->m_iCollisionType = TCollisionType::T_Overlap;
             //npcobj->SetScale(30.0f, 30.0f );
-            npcobj->SetRotation(T_Pi);
+            //npcobj->SetRotation(T_Pi);
             m_NpcList.emplace_back(npcobj);
         }
     }
@@ -147,6 +152,31 @@ bool Sample::CreateEffect()
 }
 void   Sample::Init()
 {
+    // STATE_STAND -> EVENT_PATROL (시간경과)    -> STATE_MOVE
+// STATE_STAND -> EVENT_FINDTARGET(검색범위) -> STATE_ATTACK
+// STATE_MOVE  -> EVENT_STOP		->STATE_STAND
+// STATE_MOVE  -> EVENT_LOSTTARGET  ->STATE_STAND
+// STATE_MOVE  -> EVENT_FINDTARGET  ->STATE_ATTACK
+// STATE_ATTACK -> EVENT_LOSTTARGET ->STATE_STAND 
+// STATE_ATTACK -> EVENT_STOP       ->STATE_STAND 
+    m_fsm.AddStateTransition(STATE_STAND, EVENT_PATROL, STATE_MOVE);
+    m_fsm.AddStateTransition(STATE_STAND, EVENT_FINDTARGET, STATE_ATTACK);
+    m_fsm.AddStateTransition(STATE_MOVE, EVENT_STOP, STATE_STAND);
+    m_fsm.AddStateTransition(STATE_MOVE, EVENT_LOSTTARGET, STATE_STAND);
+    m_fsm.AddStateTransition(STATE_MOVE, EVENT_FINDTARGET, STATE_ATTACK);
+    m_fsm.AddStateTransition(STATE_ATTACK, EVENT_STOP, STATE_STAND);
+    m_fsm.AddStateTransition(STATE_ATTACK, EVENT_LOSTTARGET, STATE_STAND);
+
+    //UINT iCurrent = T_ActionState::STATE_STAND;
+    //UINT iEvent = T_ActionEvent::EVENT_PATROL;
+    //// STATE_MOVE
+    //UINT iActionState = m_fsm.GetOutputState(iCurrent, iEvent);
+    //// STATE_ATTACK
+    //iActionState = m_fsm.GetOutputState(iActionState,
+    //    T_ActionEvent::EVENT_FINDTARGET);
+    //iActionState = m_fsm.GetOutputState(iActionState,
+    //    T_ActionEvent::EVENT_LOSTTARGET);
+
     CreateSound();
     m_pBitmap1Mask = I_Tex.Load(L"../../data/texture/bitmap2.bmp");
     GameDataLoad(L"SpriteData.txt");
@@ -197,46 +227,50 @@ void   Sample::Frame()
 
     for (auto data : m_NpcList)
     {
-        if (!data->m_bDead)   data->Frame();
+        if (!data->m_bDead)
+        {
+            data->FrameState(m_pHero.get());
+            data->Frame();
+        }
     }
-    // collision
+    //// collision
     TVector2 vMouse = GetWorldMousePos();
-    TSphere s;
-    s.vCenter = vMouse;
-    s.fRadius = 100.0f;
-    for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
-    {
-        if (m_NpcList[iNpc1]->m_bDead) continue;
-        // m_Sphere by vMouse 
-        if (g_GameKey.dwLeftClick == KEY_PUSH)
-        {
-            if (TCollision::CheckSphereToPoint(
-                m_NpcList[iNpc1]->m_Sphere, vMouse))
-            {
-                m_NpcList[iNpc1]->m_bDead = true;
-            }
-        }
-        // m_Sphere by m_Sphere 
-        /*if (TCollision::CheckSphereToSphere(
-            m_NpcList[iNpc1]->m_Sphere,
-            m_pHero->m_Sphere))
-        {
-            m_NpcList[iNpc1]->m_bDead = true;
-        }*/
+    //TSphere s;
+    //s.vCenter = vMouse;
+    //s.fRadius = 100.0f;
+    //for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
+    //{
+    //    if (m_NpcList[iNpc1]->m_bDead) continue;
+    //    // m_Sphere by vMouse 
+    //    if (g_GameKey.dwLeftClick == KEY_PUSH)
+    //    {
+    //        if (TCollision::CheckSphereToPoint(
+    //            m_NpcList[iNpc1]->m_Sphere, vMouse))
+    //        {
+    //            m_NpcList[iNpc1]->m_bDead = true;
+    //        }
+    //    }
+    //    // m_Sphere by m_Sphere 
+    //    /*if (TCollision::CheckSphereToSphere(
+    //        m_NpcList[iNpc1]->m_Sphere,
+    //        m_pHero->m_Sphere))
+    //    {
+    //        m_NpcList[iNpc1]->m_bDead = true;
+    //    }*/
 
-        for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
-        {
-            if (iNpc1 == iNpc2) continue;
-            if (m_NpcList[iNpc2]->m_bDead) continue;
-            // m_rtScreen by m_rtScreen 
-            if (TCollision::CheckRectToRect(
-                m_NpcList[iNpc1]->m_rtScreen,
-                m_NpcList[iNpc2]->m_rtScreen))
-            {                
-                //m_NpcList[iNpc1]->m_bDead = true;
-            }
-        }
-    }
+    //    for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
+    //    {
+    //        if (iNpc1 == iNpc2) continue;
+    //        if (m_NpcList[iNpc2]->m_bDead) continue;
+    //        // m_rtScreen by m_rtScreen 
+    //        if (TCollision::CheckRectToRect(
+    //            m_NpcList[iNpc1]->m_rtScreen,
+    //            m_NpcList[iNpc2]->m_rtScreen))
+    //        {                
+    //            //m_NpcList[iNpc1]->m_bDead = true;
+    //        }
+    //    }
+    //}
     
     if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {        

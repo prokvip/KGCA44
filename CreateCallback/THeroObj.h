@@ -7,7 +7,7 @@ public:
 	void SetMap(TMapObj* pMap) { m_pMap = pMap; }
 	virtual void Frame() override;
 	virtual void SetVertexData()override;
-	void    HitOverlap(TObject* pObj, UINT iState) override;
+	void    HitOverlap(TObject* pObj, THitResult hRes) override;
 public:
 	THeroObj()
 	{
