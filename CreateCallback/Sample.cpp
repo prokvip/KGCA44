@@ -1,4 +1,15 @@
 #include "Sample.h"
+// UI
+// callback : collision system
+// aI
+bool Sample::CreateSound()
+{
+    TSoundManager& mgr = TSoundManager::GetInstance();
+    m_pSound = mgr.Load(L"../../data/sound/abel_leaf.asf");
+    m_pSoundEffect = mgr.Load(L"../../data/sound/GunShot.mp3");
+    m_pSound->Play();
+    return true;
+}
 TVector2 Sample::GetWorldMousePos()
 {
     TVector2 vPos = { (float)m_Input.m_ptMouse.x,
@@ -67,7 +78,7 @@ bool Sample::CreateMap()
     TRect rt;
     rt.SetP(-1000.0f, -1000.0f, +1000.0f, +1000.0f);
     m_pMap = std::make_shared<TMapObj>(rt, 10, 10);
-    if (m_pMap->Create())
+    if (m_pMap->Create(m_pWorld.get()))
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
         m_pMap->SetTexture(pTex).
@@ -88,16 +99,24 @@ bool Sample::CreateHero()
     resData.texPathName = L"../../data/texture/bitmap1.bmp";
     resData.texShaderName = L"../../data/shader/BlendMask.txt";
     m_pHero->m_pMeshRender = &TGameCore::m_MeshRender;
-    if (m_pHero->Create(resData, vStart, tEnd))
+    m_pHero->m_pWorld = m_pWorld.get();
+    if (m_pHero->Create(m_pWorld.get(), resData, vStart, tEnd))
     {
     }
+   /* auto bindFun = std::bind(&TObject::HitOverlap,
+                             m_pHero.get(),
+                             std::placeholders::_1,
+                             std::placeholders::_2);
+    m_pWorld->AddCollisionExecute(
+        m_pHero.get(),
+        bindFun);*/
     return true;
 }
 bool Sample::CreateNPC()
 {
     // npc
     TRect rtWorldMap = m_pMap->m_rtScreen;
-    for (int iNpc = 0; iNpc < 100; iNpc++)
+    for (int iNpc = 0; iNpc < 1; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
@@ -109,7 +128,7 @@ bool Sample::CreateNPC()
         resData.texPathName = L"../../data/texture/bitmap1.bmp";
         resData.texShaderName = L"../../data/shader/BlendMask.txt";
         
-        if (npcobj->Create(resData, vStart, tEnd))
+        if (npcobj->Create(m_pWorld.get(), resData, vStart, tEnd))
         {
             //npcobj->SetScale(30.0f, 30.0f );
             npcobj->SetRotation(T_Pi);
@@ -128,17 +147,15 @@ bool Sample::CreateEffect()
 }
 void   Sample::Init()
 {
+    CreateSound();
     m_pBitmap1Mask = I_Tex.Load(L"../../data/texture/bitmap2.bmp");
     GameDataLoad(L"SpriteData.txt");
-    TSoundManager& mgr = TSoundManager::GetInstance();
-    m_pSound = mgr.Load(L"../../data/sound/abel_leaf.asf");
-    m_pSoundEffect = mgr.Load(L"../../data/sound/GunShot.mp3");
-    m_pSound->Play();
 
+    m_pWorld = std::make_shared<TWorld>();
     CreateMap();
     CreateHero();
     CreateNPC();
-    CreateEffect();    
+   // CreateEffect();    
 }
 void   Sample::AddEffect(TVector2 vStart, TVector2 tEnd)
 {
@@ -165,7 +182,7 @@ void   Sample::AddEffect(TVector2 vStart, TVector2 tEnd)
         data.m_szList = m_szSpriteList[0];
     }
     pObject3->SetData(data);
-    if (pObject3->Create(resData, vStart, tEnd))
+    if (pObject3->Create(m_pWorld.get(), resData, vStart, tEnd))
     {
         m_EffectList.emplace_back(pObject3);
     }
@@ -200,12 +217,12 @@ void   Sample::Frame()
             }
         }
         // m_Sphere by m_Sphere 
-        if (TCollision::CheckSphereToSphere(
+        /*if (TCollision::CheckSphereToSphere(
             m_NpcList[iNpc1]->m_Sphere,
             m_pHero->m_Sphere))
         {
             m_NpcList[iNpc1]->m_bDead = true;
-        }
+        }*/
 
         for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
         {
@@ -215,13 +232,13 @@ void   Sample::Frame()
             if (TCollision::CheckRectToRect(
                 m_NpcList[iNpc1]->m_rtScreen,
                 m_NpcList[iNpc2]->m_rtScreen))
-            {
+            {                
                 //m_NpcList[iNpc1]->m_bDead = true;
             }
         }
     }
     
-    if (g_GameKey.dwLeftClick == KEY_HOLD)
+    if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {        
         TVector2 v1 = vMouse;
         v1.x = vMouse.x - 100.0f;
@@ -258,11 +275,20 @@ void   Sample::Frame()
         }
         else
         {
+            m_pWorld->DeleteCollisionExecute(pObj);
             pObj->Release();
             iter = m_EffectList.erase(iter);
         }
     }
 
+    for (UINT iNpc1 = 0; iNpc1 < m_NpcList.size(); iNpc1++)
+    {
+        if (m_NpcList[iNpc1]->m_bDead)
+        {
+            m_pWorld->DeleteCollisionExecute(m_NpcList[iNpc1].get());
+        };
+    }
+    m_pWorld->Frame();
 }
 void   Sample::Render() 
 {       

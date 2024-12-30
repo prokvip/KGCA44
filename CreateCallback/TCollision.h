@@ -23,13 +23,20 @@ struct TRect
 	TVector2 vh;// 가로,세로 절반크기
 	TVector2 vc;// 중심
 	float    fR;// 거리(대각선)
-
+	void    Size(float w, float h)
+	{
+		SetS(v1, { w,h });
+	}
+	void    Size(TVector2 s)
+	{
+		SetS(v1, s);
+	}
 	void    Move(float x, float y)
 	{
 		vc.x = x;
 		vc.y = y;
-		v1 = vc - vh;		
-		v2 = vc + vh;		
+		v1 = vc - vh;
+		v2 = vc + vh;
 	}
 	void    Move(TVector2 p)
 	{
@@ -48,9 +55,9 @@ struct TRect
 		v1 = s;
 		v2 = e;
 		vs = v2 - v1;
-		vh = vs/2.0f;
+		vh = vs / 2.0f;
 		fR = (v2 - v1).Length() * 0.5f;
-		Move( (v2+v1) / 2.0f);		
+		Move((v2 + v1) / 2.0f);
 	}
 	void    SetS(TVector2 p, TVector2 s)
 	{
@@ -59,9 +66,9 @@ struct TRect
 		v2 = v1 + vs;
 		vh = vs / 2.0f;
 		fR = (v2 - v1).Length() * 0.5f;
-		Move((v2+v1) / 2.0f);
+		Move((v2 + v1) / 2.0f);
 	}
-	TRect() 
+	TRect()
 	{
 		fR = 0.0f;
 	}

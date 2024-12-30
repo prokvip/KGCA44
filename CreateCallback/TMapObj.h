@@ -5,10 +5,10 @@ struct TCell
 	TRect  rt;
 	UINT   iTexID;
 };
-//class TMapMeshRender : public TMeshRender
-//{
-//
-//};
+class TMapMeshRender : public TMeshRender
+{
+
+};
 class TMapObj : public TObject2D
 {
 	TTexture* m_pTexs[4];
@@ -27,7 +27,7 @@ public:
 	std::vector<TCell>  m_Cells;
 	void	SetCellCounter(UINT iRow=10, UINT iCol=10);
 public:
-	virtual bool Create() override;
+	virtual bool Create(TWorld* pWorld) override;
 	virtual void SetVertexData() override;
 	virtual void SetIndexData() override;
 	virtual bool	CreateVertexBuffer();

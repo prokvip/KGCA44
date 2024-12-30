@@ -1,11 +1,13 @@
 #pragma once
 #include "TCollision.h"
 #include "TMeshRender.h"
-
+class TWorld;
 class TObject
 {
 public:
 	TMeshRender*	m_pMeshRender = nullptr;
+	UINT			m_iCollisionID;
+	TWorld*			m_pWorld=nullptr;
 public:
 	TMatrix3   m_matScale;
 	TMatrix3   m_matRotate;
@@ -34,9 +36,9 @@ public:
 	virtual void AddScale(TVector2 v);
 	virtual void AddRotation(float angle);
 public:
-	virtual bool	Create();   
-	virtual bool	Create(TLoadResData data);
-	virtual bool	Create(TLoadResData data,
+	virtual bool	Create(TWorld* pWorld);   
+	virtual bool	Create(TWorld* pWorld,TLoadResData data);
+	virtual bool	Create(TWorld* pWorld,TLoadResData data,
 		TVector2 s,		// 화면좌표 시작
 		TVector2 t) ;   // 화면좌표 끝		
 	virtual TObject& SetShader(TShader* pShader = nullptr);
@@ -55,6 +57,11 @@ public:
 	virtual void	Render();
 	virtual void	PostRender();
 	virtual void	Release();
+public:
+	virtual void    HitOverlap(TObject* pObj, UINT iState)
+	{
+		int k = 0;
+	};
 public:
 	TObject();
 	virtual ~TObject();

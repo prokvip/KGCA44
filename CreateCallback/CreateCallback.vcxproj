@@ -172,6 +172,7 @@
     <ClInclude Include="TVector.h" />
     <ClInclude Include="TVertex.h" />
     <ClInclude Include="TWindow.h" />
+    <ClInclude Include="TWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample.cpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="TVector.cpp" />
     <ClCompile Include="TVertex.cpp" />
     <ClCompile Include="TWindow.cpp" />
+    <ClCompile Include="TWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\data\shader\BlendMask.txt" />

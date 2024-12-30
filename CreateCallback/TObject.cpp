@@ -1,10 +1,14 @@
 #include "TObject.h"
 #include "TDevice.h"
+#include "TWorld.h"
 void TObject::SetScale(float sx, float sy)
 {
 	m_vScale.x = sx;
 	m_vScale.y = sy;
 	m_matScale.Scale(m_vScale);
+	m_rtScreen.Size(m_vScale * 2.0f);
+	m_Sphere.vCenter = m_rtScreen.vc;
+	m_Sphere.fRadius = m_rtScreen.fR;
 }
 void TObject::SetRotation(float fRadian)
 {
@@ -35,7 +39,7 @@ void TObject::AddPosition(TVector2 v)
 void TObject::AddScale(float x, float y)
 {
 	m_vScale.x += x;
-	m_vScale.y += y;	
+	m_vScale.y += y;
 	m_matScale.Scale(m_vScale);
 }
 void TObject::AddScale(TVector2 v)
@@ -68,14 +72,14 @@ void	TObject::PreRender()
 	m_pMeshRender->PreRender();
 }
 void	TObject::Render()
-{	
+{
 	PreRender();
 	if (m_pTexture)
 	{
 		TDevice::m_pd3dContext->PSSetShaderResources(
 			0, 1, &m_pTexture->m_pTexSRV);
 	}
-	
+
 	if (m_pShader)
 	{
 		TDevice::m_pd3dContext->VSSetShader(
@@ -87,11 +91,11 @@ void	TObject::Render()
 }
 void	TObject::PostRender()
 {
-	m_pMeshRender->PostRender();	
+	m_pMeshRender->PostRender();
 }
 void	TObject::Release()
 {
-	
+
 }
 bool	TObject::CreateVertexShader()
 {
@@ -123,8 +127,9 @@ bool	TObject::CreatePixelShader()
 	}
 	return true;
 }
-bool	TObject::Create()
+bool	TObject::Create(TWorld* pWorld)
 {
+	m_pWorld = pWorld;
 	SetVertexData();
 	/*if (!CreateVertexBuffer())
 	{
@@ -147,35 +152,43 @@ bool	TObject::Create()
 	{
 		return false;
 	}*/
+
+	auto bindFun = std::bind(&TObject::HitOverlap,
+		this,
+		std::placeholders::_1,
+		std::placeholders::_2);
+	m_pWorld->AddCollisionExecute(
+		this,
+		bindFun);
 	return true;
 }
-bool	TObject::Create(TLoadResData data)
+bool	TObject::Create(TWorld* pWorld,TLoadResData data)
 {
 	m_LoadResData = data;
 	if (!LoadTexture(m_LoadResData.texPathName))
 	{
 		return false;
 	}
-	return Create();
+	return Create(pWorld);
 }
-bool	TObject::Create(TLoadResData data,
-						TVector2 s,
-						TVector2 e)
+bool	TObject::Create(TWorld* pWorld,TLoadResData data,
+	TVector2 s,
+	TVector2 e)
 {
-	m_LoadResData = data;	
-	m_rtScreen.SetP(s,e);
-	SetScale(m_rtScreen.vh.x,m_rtScreen.vh.y);
+	m_LoadResData = data;
+	m_rtScreen.SetP(s, e);
+	SetScale(m_rtScreen.vh.x, m_rtScreen.vh.y);
 	SetRotation(m_fAngleRadian);
 	SetPosition(m_rtScreen.vc);
-	
+
 	m_vVertexList.resize(4);
 	m_vScreenList.resize(4);
-	
+
 	if (!LoadTexture(m_LoadResData.texPathName))
 	{
 		return false;
 	}
-	return Create();
+	return Create(pWorld);
 }
 
 TObject& TObject::SetShader(TShader* pData)

@@ -1,13 +1,11 @@
 #pragma once
 #include "TGameCore.h"
-#include "TMapObj.h"
-#include "THeroObj.h"
-#include "TEffectObj.h"
+#include "TWorld.h"
 #include "TSound.h"
-#include "TNpcObj.h"
 using RECT_ARRAY = std::vector<RECT>;
 class Sample : public TGameCore
 {
+	std::shared_ptr<TWorld>  m_pWorld;
 	TVector2        m_vCamera = { 400.0f, 300.0f };
 	TTexture*		m_pBitmap1Mask = nullptr;
 	using tObject = std::shared_ptr<TObject2D>;
@@ -28,6 +26,7 @@ public:
 	virtual void   Render() override;
 	virtual void   Release() override;
 public:
+	bool CreateSound();
     bool CreateMap();
     bool CreateHero();
 	bool CreateNPC();

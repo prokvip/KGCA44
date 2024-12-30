@@ -1,5 +1,9 @@
 #include "THeroObj.h"
 #include "TDevice.h"
+void    THeroObj::HitOverlap(TObject* pObj, UINT iState)
+{
+	int kk = 0;
+};
 void THeroObj::Frame()
 {
 	// *시간의 동기화

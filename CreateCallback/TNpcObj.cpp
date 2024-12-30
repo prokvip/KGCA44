@@ -1,5 +1,13 @@
 #include "TNpcObj.h"
 #include "TDevice.h"
+struct TCollisionInfo
+{
+
+};
+void    TNpcObj::HitOverlap(TObject* pObj, UINT iState)
+{
+	m_bDead = true;
+};
 void TNpcObj::Frame()
 {
 	TVector2 vAdd = m_vPos;

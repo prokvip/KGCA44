@@ -17,8 +17,9 @@ TMapObj::TMapObj(TRect rt, UINT iCellX, UINT iCellY)
 	m_vCellDistance = (rt.v2 - rt.v1) / iCellX;
 	SetCellCounter(iCellX, iCellY);
 }
-bool	TMapObj::Create()
+bool	TMapObj::Create(TWorld* pWorld)
 {
+	m_pWorld = pWorld;
 	SetVertexData();
 	if (!CreateVertexBuffer())
 	{

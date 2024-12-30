@@ -7,6 +7,7 @@ public:
 	void SetMap(TMapObj* pMap) { m_pMap = pMap; }
 	virtual void Frame() override;
 	virtual void SetVertexData();
+	void    HitOverlap(TObject* pObj, UINT iState) override;
 	TNpcObj()
 	{
 		m_fSpeed = 150.0f;

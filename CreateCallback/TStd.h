@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <atlconv.h>  // A2W
 #include <wrl.h> // windows runtime c++ template library
