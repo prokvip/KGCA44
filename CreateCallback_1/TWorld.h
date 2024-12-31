@@ -2,8 +2,8 @@
 #include "TMapObj.h"
 #include "THeroObj.h"
 #include "TEffectObj.h"
+
 #include "TNpcObj.h"
-#include "TControlGUI.h"
 //void fun(object, UINT);
 //std::function<void ()>
 using CollisionFunction = std::function<void(TObject*, THitResult)>;

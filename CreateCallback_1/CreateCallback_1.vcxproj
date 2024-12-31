@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{64D744C0-451E-49EF-907D-47C18558F1AE}</ProjectGuid>
+    <ProjectGuid>{2CA28D5D-C55C-4D3A-8F25-A87437B9CDBF}</ProjectGuid>
     <RootNamespace>WindowClass</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>../../output/Debug/</OutDir>
-    <IntDir>../../output/Debug/CreateCallback</IntDir>
+    <IntDir>../../output/Debug/CreateCallback_1</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -147,9 +147,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\data\shader\stdShader.h" />
-    <ClInclude Include="TControlGUI.h" />
-    <ClInclude Include="TEnemyFSM.h" />
     <ClInclude Include="Sample.h" />
+    <ClInclude Include="stdShader.h" />
     <ClInclude Include="TCollision.h" />
     <ClInclude Include="TDevice.h" />
     <ClInclude Include="TDxState.h" />
@@ -157,7 +156,6 @@
     <ClInclude Include="TEffectObj.h" />
     <ClInclude Include="TFiniteState.h" />
     <ClInclude Include="TGameCore.h" />
-    <ClInclude Include="TGuiFSM.h" />
     <ClInclude Include="THeroObj.h" />
     <ClInclude Include="TInput.h" />
     <ClInclude Include="TInputLayout.h" />
@@ -178,8 +176,6 @@
     <ClInclude Include="TWorld.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TControlGUI.cpp" />
-    <ClCompile Include="TEnemyFSM.cpp" />
     <ClCompile Include="Sample.cpp" />
     <ClCompile Include="TCollision.cpp" />
     <ClCompile Include="TDevice.cpp" />
@@ -188,7 +184,6 @@
     <ClCompile Include="TEffectObj.cpp" />
     <ClCompile Include="TFiniteState.cpp" />
     <ClCompile Include="TGameCore.cpp" />
-    <ClCompile Include="TGuiFSM.cpp" />
     <ClCompile Include="THeroObj.cpp" />
     <ClCompile Include="TInput.cpp" />
     <ClCompile Include="TInputLayout.cpp" />

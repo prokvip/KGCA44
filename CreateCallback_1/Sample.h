@@ -3,7 +3,6 @@
 #include "TWorld.h"
 #include "TSound.h"
 #include "TFiniteState.h"
-
 using RECT_ARRAY = std::vector<RECT>;
 class Sample : public TGameCore
 {
@@ -13,12 +12,10 @@ class Sample : public TGameCore
 	TTexture*		m_pBitmap1Mask = nullptr;
 	using tObject = std::shared_ptr<TObject2D>;
 	using tNpc = std::shared_ptr<TNpcObj>;
-	using tUI = std::shared_ptr<TControlGUI>;
 	
 	std::shared_ptr<TMapObj>	m_pMap = nullptr;
 	std::shared_ptr<THeroObj>	m_pHero = nullptr;
 	std::vector<tNpc>			m_NpcList;
-	std::vector< tUI>   m_UiList;
 	std::list<tObject>			m_EffectList;
 	TSound* m_pSound = nullptr;
 	TSound* m_pSoundEffect = nullptr;
@@ -37,7 +34,6 @@ public:
     bool CreateHero();
 	bool CreateNPC();
     bool CreateEffect();
-	bool CreateUI();
 	TVector2 GetWorldMousePos();
 };
 

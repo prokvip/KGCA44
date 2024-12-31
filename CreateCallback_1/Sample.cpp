@@ -78,6 +78,7 @@ bool Sample::CreateMap()
     TRect rt;
     rt.SetP(-1000.0f, -1000.0f, +1000.0f, +1000.0f);
     m_pMap = std::make_shared<TMapObj>(rt, 10, 10);
+    
     if (m_pMap->Create(m_pWorld.get()))
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
@@ -98,7 +99,7 @@ bool Sample::CreateHero()
     //resData.texShaderName = L"../../data/shader/Default.txt";
     resData.texPathName = L"../../data/texture/bitmap1.bmp";
     resData.texShaderName = L"../../data/shader/BlendMask.txt";
-    m_pHero->m_pMeshRender = &TGameCore::m_MeshRender;
+    m_pHero->m_pMeshRender = TGameCore::m_pMeshRender;
     m_pHero->m_pWorld = m_pWorld.get();
     if (m_pHero->Create(m_pWorld.get(), resData, vStart, tEnd))
     {
@@ -115,15 +116,14 @@ bool Sample::CreateHero()
 }
 bool Sample::CreateNPC()
 {
-    TNpcObj::StartFSM();
     // npc
     TRect rtWorldMap = m_pMap->m_rtScreen;
     for (int iNpc = 0; iNpc < 100; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
-        npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
+        npcobj->m_pMeshRender = TGameCore::m_pMeshRender;
         npcobj->SetMap(m_pMap.get());
-        npcobj->SetFSM(&m_fsm);
+        npcobj->StartFSM(&m_fsm);
         TVector2 vStart(
             rtWorldMap.v1.x + (rand() % (UINT)(rtWorldMap.vs.x - 100.0f)),
             rtWorldMap.v1.y + (rand() % (UINT)(rtWorldMap.vs.y - 100.0f)));
@@ -141,56 +141,6 @@ bool Sample::CreateNPC()
             m_NpcList.emplace_back(npcobj);
         }
     }
-    return true;
-}
-bool Sample::CreateUI()
-{
-    TControlGUI::StartFSM();
-
-    TLoadResData resData;
-    resData.texPathName = L"../../data/texture/kgcalogo.bmp";
-    resData.texShaderName = L"../../data/shader/Default.txt";
-     
-    //auto ui = std::make_shared<TControlGUI>();
-    //ui->m_pMeshRender = &TGameCore::m_MeshRender;
-    //ui->SetFSM(&m_fsm);
-    //TVector2 vStart = { 0.0f, 0.0f };
-    //TVector2 vEnd = { 800.0f, 600.0f };
-    
-    //ui->m_pMeshRender = &TGameCore::m_MeshRender;
-    //if (ui->Create(m_pWorld.get(), resData, vStart, vEnd))
-    //{
-    //    ui->m_iCollisionType = TCollisionType::T_Overlap;
-    //    //ui->SetScale(300.0f, 300.0f );
-    //    ui->SetRotation(T_Pi*0.25f);
-    //    m_UiList.emplace_back(ui);
-    //}
-    auto ui1 = std::make_shared<TControlGUI>();
-    ui1->m_pMeshRender = &TGameCore::m_MeshRender;
-    ui1->SetFSM(&m_fsm);
-    TVector2 vStart1 = { 0.0f, 0.0f };
-    TVector2 vEnd1 = { 100.0f, 300.0f };
-    if (ui1->Create(m_pWorld.get(), resData, vStart1, vEnd1))
-    {
-        ui1->m_iCollisionType = TCollisionType::T_Overlap;
-        //ui1->SetScale(50.0f, 50.0f);
-        //ui1->SetRotation(T_Pi * 0.25f);
-        m_UiList.emplace_back(ui1);
-    }
-
-    auto ui2 = std::make_shared<TControlGUI>();
-    ui2->m_pMeshRender = &TGameCore::m_MeshRender;
-    ui2->SetFSM(&m_fsm);
-    TVector2 vStart2 = { 700.0f, 0.0f };
-    TVector2 vEnd2 = { 800.0f, 600.0f };
-    if (ui2->Create(m_pWorld.get(), resData, vStart2, vEnd2))
-    {
-        ui2->m_iCollisionType = TCollisionType::T_Overlap;
-        //ui2->SetScale(50.0f, 100.0f);
-        //ui2->SetRotation(T_Pi);
-        m_UiList.emplace_back(ui2);
-    }
-
     return true;
 }
 bool Sample::CreateEffect()
@@ -236,13 +186,12 @@ void   Sample::Init()
     CreateMap();
     CreateHero();
     CreateNPC();
-    CreateUI();
    // CreateEffect();    
 }
 void   Sample::AddEffect(TVector2 vStart, TVector2 tEnd)
 {
     auto pObject3 = std::make_shared<TEffectObj>();
-    pObject3->m_pMeshRender = &TGameCore::m_MeshRender;
+    pObject3->m_pMeshRender = TGameCore::m_pMeshRender;
     pObject3->m_vVertexList = pObject3->m_pMeshRender->m_vVertexList;
     TLoadResData resData;
     resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
@@ -374,26 +323,11 @@ void   Sample::Frame()
             m_pWorld->DeleteCollisionExecute(m_NpcList[iNpc1].get());
         };
     }
-
-    for (auto data : m_UiList)
-    {
-        if (!data->m_bDead)
-        {
-            //data->FrameState(m_pHero.get());
-            data->Frame();
-        }
-    }
-
     m_pWorld->Frame();
 }
 void   Sample::Render() 
 {       
     TSoundManager::GetInstance().Render();
-    TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
-    TDevice::m_pd3dContext->PSSetShaderResources(1, 1, &m_pBitmap1Mask->m_pTexSRV);
-    m_pHero->Transform(m_vCamera);
-    m_pHero->Render();
-
     m_pMap->Transform(m_vCamera);
     m_pMap->Render();
 
@@ -414,15 +348,6 @@ void   Sample::Render()
         data->Transform(m_vCamera);
         data->Render();
     }
-
-    for (auto data : m_UiList)
-    {
-        if (!data->m_bDead)
-        {
-            data->Transform(m_vCamera);
-            data->Render();
-        }
-    }
     D2D1_RECT_F rt = { 0.0f, 350.0f, 800.0f, 600.0f };
     m_DxWrite.DirectDraw(rt, L"Sample::Render");
 }
@@ -436,10 +361,7 @@ void   Sample::Release()
     {
         data->Release();
     }
-    for (auto data : m_UiList)
-    {
-        data->Release();
-    }
+
     m_pHero->Release();
     m_pMap->Release();
 }
