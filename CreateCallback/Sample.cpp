@@ -173,8 +173,8 @@ bool Sample::CreateUI()
     if (ui1->Create(m_pWorld.get(), resData, vStart1, vEnd1))
     {
         ui1->m_iCollisionType = TCollisionType::T_Overlap;
-        //ui1->SetScale(50.0f, 50.0f);
-        //ui1->SetRotation(T_Pi * 0.25f);
+        ui1->SetScale(100.0f, 50.0f);
+        ui1->SetRotation(T_Pi * 0.25f);
         m_UiList.emplace_back(ui1);
     }
 
@@ -186,8 +186,8 @@ bool Sample::CreateUI()
     if (ui2->Create(m_pWorld.get(), resData, vStart2, vEnd2))
     {
         ui2->m_iCollisionType = TCollisionType::T_Overlap;
-        //ui2->SetScale(50.0f, 100.0f);
-        //ui2->SetRotation(T_Pi);
+        ui2->SetScale(50.0f, 100.0f);
+        //ui2->SetRotation(T_Pi * -0.25f);
         m_UiList.emplace_back(ui2);
     }
 

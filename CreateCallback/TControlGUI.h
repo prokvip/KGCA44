@@ -22,6 +22,7 @@ public:
 	virtual void Frame() override;
 	void	Transform(TVector2 vCamera);
 	void    TransformNDC();
+	void	SetScale(float sx, float sy);
 	virtual void SetVertexData();
 	void    HitOverlap(TObject* pObj, THitResult hRet) override;
 	bool	Create(TWorld* pWorld, TLoadResData data,TVector2 s,TVector2 e);
