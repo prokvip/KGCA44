@@ -17,7 +17,7 @@ public:
 public:
 	void SetFSM(TFiniteStateMachine* pFsm);
 	void SetTransition(UINT iEvent);
-	static void StartFSM();
+	static void CreateActionFSM();
 	void FrameState(TObject* pHero);
 	void SetMap(TMapObj* pMap) { m_pMap = pMap; }
 	virtual void Frame() override;

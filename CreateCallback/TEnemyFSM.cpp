@@ -5,26 +5,26 @@ TEnemyState::TEnemyState(TNpcObj* p) : m_pOwner(p) {
 }
 TEnemyState::~TEnemyState() {}
 TStandAction::TStandAction(TNpcObj* p) : TEnemyState(p) {
-	m_iEnemyState = 0;
+	m_iState = 0;
 }
 TStandAction::~TStandAction() {}
 TMoveAction::TMoveAction(TNpcObj* p) : TEnemyState(p) {
-	m_iEnemyState = 1;
+	m_iState = 1;
 }
 TMoveAction::~TMoveAction() {}
 
 TAttackAction::TAttackAction(TNpcObj* p) : TEnemyState(p) {
-	m_iEnemyState = 2;
+	m_iState = 2;
 }
 TAttackAction::~TAttackAction() {}
 
 void TStandAction::ProcessAction(TObject* pObj)
 {
-	m_pOwner->m_StateData[m_iEnemyState].m_fTimer -= g_fSPF;
-	if (m_pOwner->m_StateData[m_iEnemyState].m_fTimer < 0.0f)
+	m_pOwner->m_StateData[m_iState].m_fTimer -= g_fSPF;
+	if (m_pOwner->m_StateData[m_iState].m_fTimer < 0.0f)
 	{
-		m_pOwner->m_StateData[m_iEnemyState].m_fTimer = 
-			m_pOwner->m_StateData[m_iEnemyState].m_fDefaultTimer;
+		m_pOwner->m_StateData[m_iState].m_fTimer = 
+			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
 		m_pOwner->SetTransition(T_ActionEvent::EVENT_PATROL);
 	}
 	m_pOwner->SetRotation(0);
@@ -34,10 +34,10 @@ void TMoveAction::ProcessAction(TObject* pObj)
 	// 공격범위 판단 -> 상태전이
 	// 고격범위 탈출 -> 상태전이
 	float fDistance = (pObj->m_vPos - m_pOwner->m_vPos).Length();
-	if (fDistance < m_pOwner->m_StateData[m_iEnemyState].m_fDistance)
+	if (fDistance < m_pOwner->m_StateData[m_iState].m_fDistance)
 	{
-		m_pOwner->m_StateData[m_iEnemyState].m_fTimer =
-			m_pOwner->m_StateData[m_iEnemyState].m_fDefaultTimer;
+		m_pOwner->m_StateData[m_iState].m_fTimer =
+			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
 		m_pOwner->SetTransition(T_ActionEvent::EVENT_FINDTARGET);
 		return;
 	}
@@ -51,19 +51,19 @@ void TAttackAction::ProcessAction(TObject* pObj)
 {
 	// 공격범위 판단 -> 상태전이
 	// 고격범위 탈출 -> 상태전이
-	m_pOwner->m_StateData[m_iEnemyState].m_fTimer -= g_fSPF; 
-	if (m_pOwner->m_StateData[m_iEnemyState].m_fTimer < 0.0f)
+	m_pOwner->m_StateData[m_iState].m_fTimer -= g_fSPF; 
+	if (m_pOwner->m_StateData[m_iState].m_fTimer < 0.0f)
 	{
-		m_pOwner->m_StateData[m_iEnemyState].m_fTimer =
-			m_pOwner->m_StateData[m_iEnemyState].m_fDefaultTimer;
+		m_pOwner->m_StateData[m_iState].m_fTimer =
+			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
 		m_pOwner->SetTransition(T_ActionEvent::EVENT_STOP);
 		return;
 	}
 	float fDistance = (pObj->m_vPos - m_pOwner->m_vPos).Length();
-	if (fDistance > m_pOwner->m_StateData[m_iEnemyState].m_fDistance)
+	if (fDistance > m_pOwner->m_StateData[m_iState].m_fDistance)
 	{		
-		m_pOwner->m_StateData[m_iEnemyState].m_fTimer =
-			m_pOwner->m_StateData[m_iEnemyState].m_fDefaultTimer;
+		m_pOwner->m_StateData[m_iState].m_fTimer =
+			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
 		m_pOwner->SetTransition(T_ActionEvent::EVENT_LOSTTARGET);
 		return;
 	}

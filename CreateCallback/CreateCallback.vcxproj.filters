@@ -71,7 +71,7 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="TGuiFSM.cpp">
-      <Filter>GUI</Filter>
+      <Filter>FSM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +151,7 @@
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="TGuiFSM.h">
-      <Filter>GUI</Filter>
+      <Filter>FSM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

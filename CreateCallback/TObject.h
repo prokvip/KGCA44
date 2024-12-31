@@ -31,6 +31,7 @@ public:
 	std::vector<PCT_VERTEX>		m_vVertexList;
 public:
 	virtual void SetScale(float sx, float sy);
+	virtual void SetScale(TVector2 s);
 	virtual void SetRotation(float fRadian);
 	virtual void SetPosition(TVector2 p);
 	virtual void AddPosition(float x, float y);

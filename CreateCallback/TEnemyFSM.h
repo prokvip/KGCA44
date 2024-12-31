@@ -5,7 +5,7 @@ class TNpcObj;
 class TEnemyState
 {
 public:
-	UINT   m_iEnemyState;
+	UINT   m_iState;
 	TEnemyState(TNpcObj* p);
 	TEnemyState() {};
 	virtual ~TEnemyState();
@@ -20,7 +20,7 @@ public:
 	virtual void ProcessAction(TObject* pObj);
 public:
 	TStandAction(TNpcObj* p);
-	TStandAction() { m_iEnemyState = STATE_STAND; };
+	TStandAction() { m_iState = STATE_STAND; };
 	virtual ~TStandAction();
 };
 class TMoveAction : public TEnemyState
@@ -28,7 +28,7 @@ class TMoveAction : public TEnemyState
 public:
 	virtual void ProcessAction(TObject* pObj);
 	TMoveAction(TNpcObj* p);
-	TMoveAction() { m_iEnemyState = STATE_MOVE; };
+	TMoveAction() { m_iState = STATE_MOVE; };
 	virtual ~TMoveAction();
 };
 class TAttackAction : public TEnemyState
@@ -36,7 +36,7 @@ class TAttackAction : public TEnemyState
 public:
 	virtual void ProcessAction(TObject* pObj);
 	TAttackAction(TNpcObj* p);
-	TAttackAction() { m_iEnemyState = STATE_ATTACK; };
+	TAttackAction() { m_iState = STATE_ATTACK; };
 	virtual ~TAttackAction();
 };
 

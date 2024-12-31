@@ -36,7 +36,6 @@ void THeroObj::Frame()
 void THeroObj::SetVertexData()
 {
 	if (m_pTexture == nullptr) return;
-	TObject2D::SetVertexData();
 	float xSize = m_pTexture->m_TexDesc.Width;
 	float ySize = m_pTexture->m_TexDesc.Height;
 	TRect rt;

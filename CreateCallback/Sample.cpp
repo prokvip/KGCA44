@@ -115,7 +115,7 @@ bool Sample::CreateHero()
 }
 bool Sample::CreateNPC()
 {
-    TNpcObj::StartFSM();
+    TNpcObj::CreateActionFSM();
     // npc
     TRect rtWorldMap = m_pMap->m_rtScreen;
     for (int iNpc = 0; iNpc < 100; iNpc++)
@@ -145,7 +145,7 @@ bool Sample::CreateNPC()
 }
 bool Sample::CreateUI()
 {
-    TControlGUI::StartFSM();
+    TButtonGUI::CreateActionFSM();
 
     TLoadResData resData;
     resData.texPathName = L"../../data/ui/main_start_nor.png";

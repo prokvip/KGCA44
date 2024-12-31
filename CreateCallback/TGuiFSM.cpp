@@ -4,19 +4,26 @@ TGuiState::TGuiState(TControlGUI* p) : m_pOwner(p) {
 
 }
 TGuiState::~TGuiState() {}
+
 TDefaultActionGui::TDefaultActionGui(TControlGUI* p) : TGuiState(p) {
-	m_iEnemyState = 0;
+	m_iState = TSelectState::T_DEFAULT;
 }
 TDefaultActionGui::~TDefaultActionGui() {}
+
 THoverActionGui::THoverActionGui(TControlGUI* p) : TGuiState(p) {
-	m_iEnemyState = 1;
+	m_iState = TSelectState::T_HOVER;
 }
 THoverActionGui::~THoverActionGui() {}
 
 TActiveActionGui::TActiveActionGui(TControlGUI* p) : TGuiState(p) {
-	m_iEnemyState = 2;
+	m_iState = TSelectState::T_ACTIVE;
 }
 TActiveActionGui::~TActiveActionGui() {}
+
+TSelectedActionGui::TSelectedActionGui(TControlGUI* p) : TGuiState(p) {
+	m_iState = TSelectState::T_SELECTED;
+}
+TSelectedActionGui::~TSelectedActionGui() {}
 
 void TDefaultActionGui::ProcessAction(TObject* pObj)
 {	
@@ -30,11 +37,7 @@ void THoverActionGui::ProcessAction(TObject* pObj)
 {
 	if (m_pOwner->m_iSelectState == TSelectState::T_DEFAULT)
 	{
-		m_pOwner->SetScale(
-			m_pOwner->m_StateData[T_SelectEvent::EVENT_DEFAULT].
-			vDefaultScale.x,
-			m_pOwner->m_StateData[T_SelectEvent::EVENT_DEFAULT].
-			vDefaultScale.y);
+		m_pOwner->SetScale(	m_pOwner->m_StateData[T_SelectEvent::EVENT_DEFAULT].vDefaultScale);
 		m_pOwner->SetTransition(T_SelectEvent::EVENT_DEFAULT);
 		return;
 	}
@@ -52,7 +55,3 @@ void TSelectedActionGui::ProcessAction(TObject* pObj)
 }
 
 
-TSelectedActionGui::TSelectedActionGui(TControlGUI* p) : TGuiState(p) {
-	m_iEnemyState = 0;
-}
-TSelectedActionGui::~TSelectedActionGui() {}

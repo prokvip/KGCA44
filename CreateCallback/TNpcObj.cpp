@@ -36,7 +36,6 @@ void TNpcObj::Frame()
 void TNpcObj::SetVertexData()
 {
 	if (m_pTexture == nullptr) return;
-	TObject2D::SetVertexData();
 	float xSize = m_pTexture->m_TexDesc.Width;
 	float ySize = m_pTexture->m_TexDesc.Height;
 	TRect rt;
@@ -61,7 +60,7 @@ void TNpcObj::SetFSM(TFiniteStateMachine* pFsm)
 	m_StateData[T_ActionState::STATE_ATTACK].m_fDistance = 100.0f;
 	m_pAction = m_pActionList[0].get();
 }
-void TNpcObj::StartFSM()
+void TNpcObj::CreateActionFSM()
 {
 	if (m_pActionList.size()) return;
 	std::shared_ptr<TEnemyState> stand = 
@@ -78,7 +77,7 @@ void TNpcObj::SetTransition(UINT iEvent)
 {
 	_ASSERT(m_pFsm);
 	UINT iOutput = m_pFsm->GetOutputState(
-		m_pAction->m_iEnemyState, iEvent);
+		m_pAction->m_iState, iEvent);
 	m_pAction = m_pActionList[iOutput].get();
 }
 void TNpcObj::FrameState(TObject* pHero)

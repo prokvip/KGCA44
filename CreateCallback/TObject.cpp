@@ -16,6 +16,10 @@ void TObject::SetScale(float sx, float sy)
 	m_Sphere.vCenter = m_rtScreen.vc;
 	m_Sphere.fRadius = m_rtScreen.fR;
 }
+void TObject::SetScale(TVector2 s)
+{
+	SetScale(s.x, s.y);
+}
 void TObject::SetRotation(float fRadian)
 {
 	m_fAngleRadian = fRadian;
