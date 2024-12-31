@@ -12,11 +12,16 @@ class TWorld
 public:
 	UINT   m_iExecuteCollisionID = 0;
 	std::map<int, TObject*>  m_ObjectList;
+	UINT   m_iExecuteSelectID = 0;
+	std::map<int, TObject*>  m_SelectList;
 public:
 	std::map<int, CollisionFunction>  m_fnCollisionExecute;
-	void AddCollisionExecute(TObject* pOwnder, 
-		CollisionFunction fun);
+	void AddCollisionExecute(TObject* pOwnder, 	CollisionFunction fun);
 	void DeleteCollisionExecute(TObject* pOwner);
+
+	std::map<int, CollisionFunction>  m_fnSelectExecute;
+	void AddSelectExecute(TObject* pOwnder,	CollisionFunction fun);
+	void DeleteSelectExecute(TObject* pOwner);
 public:
 	void   Frame();
 };

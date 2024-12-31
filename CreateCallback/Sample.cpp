@@ -148,45 +148,45 @@ bool Sample::CreateUI()
     TControlGUI::StartFSM();
 
     TLoadResData resData;
-    resData.texPathName = L"../../data/texture/kgcalogo.bmp";
+    resData.texPathName = L"../../data/ui/main_start_nor.png";
     resData.texShaderName = L"../../data/shader/Default.txt";
      
-    //auto ui = std::make_shared<TControlGUI>();
-    //ui->m_pMeshRender = &TGameCore::m_MeshRender;
-    //ui->SetFSM(&m_fsm);
-    //TVector2 vStart = { 0.0f, 0.0f };
-    //TVector2 vEnd = { 800.0f, 600.0f };
+    auto ui = std::make_shared<TButtonGUI>();
+    ui->m_pMeshRender = &TGameCore::m_MeshRender;
+    ui->SetFSM(&m_GuiFSM);
+    TVector2 vStart = { 400.0f-50.0f, 300.0f-25.0f };
+    TVector2 vEnd = { 400.0f + 100.0f, 300.0f+50.0f };
     
-    //ui->m_pMeshRender = &TGameCore::m_MeshRender;
-    //if (ui->Create(m_pWorld.get(), resData, vStart, vEnd))
-    //{
-    //    ui->m_iCollisionType = TCollisionType::T_Overlap;
-    //    //ui->SetScale(300.0f, 300.0f );
-    //    ui->SetRotation(T_Pi*0.25f);
-    //    m_UiList.emplace_back(ui);
-    //}
-    auto ui1 = std::make_shared<TControlGUI>();
+    ui->m_pMeshRender = &TGameCore::m_MeshRender;
+    if (ui->Create(m_pWorld.get(), resData, vStart, vEnd))
+    {
+        ui->m_iCollisionType = TCollisionType::T_Overlap;
+        //ui->SetScale(300.0f, 300.0f );
+        //ui->SetRotation(T_Pi*0.25f);
+        m_UiList.emplace_back(ui);
+    }
+    auto ui1 = std::make_shared<TButtonGUI>();
     ui1->m_pMeshRender = &TGameCore::m_MeshRender;
-    ui1->SetFSM(&m_fsm);
+    ui1->SetFSM(&m_GuiFSM);
     TVector2 vStart1 = { 0.0f, 0.0f };
-    TVector2 vEnd1 = { 100.0f, 300.0f };
+    TVector2 vEnd1 = { 100.0f, 100.0f };
     if (ui1->Create(m_pWorld.get(), resData, vStart1, vEnd1))
     {
         ui1->m_iCollisionType = TCollisionType::T_Overlap;
-        ui1->SetScale(100.0f, 50.0f);
-        ui1->SetRotation(T_Pi * 0.25f);
+        //ui1->SetScale(100.0f, 50.0f);
+        //ui1->SetRotation(T_Pi * 0.25f);
         m_UiList.emplace_back(ui1);
     }
 
-    auto ui2 = std::make_shared<TControlGUI>();
+    auto ui2 = std::make_shared<TButtonGUI>();
     ui2->m_pMeshRender = &TGameCore::m_MeshRender;
-    ui2->SetFSM(&m_fsm);
+    ui2->SetFSM(&m_GuiFSM);
     TVector2 vStart2 = { 700.0f, 0.0f };
-    TVector2 vEnd2 = { 800.0f, 600.0f };
+    TVector2 vEnd2 = { 800.0f, 100.0f };
     if (ui2->Create(m_pWorld.get(), resData, vStart2, vEnd2))
     {
         ui2->m_iCollisionType = TCollisionType::T_Overlap;
-        ui2->SetScale(50.0f, 100.0f);
+        //ui2->SetScale(50.0f, 100.0f);
         //ui2->SetRotation(T_Pi * -0.25f);
         m_UiList.emplace_back(ui2);
     }
@@ -217,6 +217,9 @@ void   Sample::Init()
     m_fsm.AddStateTransition(STATE_MOVE, EVENT_FINDTARGET, STATE_ATTACK);
     m_fsm.AddStateTransition(STATE_ATTACK, EVENT_STOP, STATE_STAND);
     m_fsm.AddStateTransition(STATE_ATTACK, EVENT_LOSTTARGET, STATE_STAND);
+
+    m_GuiFSM.AddStateTransition(T_DEFAULT, EVENT_SELECT, T_HOVER);
+    m_GuiFSM.AddStateTransition(T_HOVER, EVENT_DEFAULT, T_DEFAULT);
 
     //UINT iCurrent = T_ActionState::STATE_STAND;
     //UINT iEvent = T_ActionEvent::EVENT_PATROL;
@@ -379,7 +382,7 @@ void   Sample::Frame()
     {
         if (!data->m_bDead)
         {
-            //data->FrameState(m_pHero.get());
+            data->FrameState(m_pHero.get());
             data->Frame();
         }
     }

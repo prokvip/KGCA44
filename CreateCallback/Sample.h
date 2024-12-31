@@ -8,6 +8,7 @@ using RECT_ARRAY = std::vector<RECT>;
 class Sample : public TGameCore
 {
 	TFiniteStateMachine      m_fsm;
+	TGUIFSM					 m_GuiFSM;
 	std::shared_ptr<TWorld>  m_pWorld;
 	TVector2        m_vCamera = { 400.0f, 300.0f };
 	TTexture*		m_pBitmap1Mask = nullptr;

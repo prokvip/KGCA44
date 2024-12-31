@@ -6,10 +6,14 @@ struct TStateDataUI
 	float m_fTimer;
 	float m_fDefaultTimer;
 	float m_fDistance;
+	TVector2 vDefaultScale;
+	TVector2 vDefaultPos;
+	TVector2 vDefaultRotate;
 };
 class TControlGUI : public TObject2D
 {
 public:
+	UINT   m_iSelectState = 0;
 	TGuiState* m_pAction = nullptr;
 	std::vector<TStateDataUI>   m_StateData;
 	static std::vector<std::shared_ptr<TGuiState>>  m_pActionList;
@@ -24,7 +28,8 @@ public:
 	void    TransformNDC();
 	void	SetScale(float sx, float sy);
 	virtual void SetVertexData();
-	void    HitOverlap(TObject* pObj, THitResult hRet) override;
+	bool    LoadTexture(std::wstring texName)override;
+	void    HitSelect(TObject* pObj, THitResult hRet) override;
 	bool	Create(TWorld* pWorld, TLoadResData data,TVector2 s,TVector2 e);
 	TControlGUI()
 	{
@@ -35,6 +40,11 @@ public:
 };
 class TButtonGUI : public TControlGUI
 {
-
+public:
+	std::vector<TTexture*> m_pTexState;
+public:
+	void   Frame();
+	void   PostRender();
+	bool   LoadTexture(std::wstring texName);
 };
 

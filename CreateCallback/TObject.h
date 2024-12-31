@@ -8,6 +8,7 @@ class TObject
 public:
 	TMeshRender*	m_pMeshRender = nullptr;
 	UINT			m_iCollisionID;
+	UINT			m_iSelectID;
 	TWorld*			m_pWorld=nullptr;
 	TCollisionType	m_iCollisionType = TCollisionType::T_Ignore;
 public:
@@ -61,6 +62,7 @@ public:
 	virtual void	Release();
 public:
 	virtual void    HitOverlap(TObject* pObj, THitResult hRet);
+	virtual void    HitSelect(TObject* pObj, THitResult hRet);
 public:
 	TObject();
 	virtual ~TObject();

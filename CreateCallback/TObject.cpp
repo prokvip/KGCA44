@@ -4,6 +4,9 @@
 void    TObject::HitOverlap(TObject* pObj, THitResult hRet)
 {	
 };
+void    TObject::HitSelect(TObject* pObj, THitResult hRet)
+{	
+}
 void TObject::SetScale(float sx, float sy)
 {
 	m_vScale.x = sx;

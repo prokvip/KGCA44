@@ -1,5 +1,6 @@
 #include "TInput.h"
 TGameKey g_GameKey;
+POINT    g_ptMouse;
 DWORD   TInput::KeyCheck(DWORD dwKey)
 {
 	SHORT sKey = GetAsyncKeyState(dwKey);
@@ -34,6 +35,7 @@ void    TInput::Frame()
 {
 	GetCursorPos(&m_ptMouse);			// 화면좌표
 	ScreenToClient(g_hWnd, &m_ptMouse); // 클라이언트좌표
+	g_ptMouse = m_ptMouse;
 	// 키 매핑
 	g_GameKey.dwWkey		= KeyCheck('W');
 	g_GameKey.dwSkey		= KeyCheck('S');

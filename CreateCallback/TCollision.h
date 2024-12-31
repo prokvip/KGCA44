@@ -12,6 +12,7 @@ struct THitResult
 	TObject* pObject;
 	TVector2 vPos;
 	TVector2 vDir;
+	UINT     iState;
 };
 struct PRect;
 
