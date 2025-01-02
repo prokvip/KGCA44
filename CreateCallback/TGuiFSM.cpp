@@ -29,7 +29,7 @@ void TDefaultActionGui::ProcessAction(TObject* pObj)
 {	
 	if (m_pOwner->m_iSelectState == TSelectState::T_HOVER)
 	{
-		m_pOwner->SetTransition(T_SelectEvent::EVENT_SELECT);
+		m_pOwner->SetTransition(TSelectEvent::EVENT_SELECT);
 		return;
 	}
 }
@@ -37,11 +37,17 @@ void THoverActionGui::ProcessAction(TObject* pObj)
 {
 	if (m_pOwner->m_iSelectState == TSelectState::T_DEFAULT)
 	{
-		m_pOwner->SetScale(	m_pOwner->m_StateData[T_SelectEvent::EVENT_DEFAULT].vDefaultScale);
-		m_pOwner->SetTransition(T_SelectEvent::EVENT_DEFAULT);
+		m_pOwner->SetScale(	m_pOwner->m_StateData[TSelectEvent::EVENT_DEFAULT].vDefaultScale);
+		m_pOwner->SetTransition(TSelectEvent::EVENT_DEFAULT);
 		return;
 	}
-	float fAngle = m_pOwner->m_StateData[T_SelectEvent::EVENT_SELECT].
+	if (m_pOwner->m_iSelectState == TSelectState::T_SELECTED)
+	{
+		m_pOwner->SetScale(m_pOwner->m_StateData[TSelectEvent::EVENT_DEFAULT].vDefaultScale);
+		m_pOwner->SetTransition(TSelectEvent::EVENT_SELECT);
+		return;
+	}
+	float fAngle = m_pOwner->m_StateData[TSelectEvent::EVENT_SELECT].
 		vDefaultScale.y + 5.0f;
 	m_pOwner->SetScale(m_pOwner->m_vScale.x, fAngle);
 }

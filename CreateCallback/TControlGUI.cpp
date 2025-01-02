@@ -7,6 +7,10 @@ std::vector<std::shared_ptr<TGuiState>> TControlGUI::m_pActionList;
 void    TControlGUI::HitSelect(TObject* pObj, THitResult hRet)
 {
 	m_iSelectState = hRet.iState;
+	if (m_iSelectState == T_SELECTED)
+	{
+		m_iSelectState = T_SELECTED;
+	}
 };
 bool	TControlGUI::Create(TWorld* pWorld, TLoadResData data,TVector2 s,TVector2 e)
 {
@@ -22,8 +26,8 @@ bool	TControlGUI::Create(TWorld* pWorld, TLoadResData data,TVector2 s,TVector2 e
 		return false;
 	}
 
-	m_StateData[T_SelectEvent::EVENT_DEFAULT].vDefaultScale = m_vScale;
-	m_StateData[T_SelectEvent::EVENT_SELECT].vDefaultScale = m_vScale;
+	m_StateData[TSelectEvent::EVENT_DEFAULT].vDefaultScale = m_vScale;
+	m_StateData[TSelectEvent::EVENT_SELECT].vDefaultScale = m_vScale;
 
 	auto bindFun = std::bind(&TObject::HitSelect,
 		this,
@@ -122,12 +126,12 @@ void TButtonGUI::SetTransition(UINT iEvent)
 void TButtonGUI::Frame()
 {
 }
-void	TButtonGUI::PostRender()
+void TButtonGUI::PostRender()
 {
 	TDevice::m_pd3dContext->PSSetShaderResources(0, 1, &m_pTexState[m_iSelectState]->m_pTexSRV);
 	m_pMeshRender->PostRender();
 }
-bool   TButtonGUI::LoadTexture(std::wstring texName)
+bool TButtonGUI::LoadTexture(std::wstring texName)
 {
 	auto tex0 = I_Tex.Load(L"../../data/ui/main_start_dis.png");
 	auto tex1 = I_Tex.Load(L"../../data/ui/main_start_nor.png");
@@ -139,5 +143,25 @@ bool   TButtonGUI::LoadTexture(std::wstring texName)
 	m_pTexState.emplace_back(tex1);
 	m_pTexState.emplace_back(tex2);
 	m_pTexState.emplace_back(tex3);
+	return true;
+}
+
+void TImageGUI::PostRender()
+{
+	TDevice::m_pd3dContext->PSSetShaderResources(0, 1, &m_pTexState[m_iSelectState]->m_pTexSRV);
+	m_pMeshRender->PostRender();
+}
+bool TImageGUI::LoadTexture(std::wstring texName)
+{
+	auto tex0 = I_Tex.Load(texName);
+	//auto tex1 = I_Tex.Load(texName");
+	//auto tex2 = I_Tex.Load(texNameg");
+	//auto tex3 = I_Tex.Load(texName");
+	m_pTexture = tex0;
+
+	m_pTexState.emplace_back(m_pTexture);
+	m_pTexState.emplace_back(m_pTexture);
+	m_pTexState.emplace_back(m_pTexture);
+	m_pTexState.emplace_back(m_pTexture);
 	return true;
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -157,6 +157,7 @@
     <ClInclude Include="TEffectObj.h" />
     <ClInclude Include="TFiniteState.h" />
     <ClInclude Include="TGameCore.h" />
+    <ClInclude Include="TGame.h" />
     <ClInclude Include="TGuiFSM.h" />
     <ClInclude Include="THeroObj.h" />
     <ClInclude Include="TInput.h" />
@@ -167,6 +168,11 @@
     <ClInclude Include="TNpcObj.h" />
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TObject2D.h" />
+    <ClInclude Include="TScene.h" />
+    <ClInclude Include="TSceneGameIn.h" />
+    <ClInclude Include="TSceneIntro.h" />
+    <ClInclude Include="TSceneLobby.h" />
+    <ClInclude Include="TSceneResult.h" />
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TSound.h" />
     <ClInclude Include="TStd.h" />
@@ -188,6 +194,7 @@
     <ClCompile Include="TEffectObj.cpp" />
     <ClCompile Include="TFiniteState.cpp" />
     <ClCompile Include="TGameCore.cpp" />
+    <ClCompile Include="TGame.cpp" />
     <ClCompile Include="TGuiFSM.cpp" />
     <ClCompile Include="THeroObj.cpp" />
     <ClCompile Include="TInput.cpp" />
@@ -198,6 +205,11 @@
     <ClCompile Include="TNpcObj.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TObject2D.cpp" />
+    <ClCompile Include="TScene.cpp" />
+    <ClCompile Include="TSceneGameIn.cpp" />
+    <ClCompile Include="TSceneIntro.cpp" />
+    <ClCompile Include="TSceneLobby.cpp" />
+    <ClCompile Include="TSceneResult.cpp" />
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TSound.cpp" />
     <ClCompile Include="TTexture.cpp" />

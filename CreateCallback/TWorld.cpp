@@ -4,7 +4,7 @@ void TWorld::AddCollisionExecute(
 	CollisionFunction fun)
 {
 	pOwner->m_iCollisionID = ++m_iExecuteCollisionID;
-	m_ObjectList.insert(std::make_pair(
+	m_CollisionList.insert(std::make_pair(
 		pOwner->m_iCollisionID,
 		pOwner));
 	m_fnCollisionExecute.insert(std::make_pair(
@@ -21,10 +21,10 @@ void TWorld::AddCollisionExecute(
 }
 void TWorld::DeleteCollisionExecute(TObject* pOwner)
 {
-	auto iter = m_ObjectList.find(pOwner->m_iCollisionID);
-	if (iter != m_ObjectList.end())
+	auto iter = m_CollisionList.find(pOwner->m_iCollisionID);
+	if (iter != m_CollisionList.end())
 	{
-		m_ObjectList.erase(iter);
+		m_CollisionList.erase(iter);
 	}
 	auto iterFun = m_fnCollisionExecute.find(pOwner->m_iCollisionID);
 	if (iterFun != m_fnCollisionExecute.end())
@@ -59,7 +59,7 @@ void TWorld::DeleteSelectExecute(TObject* pOwner)
 }
 void   TWorld::Frame()
 {
-	for (auto src : m_ObjectList)
+	for (auto src : m_CollisionList)
 	{
 		TObject* pSrcObj = src.second;
 		if (pSrcObj->m_bDead) continue;
@@ -68,7 +68,7 @@ void   TWorld::Frame()
 		{
 			continue;
 		}
-		for (auto dest : m_ObjectList)
+		for (auto dest : m_CollisionList)
 		{
 			if (src == dest) continue;			
 			TObject* pDestObj = dest.second;
@@ -127,14 +127,33 @@ void   TWorld::Frame()
 		}
 		else
 		{
-			auto iter = m_fnSelectExecute.find(pSrcObj->m_iSelectID);
-			if (iter != m_fnSelectExecute.end())
+			if (pSrcObj->m_iSelectState != TSelectState::T_DEFAULT
+				)
 			{
-				THitResult ret;
-				ret.iState = TSelectState::T_DEFAULT;
-				CollisionFunction call = iter->second;
-				call(nullptr, ret);
+				auto iter = m_fnSelectExecute.find(pSrcObj->m_iSelectID);
+				if (iter != m_fnSelectExecute.end())
+				{
+					THitResult ret;
+					ret.iState = TSelectState::T_DEFAULT;
+					CollisionFunction call = iter->second;
+					call(nullptr, ret);
+				}
 			}
 		}		
 	}
+}
+void   TWorld::Release()
+{
+	for (auto src : m_CollisionList)
+	{
+		TObject* pSrcObj = src.second;
+		pSrcObj->Release();
+	}
+	for (auto src : m_SelectList)
+	{
+		TObject* pSrcObj = src.second;
+		pSrcObj->Release();
+	}
+	m_CollisionList.clear();
+	m_SelectList.clear();
 }

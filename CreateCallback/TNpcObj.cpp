@@ -48,16 +48,16 @@ void TNpcObj::SetVertexData()
 void TNpcObj::SetFSM(TFiniteStateMachine* pFsm)
 {
 	m_pFsm = pFsm;
-	m_StateData.resize(T_ActionState::STATE_COUNT);
-	m_StateData[T_ActionState::STATE_STAND].m_fTimer = 3.0f;
-	m_StateData[T_ActionState::STATE_STAND].m_fDefaultTimer = 3.0f;
-	m_StateData[T_ActionState::STATE_STAND].m_fDistance = 100.0f;
-	m_StateData[T_ActionState::STATE_MOVE].m_fTimer = 3.0f;
-	m_StateData[T_ActionState::STATE_MOVE].m_fDefaultTimer = 3.0f;
-	m_StateData[T_ActionState::STATE_MOVE].m_fDistance = 100.0f;
-	m_StateData[T_ActionState::STATE_ATTACK].m_fTimer = 3.0f;
-	m_StateData[T_ActionState::STATE_ATTACK].m_fDefaultTimer = 3.0f;
-	m_StateData[T_ActionState::STATE_ATTACK].m_fDistance = 100.0f;
+	m_StateData.resize(TActionState::STATE_COUNT);
+	m_StateData[TActionState::STATE_STAND].m_fTimer = 3.0f;
+	m_StateData[TActionState::STATE_STAND].m_fDefaultTimer = 3.0f;
+	m_StateData[TActionState::STATE_STAND].m_fDistance = 100.0f;
+	m_StateData[TActionState::STATE_MOVE].m_fTimer = 3.0f;
+	m_StateData[TActionState::STATE_MOVE].m_fDefaultTimer = 3.0f;
+	m_StateData[TActionState::STATE_MOVE].m_fDistance = 100.0f;
+	m_StateData[TActionState::STATE_ATTACK].m_fTimer = 3.0f;
+	m_StateData[TActionState::STATE_ATTACK].m_fDefaultTimer = 3.0f;
+	m_StateData[TActionState::STATE_ATTACK].m_fDistance = 100.0f;
 	m_pAction = m_pActionList[0].get();
 }
 void TNpcObj::CreateActionFSM()

@@ -25,7 +25,7 @@ void TStandAction::ProcessAction(TObject* pObj)
 	{
 		m_pOwner->m_StateData[m_iState].m_fTimer = 
 			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
-		m_pOwner->SetTransition(T_ActionEvent::EVENT_PATROL);
+		m_pOwner->SetTransition(TActionEvent::EVENT_PATROL);
 	}
 	m_pOwner->SetRotation(0);
 }
@@ -38,7 +38,7 @@ void TMoveAction::ProcessAction(TObject* pObj)
 	{
 		m_pOwner->m_StateData[m_iState].m_fTimer =
 			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
-		m_pOwner->SetTransition(T_ActionEvent::EVENT_FINDTARGET);
+		m_pOwner->SetTransition(TActionEvent::EVENT_FINDTARGET);
 		return;
 	}
 	// v = v + d*s : 직선의 벡터의 방정식
@@ -56,7 +56,7 @@ void TAttackAction::ProcessAction(TObject* pObj)
 	{
 		m_pOwner->m_StateData[m_iState].m_fTimer =
 			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
-		m_pOwner->SetTransition(T_ActionEvent::EVENT_STOP);
+		m_pOwner->SetTransition(TActionEvent::EVENT_STOP);
 		return;
 	}
 	float fDistance = (pObj->m_vPos - m_pOwner->m_vPos).Length();
@@ -64,7 +64,7 @@ void TAttackAction::ProcessAction(TObject* pObj)
 	{		
 		m_pOwner->m_StateData[m_iState].m_fTimer =
 			m_pOwner->m_StateData[m_iState].m_fDefaultTimer;
-		m_pOwner->SetTransition(T_ActionEvent::EVENT_LOSTTARGET);
+		m_pOwner->SetTransition(TActionEvent::EVENT_LOSTTARGET);
 		return;
 	}
 

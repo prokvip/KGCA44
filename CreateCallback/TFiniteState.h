@@ -9,7 +9,7 @@ enum TSelectState
 	T_SELECTED,// = 8, // T_ACTIVE 상태에서 왼쪼버튼 놓았을 때
 	T_COUNTER,
 };
-enum T_SelectEvent
+enum TSelectEvent
 {
 	EVENT_DEFAULT = 0,
 	EVENT_SELECT,
@@ -22,7 +22,7 @@ enum T_SelectEvent
 // STATE_MOVE  -> EVENT_FINDTARGET  ->STATE_ATTACK
 // STATE_ATTACK -> EVENT_LOSTTARGET ->STATE_STAND 
 
-enum T_ActionState
+enum TActionState
 {
 	STATE_STAND = 0,
 	STATE_MOVE,
@@ -30,13 +30,28 @@ enum T_ActionState
 	STATE_COUNT,
 };
 // 상태전이
-enum T_ActionEvent
+enum TActionEvent
 {
 	EVENT_FINDTARGET = 0,
 	EVENT_LOSTTARGET,
 	EVENT_STOP,
 	EVENT_PATROL,
 	EVENT_COUNT,
+};
+enum TSceneState
+{
+	SCENE_INTRO = 0,
+	SCENE_LOBBY,
+	SCENE_INGAME,
+	SCENE_RESULT,
+	SCENE_COUNT,
+};
+// 상태전이
+enum TSceneEvent
+{
+	EVENT_NEXT_SCENE = 0,
+	EVENT_PREV_SCENE,
+	EVENT_SCENE_COUNT,
 };
 // 유한상태
 class TFiniteState

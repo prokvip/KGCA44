@@ -9,6 +9,7 @@ public:
 	TMeshRender*	m_pMeshRender = nullptr;
 	UINT			m_iCollisionID;
 	UINT			m_iSelectID;
+	UINT			m_iSelectState = 0;
 	TWorld*			m_pWorld=nullptr;
 	TCollisionType	m_iCollisionType = TCollisionType::T_Ignore;
 public:

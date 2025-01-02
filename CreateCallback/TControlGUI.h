@@ -12,8 +12,7 @@ struct TStateDataUI
 };
 class TControlGUI : public TObject2D
 {
-public:
-	UINT   m_iSelectState = 0;
+public:	
 	TGuiState* m_pAction = nullptr;
 	std::vector<TStateDataUI>   m_StateData;	
 	static std::vector<std::shared_ptr<TGuiState>>  m_pActionList;
@@ -49,6 +48,12 @@ public:
 	void SetFSM(TFiniteStateMachine* pFsm)override;
 	void SetTransition(UINT iEvent)override;
 	void Frame()override;
+	void PostRender()override;
+	bool LoadTexture(std::wstring texName)override;
+};
+class TImageGUI : public TButtonGUI
+{
+public:
 	void PostRender()override;
 	bool LoadTexture(std::wstring texName)override;
 };

@@ -11,7 +11,7 @@ class TWorld
 {
 public:
 	UINT   m_iExecuteCollisionID = 0;
-	std::map<int, TObject*>  m_ObjectList;
+	std::map<int, TObject*>  m_CollisionList;
 	UINT   m_iExecuteSelectID = 0;
 	std::map<int, TObject*>  m_SelectList;
 public:
@@ -24,5 +24,6 @@ public:
 	void DeleteSelectExecute(TObject* pOwner);
 public:
 	void   Frame();
+	void   Release();
 };
 
