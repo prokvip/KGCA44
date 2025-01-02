@@ -133,10 +133,10 @@ void TButtonGUI::PostRender()
 }
 bool TButtonGUI::LoadTexture(std::wstring texName)
 {
-	auto tex0 = I_Tex.Load(L"../../data/ui/main_start_dis.png");
-	auto tex1 = I_Tex.Load(L"../../data/ui/main_start_nor.png");
-	auto tex2 = I_Tex.Load(L"../../data/ui/main_start_sel.png");
-	auto tex3 = I_Tex.Load(L"../../data/ui/main_start_pus.png");
+	auto tex0 = I_Tex.Load(L"../../data/ui/main_start_nor.png");
+	auto tex1 = I_Tex.Load(L"../../data/ui/main_start_sel.png");
+	auto tex2 = I_Tex.Load(L"../../data/ui/main_start_pus.png");
+	auto tex3 = I_Tex.Load(L"../../data/ui/main_start_dis.png");
 	m_pTexture = tex0;
 
 	m_pTexState.emplace_back(m_pTexture);

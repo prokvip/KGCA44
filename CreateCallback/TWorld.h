@@ -4,8 +4,8 @@
 #include "TEffectObj.h"
 #include "TNpcObj.h"
 #include "TControlGUI.h"
-//void fun(object, UINT);
-//std::function<void ()>
+
+class TScene;
 using CollisionFunction = std::function<void(TObject*, THitResult)>;
 class TWorld
 {
@@ -14,6 +14,7 @@ public:
 	std::map<int, TObject*>  m_CollisionList;
 	UINT   m_iExecuteSelectID = 0;
 	std::map<int, TObject*>  m_SelectList;
+	TScene* m_pScene=nullptr;
 public:
 	std::map<int, CollisionFunction>  m_fnCollisionExecute;
 	void AddCollisionExecute(TObject* pOwnder, 	CollisionFunction fun);
@@ -25,5 +26,7 @@ public:
 public:
 	void   Frame();
 	void   Release();
+public:
+	TWorld(TScene* pScene);
 };
 

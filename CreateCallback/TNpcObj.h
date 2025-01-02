@@ -6,6 +6,13 @@ struct TStateData
 	float m_fDefaultTimer;
 	float m_fDistance;
 };
+
+class TEnemyFSM : public TFiniteStateMachine
+{
+
+};
+
+
 class TNpcObj : public TObject2D
 {
 public:

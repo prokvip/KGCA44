@@ -1,6 +1,6 @@
 #pragma once
-
 #include "TGuiFSM.h"
+
 struct TStateDataUI
 {
 	float m_fTimer;
@@ -10,6 +10,12 @@ struct TStateDataUI
 	TVector2 vDefaultPos;
 	TVector2 vDefaultRotate;
 };
+
+class TGUIFSM : public TFiniteStateMachine
+{
+
+};
+
 class TControlGUI : public TObject2D
 {
 public:	

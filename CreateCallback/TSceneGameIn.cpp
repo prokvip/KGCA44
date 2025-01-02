@@ -7,19 +7,18 @@ TSceneGameIn::TSceneGameIn(TGame* p) {
 TSceneGameIn::~TSceneGameIn() {}
 void TSceneGameIn::ProcessAction(TObject* pObj)
 {
-    if (m_bSceneChange == true)
+    if (m_bNextScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
+        m_bNextScene = false;
         return;
     }
-    /*if (m_bSceneChange == true)
+    if (m_bPrevScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_PREV_SCENE);
+        m_bPrevScene = false;
         return;
-    }*/
-
-    Frame();
-    Render();
+    }
 }
 bool TSceneGameIn::CreateSound()
 {
@@ -31,8 +30,7 @@ bool TSceneGameIn::CreateSound()
 }
 TVector2 TSceneGameIn::GetWorldMousePos()
 {
-    TVector2 vPos = { (float)g_ptMouse.x,
-                          (float)g_ptMouse.y };
+    TVector2 vPos = { (float)g_ptMouse.x,(float)g_ptMouse.y };
     vPos.x += m_vCamera.x - g_ptClientSize.x * 0.5f;
     vPos.y += m_vCamera.y - g_ptClientSize.y * 0.5f;
     return vPos;
@@ -123,13 +121,6 @@ bool TSceneGameIn::CreateHero()
     {
         m_pHero->m_iCollisionType = TCollisionType::T_Overlap;
     }
-    /* auto bindFun = std::bind(&TObject::HitOverlap,
-                              m_pHero.get(),
-                              std::placeholders::_1,
-                              std::placeholders::_2);
-     m_pWorld->AddCollisionExecute(
-         m_pHero.get(),
-         bindFun);*/
     return true;
 }
 bool TSceneGameIn::CreateNPC()
@@ -170,21 +161,7 @@ bool TSceneGameIn::CreateUI()
     resData.texPathName = L"../../data/ui/main_start_nor.png";
     resData.texShaderName = L"../../data/shader/Default.txt";
 
-    auto ui = std::make_shared<TButtonGUI>();
-    ui->m_pMeshRender = &TGameCore::m_MeshRender;
-    ui->SetFSM(&m_GuiFSM);
-    TVector2 vStart = { 400.0f - 50.0f, 300.0f - 25.0f };
-    TVector2 vEnd = { 400.0f + 100.0f, 300.0f + 50.0f };
-
-    ui->m_pMeshRender = &TGameCore::m_MeshRender;
-    if (ui->Create(m_pWorld.get(), resData, vStart, vEnd))
-    {
-        ui->m_iCollisionType = TCollisionType::T_Overlap;
-        //ui->SetScale(300.0f, 300.0f );
-        //ui->SetRotation(T_Pi*0.25f);
-        m_UiList.emplace_back(ui);
-    }
-    auto ui1 = std::make_shared<TButtonGUI>();
+    auto ui1 = std::make_shared<TPrevBtn>();
     ui1->m_pMeshRender = &TGameCore::m_MeshRender;
     ui1->SetFSM(&m_GuiFSM);
     TVector2 vStart1 = { 0.0f, 0.0f };
@@ -197,7 +174,7 @@ bool TSceneGameIn::CreateUI()
         m_UiList.emplace_back(ui1);
     }
 
-    auto ui2 = std::make_shared<TButtonGUI>();
+    auto ui2 = std::make_shared<TNextBtn>();
     ui2->m_pMeshRender = &TGameCore::m_MeshRender;
     ui2->SetFSM(&m_GuiFSM);
     TVector2 vStart2 = { 700.0f, 0.0f };
@@ -278,12 +255,12 @@ void   TSceneGameIn::Init()
     m_pBitmap1Mask = I_Tex.Load(L"../../data/texture/bitmap2.bmp");
     GameDataLoad(L"SpriteData.txt");
 
-    m_pWorld = std::make_shared<TWorld>();
+    m_pWorld = std::make_shared<TWorld>(this);
     CreateMap();
     CreateHero();
     CreateNPC();
     CreateUI();
-    // CreateEffect();    
+    //CreateEffect();    
 }
 void   TSceneGameIn::Frame()
 {
@@ -439,10 +416,10 @@ void   TSceneGameIn::Render()
             data->Render();
         }
     }
-    if (m_UiList[0]->m_iSelectState == T_SELECTED)
-    {
-        m_bSceneChange = true;
-    }
+    //if (m_UiList[0]->m_iSelectState == T_SELECTED)
+    //{
+    //    m_bNextScene = true;
+    //}
 }
 void   TSceneGameIn::Release()
 {
@@ -462,8 +439,5 @@ void   TSceneGameIn::Release()
     m_pMap->Release();
 }
 
-//void   TSceneGameIn::Init() {}
-//void   TSceneGameIn::Frame() {}
-//void   TSceneGameIn::Render() {}
-//void   TSceneGameIn::Release() {}
+
 

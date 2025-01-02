@@ -7,20 +7,18 @@ TSceneIntro::TSceneIntro(TGame* p)  {
 TSceneIntro::~TSceneIntro() {}
 void TSceneIntro::ProcessAction(TObject* pObj)
 {
-    if (m_bSceneChange == true)
+    if (m_bNextScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
+        m_bNextScene = false;
         return;
     }
-
-    Frame();
-    Render();    
 }
 
 void   TSceneIntro::Init()
 {
 	TButtonGUI::CreateActionFSM();
-    m_pWorld = std::make_shared<TWorld>();
+    m_pWorld = std::make_shared<TWorld>(this);
     m_GuiFSM.AddStateTransition(T_DEFAULT, EVENT_SELECT, T_HOVER);
     m_GuiFSM.AddStateTransition(T_HOVER, EVENT_DEFAULT, T_DEFAULT);
     m_GuiFSM.AddStateTransition(T_HOVER, EVENT_SELECT, T_SELECTED);
@@ -84,7 +82,7 @@ void   TSceneIntro::Render()
     }
     if (m_UiList[1]->m_iSelectState == T_SELECTED)
     {
-        m_bSceneChange = true;
+        m_bNextScene = true;
     }   
 }
 void   TSceneIntro::Release()

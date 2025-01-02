@@ -1,58 +1,6 @@
 #pragma once
 #include "TStd.h"
-enum TSelectState
-{
-	T_DEFAULT = 0,  // 커서가 위에 없을 때(T_FOCUS상태에서 다른 곳을 T_ACTIVE하면 전환된다.)
-	T_HOVER,// = 1,	// 커서가 위에 있을 때
-	//T_FOCUS,// = 2,	// T_ACTIVE상태에서 왼쪽 버튼을 다른 곳에서 놓았을 때(취소)
-	T_ACTIVE,// = 4,	// 마우스 왼쪽 버튼 누르고 있을 때
-	T_SELECTED,// = 8, // T_ACTIVE 상태에서 왼쪼버튼 놓았을 때
-	T_COUNTER,
-};
-enum TSelectEvent
-{
-	EVENT_DEFAULT = 0,
-	EVENT_SELECT,
-	EVENT_SELECT_COUNT,
-};
-// STATE_STAND -> EVENT_PATROL (시간경과)    -> STATE_MOVE
-// STATE_STAND -> EVENT_FINDTARGET(검색범위) -> STATE_ATTACK
-// STATE_MOVE  -> EVENT_STOP		->STATE_STAND
-// STATE_MOVE  -> EVENT_LOSTTARGET  ->STATE_STAND
-// STATE_MOVE  -> EVENT_FINDTARGET  ->STATE_ATTACK
-// STATE_ATTACK -> EVENT_LOSTTARGET ->STATE_STAND 
 
-enum TActionState
-{
-	STATE_STAND = 0,
-	STATE_MOVE,
-	STATE_ATTACK,
-	STATE_COUNT,
-};
-// 상태전이
-enum TActionEvent
-{
-	EVENT_FINDTARGET = 0,
-	EVENT_LOSTTARGET,
-	EVENT_STOP,
-	EVENT_PATROL,
-	EVENT_COUNT,
-};
-enum TSceneState
-{
-	SCENE_INTRO = 0,
-	SCENE_LOBBY,
-	SCENE_INGAME,
-	SCENE_RESULT,
-	SCENE_COUNT,
-};
-// 상태전이
-enum TSceneEvent
-{
-	EVENT_NEXT_SCENE = 0,
-	EVENT_PREV_SCENE,
-	EVENT_SCENE_COUNT,
-};
 // 유한상태
 class TFiniteState
 {
@@ -68,6 +16,7 @@ public:
 	TFiniteState(UINT iState);
 	virtual ~TFiniteState();
 };
+
 class TFiniteStateMachine
 {
 public:
@@ -82,16 +31,7 @@ public:
 	TFiniteStateMachine();
 	virtual ~TFiniteStateMachine();
 };
-class TEnemyFSM : public TFiniteStateMachine
-{
 
-};
-class TGUIFSM : public TFiniteStateMachine
-{
 
-};
-class TSceneFSM : public TFiniteStateMachine
-{
 
-};
 

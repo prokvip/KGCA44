@@ -5,6 +5,11 @@
 #include "TSceneGameIn.h"
 #include "TSceneResult.h"
 
+class TSceneFSM : public TFiniteStateMachine
+{
+
+};
+
 class TGame : public TObject
 {
 public:
@@ -16,5 +21,10 @@ public:
 	static  void CreateActionFSM();
 	virtual void SetTransition(UINT iEvent);
 	virtual void FrameState(TObject* pHero);
+public:
+	void		Init();
+	void		Frame();
+	void		Render();
+	void		Release();
 };
 

@@ -3,12 +3,32 @@
 #include "TWorld.h"
 #include "TSound.h"
 #include "TFiniteState.h"
+enum TSceneState
+{
+	SCENE_INTRO = 0,
+	SCENE_LOBBY,
+	SCENE_INGAME,
+	SCENE_RESULT,
+	SCENE_COUNT,
+};
+// 상태전이
+enum TSceneEvent
+{
+	EVENT_NEXT_SCENE = 0,
+	EVENT_PREV_SCENE,
+	EVENT_SCENE_COUNT,
+};
+
+
+
+
 class TGame;
 class TScene
 {
 	static std::vector<std::shared_ptr<TScene>>  m_pActionList;
 public:
-	bool		  m_bSceneChange = false;
+	bool		  m_bNextScene = false;
+	bool		  m_bPrevScene = false;
 	std::shared_ptr<TWorld>  m_pWorld;
 public:
 	UINT   m_iState = 0;

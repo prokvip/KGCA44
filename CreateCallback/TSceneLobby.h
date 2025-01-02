@@ -6,6 +6,7 @@ public:
 	TGUIFSM					 m_GuiFSM;
 	using tUI = std::shared_ptr<TControlGUI>;
 	std::vector<tUI>		m_UiList;
+public:
 	TSceneLobby(TGame* p);
 	TSceneLobby() { m_iState = TSceneState::SCENE_LOBBY; };
 	virtual ~TSceneLobby();

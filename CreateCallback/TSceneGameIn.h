@@ -1,12 +1,35 @@
 #pragma once
 #include "TScene.h"
 
+class TNextBtn : public TButtonGUI
+{
+public:
+	void    HitSelect(TObject* pObj, THitResult hRet)
+	{
+		m_iSelectState = hRet.iState;
+		if (m_iSelectState == T_SELECTED)
+		{
+			m_pWorld->m_pScene->m_bNextScene = true;
+		}
+	};
+};
+class TPrevBtn : public TButtonGUI
+{
+public:
+	void    HitSelect(TObject* pObj, THitResult hRet)
+	{
+		m_iSelectState = hRet.iState;
+		if (m_iSelectState == T_SELECTED)
+		{
+			m_pWorld->m_pScene->m_bPrevScene = true;
+		}
+	};
+};
 using RECT_ARRAY = std::vector<RECT>;
 class TSceneGameIn : public TScene
 {
 	TFiniteStateMachine      m_fsm;
 	TGUIFSM					 m_GuiFSM;
-	std::shared_ptr<TWorld>  m_pWorld;
 	TVector2        m_vCamera = { 400.0f, 300.0f };
 	TTexture* m_pBitmap1Mask = nullptr;
 	using tObject = std::shared_ptr<TObject2D>;

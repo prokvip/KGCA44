@@ -1,5 +1,4 @@
 #include "TSceneLobby.h"
-#include "TSceneIntro.h"
 #include "TGameCore.h"
 #include "TGame.h"
 TSceneLobby::TSceneLobby(TGame* p) 
@@ -9,20 +8,18 @@ TSceneLobby::TSceneLobby(TGame* p)
 TSceneLobby::~TSceneLobby() {}
 void TSceneLobby::ProcessAction(TObject* pObj)
 {
-    if (m_bSceneChange == true)
+    if (m_bNextScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
+        m_bNextScene = false;
         return;
     }
-
-    Frame();
-    Render();
 }
 
 void   TSceneLobby::Init()
 {
     TButtonGUI::CreateActionFSM();
-    m_pWorld = std::make_shared<TWorld>();
+    m_pWorld = std::make_shared<TWorld>(this);
     m_GuiFSM.AddStateTransition(T_DEFAULT, EVENT_SELECT, T_HOVER);
     m_GuiFSM.AddStateTransition(T_HOVER, EVENT_DEFAULT, T_DEFAULT);
     m_GuiFSM.AddStateTransition(T_HOVER, EVENT_SELECT, T_SELECTED);
@@ -86,7 +83,7 @@ void   TSceneLobby::Render()
     }
     if (m_UiList[1]->m_iSelectState == T_SELECTED)
     {
-        m_bSceneChange = true;
+        m_bNextScene = true;
     }
 }
 void   TSceneLobby::Release()

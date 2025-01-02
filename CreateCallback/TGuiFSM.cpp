@@ -53,11 +53,14 @@ void THoverActionGui::ProcessAction(TObject* pObj)
 }
 void TActiveActionGui::ProcessAction(TObject* pObj)
 {
-	m_pOwner->SetRotation(g_fGT);
+	if (m_pOwner->m_iSelectState == TSelectState::T_ACTIVE)
+	{
+		m_pOwner->SetTransition(TSelectEvent::EVENT_SELECT);
+		return;
+	}
 }
 void TSelectedActionGui::ProcessAction(TObject* pObj)
-{	
-	m_pOwner->SetRotation(g_fGT);
+{		
 }
 
 

@@ -1,4 +1,6 @@
 #include "TWorld.h"
+#include "TScene.h"
+
 void TWorld::AddCollisionExecute(
 	TObject* pOwner,
 	CollisionFunction fun)
@@ -127,8 +129,7 @@ void   TWorld::Frame()
 		}
 		else
 		{
-			if (pSrcObj->m_iSelectState != TSelectState::T_DEFAULT
-				)
+			if (pSrcObj->m_iSelectState != TSelectState::T_DEFAULT)
 			{
 				auto iter = m_fnSelectExecute.find(pSrcObj->m_iSelectID);
 				if (iter != m_fnSelectExecute.end())
@@ -156,4 +157,9 @@ void   TWorld::Release()
 	}
 	m_CollisionList.clear();
 	m_SelectList.clear();
+}
+
+TWorld::TWorld(TScene* pScene) : m_pScene(pScene)
+{
+	
 }
