@@ -19,6 +19,7 @@ public:
 	TMatrix3   m_matWorld; // s * r * t
 	TVector2   m_vScale = { 1.0f, 1.0f };
 	float      m_fAngleRadian = 0.0f;
+	TVector2   m_vCamera;
 	TVector2		m_vPos;
 	TVector2		m_vDir;
 	float			m_fSpeed;

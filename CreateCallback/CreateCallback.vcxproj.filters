@@ -91,6 +91,7 @@
     <ClCompile Include="TGame.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="TProjectile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sample.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="TGame.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="TProjectile.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="SpriteData.txt" />

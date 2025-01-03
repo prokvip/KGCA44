@@ -4,6 +4,11 @@ void    THeroObj::HitOverlap(TObject* pObj, THitResult hRes)
 {
 	
 };
+void THeroObj::Init()
+{
+	TObject2D::Init();
+	m_pProjectile = std::make_shared<TProjectile>(m_pWorld);
+}
 void THeroObj::Frame()
 {
 	// *시간의 동기화
@@ -32,6 +37,25 @@ void THeroObj::Frame()
 	}
 
 	AddPosition(vAdd);
+
+	if (g_GameKey.dwLeftClick == KEY_HOLD)
+	{
+		TVector2 vHalf = { 10.0f, 10.0f };
+		TVector2 vStart = m_vPos - vHalf;
+		TVector2 vEnd = m_vPos + vHalf;
+		m_pProjectile->AddEffect(vStart, vEnd);
+	}
+	m_pProjectile->Frame(m_vPos);
+}
+void THeroObj::Render()
+{
+	TObject2D::Render();
+	m_pProjectile->Render(m_vCamera);
+}
+void THeroObj::Release ()
+{
+	TObject2D::Release();
+	m_pProjectile->Release();
 }
 void THeroObj::SetVertexData()
 {

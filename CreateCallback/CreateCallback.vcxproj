@@ -168,6 +168,7 @@
     <ClInclude Include="TNpcObj.h" />
     <ClInclude Include="TObject.h" />
     <ClInclude Include="TObject2D.h" />
+    <ClInclude Include="TProjectile.h" />
     <ClInclude Include="TScene.h" />
     <ClInclude Include="TSceneGameIn.h" />
     <ClInclude Include="TSceneIntro.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="TNpcObj.cpp" />
     <ClCompile Include="TObject.cpp" />
     <ClCompile Include="TObject2D.cpp" />
+    <ClCompile Include="TProjectile.cpp" />
     <ClCompile Include="TScene.cpp" />
     <ClCompile Include="TSceneGameIn.cpp" />
     <ClCompile Include="TSceneIntro.cpp" />

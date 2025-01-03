@@ -69,6 +69,7 @@ void	TObject::Frame()
 {}
 void	TObject::Transform(TVector2 vCamera)
 {
+	m_vCamera = vCamera;
 	m_matWorld = m_matScale * m_matRotate * m_matTrans;
 	for (int i = 0; i < m_vScreenList.size(); i++)
 	{
@@ -138,8 +139,9 @@ bool	TObject::CreatePixelShader()
 	return true;
 }
 bool	TObject::Create(TWorld* pWorld)
-{
+{	
 	m_pWorld = pWorld;
+	Init();
 	SetVertexData();
 	/*if (!CreateVertexBuffer())
 	{
@@ -184,7 +186,7 @@ bool	TObject::Create(TWorld* pWorld,TLoadResData data)
 bool	TObject::Create(TWorld* pWorld,TLoadResData data,
 	TVector2 s,
 	TVector2 e)
-{
+{	
 	m_LoadResData = data;
 	m_rtScreen.SetP(s, e);
 	SetScale(m_rtScreen.vh.x, m_rtScreen.vh.y);

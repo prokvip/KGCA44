@@ -399,7 +399,7 @@ void   TSceneGameIn::Render()
     {
         if (data->m_bDead) continue;
         data->Transform(m_vCamera);
-        data->Render();
+        //data->Render();
     }
 
     for (auto data : m_EffectList)
