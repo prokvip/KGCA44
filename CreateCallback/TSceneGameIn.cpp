@@ -98,7 +98,7 @@ bool TSceneGameIn::CreateMap()
 {
     TRect rt;
     rt.SetP(-1000.0f, -1000.0f, +1000.0f, +1000.0f);
-    m_pMap = std::make_shared<TMapObj>(rt, 100, 100);
+    m_pMap = std::make_shared<TMapObj>(rt, 50, 50);
     if (m_pMap->Create(m_pWorld.get()))
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
@@ -333,7 +333,7 @@ void   TSceneGameIn::Frame()
         AddEffect(v1, tEnd);
 
     }
-    if (g_GameKey.dwRightClick == KEY_HOLD)
+    if (g_GameKey.dwRightClick == KEY_PUSH)
     {
         for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
         {
