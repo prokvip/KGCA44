@@ -15,7 +15,7 @@ void TGame::CreateActionFSM()
 
 	intro->Init();
 	lobby->Init();
-	InGame->Init();
+	//InGame->Init();
 	Result->Init();
 
 	m_pActionList.emplace_back(intro);

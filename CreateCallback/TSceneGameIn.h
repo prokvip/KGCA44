@@ -1,30 +1,7 @@
 #pragma once
 #include "TScene.h"
 
-class TNextBtn : public TButtonGUI
-{
-public:
-	void    HitSelect(TObject* pObj, THitResult hRet)
-	{
-		m_iSelectState = hRet.iState;
-		if (m_iSelectState == T_SELECTED)
-		{
-			m_pWorld->m_pScene->m_bNextScene = true;
-		}
-	};
-};
-class TPrevBtn : public TButtonGUI
-{
-public:
-	void    HitSelect(TObject* pObj, THitResult hRet)
-	{
-		m_iSelectState = hRet.iState;
-		if (m_iSelectState == T_SELECTED)
-		{
-			m_pWorld->m_pScene->m_bPrevScene = true;
-		}
-	};
-};
+
 using RECT_ARRAY = std::vector<RECT>;
 class TSceneGameIn : public TScene
 {
@@ -45,6 +22,12 @@ class TSceneGameIn : public TScene
 	TSound* m_pSoundEffect = nullptr;
 	std::vector<RECT_ARRAY>  m_rtSpriteList;
 	std::vector<T_STR_VECTOR> m_szSpriteList;
+
+	UINT  m_iKillCounter = 0;
+	std::vector<TTexture*>    m_pNumber;
+	tUI m_pNum10 = nullptr;
+	tUI m_pNum01 = nullptr;
+	static UINT m_iGameStage;
 public:
 	void   AddEffect(TVector2 vPos, TVector2 tEnd);
 	bool   GameDataLoad(W_STR filename);
@@ -54,6 +37,7 @@ public:
 	virtual void   Release() override;
 public:
 	virtual void ProcessAction(TObject* pObj);
+	void    Reset();
 public:
 	TSceneGameIn(TGame* p);
 	TSceneGameIn() { m_iState = TSceneState::SCENE_INGAME; };

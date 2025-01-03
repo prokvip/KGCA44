@@ -12,12 +12,15 @@ void TSceneResult::ProcessAction(TObject* pObj)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
         m_bNextScene = false;
+        m_bPrevScene = false;
         return;
     }
     if (m_bPrevScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_PREV_SCENE);
+        m_pOwner->m_pAction->Init();
         m_bPrevScene = false;
+        m_bNextScene = false;
         return;
     }
 }
@@ -31,7 +34,7 @@ void   TSceneResult::Init()
     m_GuiFSM.AddStateTransition(T_HOVER, EVENT_SELECT, T_SELECTED);
 
     TLoadResData resData;
-    resData.texPathName = L"../../data/Texture/black.png";
+    resData.texPathName = L"../../data/Texture/board.png";
     resData.texShaderName = L"../../data/shader/Default.txt";
 
     auto ui1 = std::make_shared<TImageGUI>();
@@ -93,11 +96,7 @@ void   TSceneResult::Render()
             data->Transform({ 0.0f,0.0f });
             data->Render();
         }
-    }
-    if (m_UiList[1]->m_iSelectState == T_SELECTED)
-    {
-        m_bNextScene = true;
-    }
+    }   
 }
 void   TSceneResult::Release()
 {

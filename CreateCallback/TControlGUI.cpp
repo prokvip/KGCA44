@@ -25,9 +25,11 @@ bool	TControlGUI::Create(TWorld* pWorld, TLoadResData data,TVector2 s,TVector2 e
 	{
 		return false;
 	}
-
-	m_StateData[TSelectEvent::EVENT_DEFAULT].vDefaultScale = m_vScale;
-	m_StateData[TSelectEvent::EVENT_SELECT].vDefaultScale = m_vScale;
+	if (m_StateData.size())
+	{
+		m_StateData[TSelectEvent::EVENT_DEFAULT].vDefaultScale = m_vScale;
+		m_StateData[TSelectEvent::EVENT_SELECT].vDefaultScale = m_vScale;
+	}
 
 	auto bindFun = std::bind(&TObject::HitSelect,
 		this,
@@ -95,8 +97,11 @@ void TControlGUI::SetTransition(UINT iEvent)
 }
 void TControlGUI::FrameState(TObject* pHero)
 {
-	m_pAction->m_pOwner = this;
-	m_pAction->ProcessAction(pHero);
+	if (m_pAction)
+	{
+		m_pAction->m_pOwner = this;
+		m_pAction->ProcessAction(pHero);
+	}
 }
 
 void TButtonGUI::SetFSM(TFiniteStateMachine* pFsm)
@@ -148,7 +153,6 @@ bool TButtonGUI::LoadTexture(std::wstring texName)
 
 void TImageGUI::PostRender()
 {
-	TDevice::m_pd3dContext->PSSetShaderResources(0, 1, &m_pTexState[m_iSelectState]->m_pTexSRV);
 	m_pMeshRender->PostRender();
 }
 bool TImageGUI::LoadTexture(std::wstring texName)

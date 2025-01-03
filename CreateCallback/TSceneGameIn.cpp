@@ -1,22 +1,33 @@
 #include "TSceneGameIn.h"
 #include "TGameCore.h"
 #include "TGame.h"
+
+UINT TSceneGameIn::m_iGameStage = 1;
 TSceneGameIn::TSceneGameIn(TGame* p) {
     m_pOwner = p;
 }
 TSceneGameIn::~TSceneGameIn() {}
+
+void    TSceneGameIn::Reset()
+{
+    m_iKillCounter = 10;
+}
 void TSceneGameIn::ProcessAction(TObject* pObj)
 {
     if (m_bNextScene == true)
     {
+        m_pOwner->m_pAction->Release();
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
         m_bNextScene = false;
+        m_bPrevScene = false;
         return;
     }
     if (m_bPrevScene == true)
     {
+        m_pOwner->m_pAction->Release();
         m_pOwner->SetTransition(TSceneEvent::EVENT_PREV_SCENE);
         m_bPrevScene = false;
+        m_bNextScene = false;
         return;
     }
 }
@@ -132,7 +143,8 @@ bool TSceneGameIn::CreateNPC()
     TNpcObj::CreateActionFSM();
     // npc
     TRect rtWorldMap = m_pMap->m_rtScreen;
-    for (int iNpc = 0; iNpc < 100; iNpc++)
+    m_iKillCounter = m_iGameStage++;
+    for (int iNpc = 0; iNpc < m_iKillCounter; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
         npcobj->m_pMeshRender = &TGameCore::m_MeshRender;
@@ -161,6 +173,15 @@ bool TSceneGameIn::CreateUI()
 {
     TButtonGUI::CreateActionFSM();
 
+    for (int iNum = 0; iNum < 10; iNum++)
+    {
+        std::wstring filename = L"../../data/ui/";
+        filename += std::to_wstring(iNum);
+        filename += L".png";
+        m_pNumber.push_back(I_Tex.Load(filename));
+    }
+
+
     TLoadResData resData;
     resData.texPathName = L"../../data/ui/main_start_nor.png";
     resData.texShaderName = L"../../data/shader/Default.txt";
@@ -175,22 +196,38 @@ bool TSceneGameIn::CreateUI()
         ui1->m_iCollisionType = TCollisionType::T_Overlap;
         //ui1->SetScale(100.0f, 50.0f);
         //ui1->SetRotation(T_Pi * 0.25f);
-        m_UiList.emplace_back(ui1);
+        m_UiList.emplace_back(ui1);        
     }
 
-    auto ui2 = std::make_shared<TNextBtn>();
-    ui2->m_pMeshRender = &TGameCore::m_MeshRender;
-    ui2->SetFSM(&m_GuiFSM);
-    TVector2 vStart2 = { 700.0f, 0.0f };
-    TVector2 vEnd2 = { 800.0f, 100.0f };
-    if (ui2->Create(m_pWorld.get(), resData, vStart2, vEnd2))
+    //auto ui2 = std::make_shared<TNextBtn>();
+    //ui2->m_pMeshRender = &TGameCore::m_MeshRender;
+    //ui2->SetFSM(&m_GuiFSM);
+    //TVector2 vStart2 = { 700.0f, 0.0f };
+    //TVector2 vEnd2 = { 800.0f, 100.0f };
+    //if (ui2->Create(m_pWorld.get(), resData, vStart2, vEnd2))
+    //{
+    //    ui2->m_iCollisionType = TCollisionType::T_Overlap;
+    //    //ui2->SetScale(50.0f, 100.0f);
+    //    //ui2->SetRotation(T_Pi * -0.25f);
+    //    m_UiList.emplace_back(ui2);
+    //}
+
+    resData.texPathName = L"../../data/ui/0.png";
+    resData.texShaderName = L"../../data/shader/Default.txt";
+    m_pNum10 = std::make_shared<TImageGUI>();
+    m_pNum10->m_pMeshRender = &TGameCore::m_MeshRender;
+    //m_pNum10->SetFSM(&m_GuiFSM);
+    if (m_pNum10->Create(m_pWorld.get(), resData, { 360.0f, 0.0f }, { 400.0f, 40.0f }))
     {
-        ui2->m_iCollisionType = TCollisionType::T_Overlap;
-        //ui2->SetScale(50.0f, 100.0f);
-        //ui2->SetRotation(T_Pi * -0.25f);
-        m_UiList.emplace_back(ui2);
+        m_pNum10->m_iCollisionType = TCollisionType::T_Overlap;
     }
-
+    m_pNum01 = std::make_shared<TImageGUI>();
+    m_pNum01->m_pMeshRender = &TGameCore::m_MeshRender;
+    //m_pNum01->SetFSM(&m_GuiFSM);
+    if (m_pNum01->Create(m_pWorld.get(), resData, { 400.0f, 0.0f }, { 440.0f, 40.0f }))
+    {
+        m_pNum01->m_iCollisionType = TCollisionType::T_Overlap;
+    }
     return true;
 }
 bool TSceneGameIn::CreateEffect()
@@ -323,7 +360,22 @@ void   TSceneGameIn::Frame()
     //        }
     //    }
     //}
-
+    for (auto iter = m_pHero->m_pProjectile->m_datalist.begin();
+        iter != m_pHero->m_pProjectile->m_datalist.end(); iter++)
+    {
+        for (UINT iNpc2 = 0; iNpc2 < m_NpcList.size(); iNpc2++)
+        {
+            if (m_NpcList[iNpc2]->m_bDead) continue;
+            // m_rtScreen by m_rtScreen 
+            if (TCollision::CheckRectToRect(
+                (*iter)->m_rtScreen,
+                m_NpcList[iNpc2]->m_rtScreen))
+            {
+                m_NpcList[iNpc2]->m_bDead = true;
+                m_iKillCounter--;
+            }
+        }
+    }
     if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {
         TVector2 v1 = vMouse;
@@ -420,10 +472,18 @@ void   TSceneGameIn::Render()
             data->Render();
         }
     }
-    //if (m_UiList[0]->m_iSelectState == T_SELECTED)
-    //{
-    //    m_bNextScene = true;
-    //}
+    UINT num10 = m_iKillCounter / 10;
+    UINT num01 = m_iKillCounter % 10;
+    m_pNum10->m_pTexture = m_pNumber[num10];
+    m_pNum01->m_pTexture = m_pNumber[num01];
+    m_pNum10->Transform(m_vCamera);
+    m_pNum10->Render();
+    m_pNum01->Transform(m_vCamera);
+    m_pNum01->Render();
+    if (m_iKillCounter == 0)
+    {
+        m_bNextScene = true;
+    }
 }
 void   TSceneGameIn::Release()
 {

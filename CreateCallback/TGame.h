@@ -5,6 +5,31 @@
 #include "TSceneGameIn.h"
 #include "TSceneResult.h"
 
+class TNextBtn : public TButtonGUI
+{
+public:
+	void    HitSelect(TObject* pObj, THitResult hRet)
+	{
+		m_iSelectState = hRet.iState;
+		if (m_iSelectState == T_SELECTED)
+		{
+			m_pWorld->m_pScene->m_bNextScene = true;
+		}
+	};
+};
+class TPrevBtn : public TButtonGUI
+{
+public:
+	void    HitSelect(TObject* pObj, THitResult hRet)
+	{
+		m_iSelectState = hRet.iState;
+		if (m_iSelectState == T_SELECTED)
+		{
+			m_pWorld->m_pScene->m_bPrevScene = true;
+		}
+	};
+};
+
 class TSceneFSM : public TFiniteStateMachine
 {
 

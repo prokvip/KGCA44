@@ -36,6 +36,7 @@ void TSceneLobby::ProcessAction(TObject* pObj)
     if (m_bLoadNextScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
+        m_pOwner->m_pAction->Init();
         m_bNextScene = false;
         m_bLoadNextScene = false;
         return;
@@ -69,7 +70,7 @@ void   TSceneLobby::Init()
 
     resData.texPathName = L"../../data/ui/main_start_nor.png";
 
-    auto ui = std::make_shared<TButtonGUI>();
+    auto ui = std::make_shared<TNextBtn>();
     ui->m_pMeshRender = &TGameCore::m_MeshRender;
     ui->SetFSM(&m_GuiFSM);
     TVector2 vStart = { 400.0f - 50.0f, 500.0f - 25.0f };
@@ -99,7 +100,6 @@ void   TSceneLobby::Frame()
 }
 void   TSceneLobby::Render()
 {
-
     for (auto data : m_UiList)
     {
         if (!data->m_bDead)
@@ -107,10 +107,6 @@ void   TSceneLobby::Render()
             data->Transform({ 0.0f,0.0f });
             data->Render();
         }
-    }
-    if (m_UiList[1]->m_iSelectState == T_SELECTED)
-    {
-        m_bNextScene = true;
     }
 }
 void   TSceneLobby::Release()

@@ -69,7 +69,7 @@ void   TSceneIntro::Init()
 
     resData.texPathName = L"../../data/ui/main_start_nor.png";
 
-    auto ui = std::make_shared<TButtonGUI>();
+    auto ui = std::make_shared<TNextBtn>();
     ui->m_pMeshRender = &TGameCore::m_MeshRender;
     ui->SetFSM(&m_GuiFSM);
     TVector2 vStart = { 400.0f - 50.0f, 500.0f - 25.0f };
@@ -108,10 +108,6 @@ void   TSceneIntro::Render()
             data->Render();
         }
     }
-    if (m_UiList[1]->m_iSelectState == T_SELECTED)
-    {
-        m_bNextScene = true;
-    }   
 }
 void   TSceneIntro::Release()
 {
