@@ -12,6 +12,7 @@ struct TEffectData
 };
 class TEffectObj :   public TObject2D
 {
+public:
 	TTexture*		m_pCurrentTexture = nullptr;
 	TEffectData		m_Data;// 초기데이터
 public:	

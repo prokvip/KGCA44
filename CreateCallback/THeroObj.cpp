@@ -38,9 +38,9 @@ void THeroObj::Frame()
 
 	AddPosition(vAdd);
 
-	if (g_GameKey.dwLeftClick == KEY_HOLD)
+	if (g_GameKey.dwLeftClick == KEY_PUSH)
 	{
-		TVector2 vHalf = { 10.0f, 10.0f };
+		TVector2 vHalf = { 50.0f, 50.0f };
 		TVector2 vStart = m_vPos - vHalf;
 		TVector2 vEnd = m_vPos + vHalf;
 		m_pProjectile->AddEffect(vStart, vEnd);

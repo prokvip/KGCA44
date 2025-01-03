@@ -23,6 +23,7 @@ public:
 	TVector2		m_vPos;
 	TVector2		m_vDir;
 	float			m_fSpeed;
+	float			m_fAlpha = 0.0f;
 	bool			m_bDead = false;
 	TRect			m_rtScreen;
 	TSphere			m_Sphere;
@@ -31,6 +32,10 @@ public:
 	TTexture*		m_pTexture = nullptr;
 	std::vector<TVector2>		m_vScreenList;
 	std::vector<PCT_VERTEX>		m_vVertexList;
+public:
+	virtual void	FadeIn(float fAlpha);
+	virtual void	FadeOut(float fAlpha);
+	virtual void	Fade();
 public:
 	virtual void SetScale(float sx, float sy);
 	virtual void SetScale(TVector2 s);

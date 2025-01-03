@@ -7,10 +7,37 @@ TSceneIntro::TSceneIntro(TGame* p)  {
 TSceneIntro::~TSceneIntro() {}
 void TSceneIntro::ProcessAction(TObject* pObj)
 {
+    if (m_bNextScene == false)
+    {
+        for (auto data : m_UiList)
+        {
+            if (data->m_fAlpha <= 1.0f)
+            {
+                data->m_fAlpha += g_fSPF * 0.5f;
+                if (data->m_fAlpha >= 1.0f)
+                {
+                    data->m_fAlpha = 1.0f;
+                }
+            }
+        }
+    }
+    
     if (m_bNextScene == true)
+    {
+        for (auto data : m_UiList)
+        {
+            data->m_fAlpha -= g_fSPF*0.5f;
+            if (data->m_fAlpha <= 0.0f)
+            {
+                m_bLoadNextScene = true;
+            }
+        }       
+    }
+    if (m_bLoadNextScene == true)
     {
         m_pOwner->SetTransition(TSceneEvent::EVENT_NEXT_SCENE);
         m_bNextScene = false;
+        m_bLoadNextScene = false;
         return;
     }
 }
@@ -76,7 +103,8 @@ void   TSceneIntro::Render()
     {
         if (!data->m_bDead)
         {
-            data->Transform({ 0.0f,0.0f });
+            data->Fade();
+            data->Transform({ 0.0f,0.0f });            
             data->Render();
         }
     }

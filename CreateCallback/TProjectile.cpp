@@ -11,13 +11,9 @@ void TProjectileEffect::Frame()
 		m_iAnimFrame++;
 		m_fCurrentTime -= m_fOffsetTime;
 	}
-	TVector2 vOffsetPos = m_vHeroPos - m_vPrePos;
-	vOffsetPos.y = fabs(vOffsetPos.y);
-
 	m_fTimer += g_fSPF;
 	m_vDir = { 0.0f, -1.0f };
-	//m_vPos += m_vDir * 300.0f * m_fTimer;
-	m_vPos = m_vHeroPos + m_vDir * 1000.0f * m_fTimer;
+	m_vPos = m_vHeroPos + m_vDir * 700.0f * m_fTimer;
 	m_vPos.x = m_vHeroPos.x;
 	SetPosition(m_vPos);
 
@@ -74,14 +70,11 @@ void TProjectileEffect::Render()
 	//if (m_Data.m_iType == 1)
 	//{
 	PreRender();
-	/*TDevice::m_pd3dContext->PSSetShaderResources(
-		0, 1, &m_pCurrentTexture->m_pTexSRV);*/
+	TDevice::m_pd3dContext->PSSetShaderResources(0, 1, &m_pCurrentTexture->m_pTexSRV);
 	if (m_pShader)
 	{
-		TDevice::m_pd3dContext->VSSetShader(
-			m_pShader->m_pVertexShader.Get(), nullptr, 0);
-		TDevice::m_pd3dContext->PSSetShader(
-			m_pShader->m_pPixelShader.Get(), nullptr, 0);
+		TDevice::m_pd3dContext->VSSetShader(m_pShader->m_pVertexShader.Get(), nullptr, 0);
+		TDevice::m_pd3dContext->PSSetShader(m_pShader->m_pPixelShader.Get(), nullptr, 0);
 	}
 	PostRender();
 }
@@ -92,12 +85,12 @@ TProjectile::TProjectile(TWorld* pWorld) : m_pWorld(pWorld)
 }
 void   TProjectile::AddEffect(TVector2 vStart, TVector2 tEnd)
 {
-    auto pObject3 = std::make_shared<TProjectileEffect>();
-    pObject3->m_pMeshRender = &TGameCore::m_MeshRender;
-    pObject3->m_vVertexList = pObject3->m_pMeshRender->m_vVertexList;
+    auto obj = std::make_shared<TProjectileEffect>();
+	obj->m_pMeshRender = &TGameCore::m_MeshRender;
+	obj->m_vVertexList = obj->m_pMeshRender->m_vVertexList;
     TLoadResData resData;
-    resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
-    resData.texShaderName = L"../../data/shader/DefaultMask.txt";
+    resData.texPathName = L"../../data/ui/8.png";
+    resData.texShaderName = L"../../data/shader/Default.txt";
     TEffectData data;
     data.m_bLoop = true;
     data.m_fLifeTime = 1.0f;
@@ -115,10 +108,11 @@ void   TProjectile::AddEffect(TVector2 vStart, TVector2 tEnd)
         data.m_iNumAnimFrame = m_szSpriteList[0].size();
         data.m_szList = m_szSpriteList[0];
     }*/
-    pObject3->SetData(data);
-    if (pObject3->Create(m_pWorld, resData, vStart, tEnd))
+	obj->SetData(data);
+    if (obj->Create(m_pWorld, resData, vStart, tEnd))
     {
-        m_datalist.emplace_back(pObject3);
+		obj->m_pCurrentTexture = obj->m_pTexture;
+        m_datalist.emplace_back(obj);
     }
 }
 void   TProjectile::Init()

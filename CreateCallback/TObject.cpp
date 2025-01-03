@@ -7,6 +7,28 @@ void    TObject::HitOverlap(TObject* pObj, THitResult hRet)
 void    TObject::HitSelect(TObject* pObj, THitResult hRet)
 {	
 }
+void    TObject::FadeIn(float fAlpha)
+{
+	for (auto& data : m_vVertexList)
+	{
+		data.c.w = m_fAlpha+fAlpha;
+	}
+}
+void    TObject::FadeOut(float fAlpha)
+{
+	for (auto& data : m_vVertexList)
+	{
+		data.c.w = m_fAlpha - fAlpha;
+	}
+}
+void    TObject::Fade()
+{
+	for (auto& data : m_vVertexList)
+	{
+		data.c.w = m_fAlpha;
+	}
+}
+
 void TObject::SetScale(float sx, float sy)
 {
 	m_vScale.x = sx;
@@ -196,6 +218,11 @@ bool	TObject::Create(TWorld* pWorld,TLoadResData data,
 	m_vVertexList.resize(4);
 	m_vScreenList.resize(4);
 
+	if (m_pMeshRender)
+	{
+		m_vVertexList = m_pMeshRender->m_vVertexList;
+	}
+
 	if (!LoadTexture(m_LoadResData.texPathName))
 	{
 		return false;
@@ -238,7 +265,7 @@ bool   TObject::LoadTexture(std::wstring texName)
 	if (m_pTexture == nullptr)
 	{
 		return false;
-	}
+	}	
 	return true;
 }
 

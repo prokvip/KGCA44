@@ -29,6 +29,8 @@ class TScene
 public:
 	bool		  m_bNextScene = false;
 	bool		  m_bPrevScene = false;
+	bool          m_bLoadPrevScene = false;
+	bool          m_bLoadNextScene = false;
 	std::shared_ptr<TWorld>  m_pWorld;
 public:
 	UINT   m_iState = 0;

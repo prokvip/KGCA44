@@ -46,8 +46,8 @@ bool TSceneGameIn::GameDataLoad(W_STR filename)
     if (fp_src == NULL) return false;
 
     _fgetts(pBuffer, _countof(pBuffer), fp_src);
-    _stscanf_s(pBuffer, _T("%s%d%s"), pTemp, (unsigned int)_countof(pTemp), &iNumSprite);
-    m_rtSpriteList.resize(iNumSprite);
+    _stscanf_s(pBuffer, _T("%s%d"), pTemp, (unsigned int)_countof(pTemp), &iNumSprite);
+    //m_rtSpriteList.resize(iNumSprite);
 
     for (int iCnt = 0; iCnt < iNumSprite; iCnt++)
     {
@@ -57,18 +57,22 @@ bool TSceneGameIn::GameDataLoad(W_STR filename)
         _fgetts(pBuffer, _countof(pBuffer), fp_src);
         _stscanf_s(pBuffer, _T("%s %d %d %f"), pTemp,
             (unsigned int)_countof(pTemp), &iNumFrame, &iType, &fLife);
-        //m_rtSpriteList[iCnt].resize(iNumFrame);
-
+        
+        
         if (iType == 0)
         {
+            RECT_ARRAY rtArray;
+            rtArray.resize(iNumFrame);
+
             RECT rt;
             for (int iFrame = 0; iFrame < iNumFrame; iFrame++)
             {
                 _fgetts(pBuffer, _countof(pBuffer), fp_src);
                 _stscanf_s(pBuffer, _T("%s %d %d %d %d"), pTemp, (unsigned int)_countof(pTemp),
                     &rt.left, &rt.top, &rt.right, &rt.bottom);
-                m_rtSpriteList[iCnt].push_back(rt);
+                rtArray[iFrame] = rt;
             }
+            m_rtSpriteList.emplace_back(rtArray);
         }
         if (iType == 1)
         {
@@ -82,9 +86,9 @@ bool TSceneGameIn::GameDataLoad(W_STR filename)
                     pTexFileName, (unsigned int)_countof(pTexFileName));
 
                 I_Tex.Load(pTexFileName);
-                strVector.push_back(I_Tex.SplitPath(pTexFileName));
+                strVector.emplace_back(I_Tex.SplitPath(pTexFileName));
             }
-            m_szSpriteList.push_back(strVector);
+            m_szSpriteList.emplace_back(strVector);
         }
     }
     fclose(fp_src);
@@ -94,7 +98,7 @@ bool TSceneGameIn::CreateMap()
 {
     TRect rt;
     rt.SetP(-1000.0f, -1000.0f, +1000.0f, +1000.0f);
-    m_pMap = std::make_shared<TMapObj>(rt, 10, 10);
+    m_pMap = std::make_shared<TMapObj>(rt, 100, 100);
     if (m_pMap->Create(m_pWorld.get()))
     {
         TTexture* pTex = I_Tex.Load(L"../../data/texture/gg.bmp");
@@ -199,18 +203,19 @@ bool TSceneGameIn::CreateEffect()
 }
 void   TSceneGameIn::AddEffect(TVector2 vStart, TVector2 tEnd)
 {
+    srand(time(NULL));
     auto pObject3 = std::make_shared<TEffectObj>();
     pObject3->m_pMeshRender = &TGameCore::m_MeshRender;
     pObject3->m_vVertexList = pObject3->m_pMeshRender->m_vVertexList;
     TLoadResData resData;
     resData.texPathName = L"../../data/texture/bitmap1Alpha.bmp";
-    resData.texShaderName = L"../../data/shader/DefaultMask.txt";
+    resData.texShaderName = L"../../data/shader/Default.txt";
     TEffectData data;
     data.m_bLoop = true;
     data.m_fLifeTime = 1.0f;
     data.m_fOffsetTime = 0.01f;
-    UINT iSprite = rand() % 3;
-    data.m_iType = 1;// rand() % m_szSpriteList[0].size();
+    UINT iSprite = rand() % m_rtSpriteList.size();
+    data.m_iType =  rand() % 2;
     if (data.m_iType == 0)
     {
         data.m_iNumAnimFrame = m_rtSpriteList[iSprite].size();
@@ -218,12 +223,14 @@ void   TSceneGameIn::AddEffect(TVector2 vStart, TVector2 tEnd)
     }
     if (data.m_iType == 1)
     {
+        resData.texShaderName = L"../../data/shader/DefaultBlack.txt";
         data.m_iNumAnimFrame = m_szSpriteList[0].size();
         data.m_szList = m_szSpriteList[0];
     }
     pObject3->SetData(data);
     if (pObject3->Create(m_pWorld.get(), resData, vStart, tEnd))
     {
+        pObject3->m_pCurrentTexture = pObject3->m_pTexture;
         m_EffectList.emplace_back(pObject3);
     }
 }
@@ -320,20 +327,18 @@ void   TSceneGameIn::Frame()
     if (g_GameKey.dwMiddleClick == KEY_HOLD)
     {
         TVector2 v1 = vMouse;
-        v1.x = vMouse.x - 100.0f;
-        v1.y = vMouse.y - 100.0f;
-        TVector2 tEnd = { v1.x + 200.0f,
-                          v1.y + 200.0f };
+        v1.x = vMouse.x - 20.0f;
+        v1.y = vMouse.y - 20.0f;
+        TVector2 tEnd = { vMouse.x + 20.0f, vMouse.y + 20.0f };
         AddEffect(v1, tEnd);
 
     }
-    if (g_GameKey.dwRightClick == KEY_PUSH)
+    if (g_GameKey.dwRightClick == KEY_HOLD)
     {
         for (int iCell = 0; iCell < m_pMap->m_Cells.size(); iCell++)
         {
             // TRect by vMouse 
-            if (TCollision::CheckRectToPoint(
-                m_pMap->m_Cells[iCell].rt, vMouse))
+            if (TCollision::CheckRectToPoint(m_pMap->m_Cells[iCell].rt, vMouse))
             {
                 m_pMap->m_Cells[iCell].iTexID++;
                 if (m_pMap->m_Cells[iCell].iTexID > 3)
@@ -382,25 +387,24 @@ void   TSceneGameIn::Frame()
 void   TSceneGameIn::Render()
 {
     TSoundManager::GetInstance().Render();
-    TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
-    TDevice::m_pd3dContext->PSSetShaderResources(1, 1, &m_pBitmap1Mask->m_pTexSRV);
-    m_pHero->Transform(m_vCamera);
-    m_pHero->Render();
-
     m_pMap->Transform(m_vCamera);
-    m_pMap->Render();
+    m_pMap->Render(); 
 
     TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
     TDevice::m_pd3dContext->PSSetShaderResources(1, 1, &m_pBitmap1Mask->m_pTexSRV);
-    m_pHero->Transform(m_vCamera);
-    m_pHero->Render();
 
     for (auto data : m_NpcList)
     {
         if (data->m_bDead) continue;
         data->Transform(m_vCamera);
-        //data->Render();
+        data->Render();
     }
+
+    m_pHero->Transform(m_vCamera);
+    m_pHero->Render();
+
+   /* TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pLinearSS.GetAddressOf());
+    TDevice::m_pd3dContext->PSSetShaderResources(1, 1, &m_pBitmap1Mask->m_pTexSRV);*/
 
     for (auto data : m_EffectList)
     {
