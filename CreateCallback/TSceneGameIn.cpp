@@ -143,7 +143,7 @@ bool TSceneGameIn::CreateNPC()
     TNpcObj::CreateActionFSM();
     // npc
     TRect rtWorldMap = m_pMap->m_rtScreen;
-    m_iKillCounter = m_iGameStage++;
+    m_iKillCounter = m_iGameStage+=10;
     for (int iNpc = 0; iNpc < m_iKillCounter; iNpc++)
     {
         auto npcobj = std::make_shared<TNpcObj>();
