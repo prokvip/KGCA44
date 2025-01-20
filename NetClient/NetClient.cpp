@@ -3,6 +3,7 @@
 #include <ws2tcpip.h>
 #include <mswsock.h>
 #include <iostream>
+#include <string>
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "mswsock.lib")
 int main()
@@ -25,12 +26,32 @@ int main()
     sa.sin_port = htons(10000); // 받는 사람
     iRet = connect(sock, (SOCKADDR*)&sa, sizeof(sa));
     if (iRet == SOCKET_ERROR) return 1;
-    char SendBuffer[256] = "안녕하세여.";// { 0, };
-    int iSendSize = send(sock, SendBuffer, strlen(SendBuffer), 0);
-    char RecvBuffer[256] = { 0, };
-    int iRecvSize = recv(sock, RecvBuffer, sizeof(RecvBuffer), 0);
-    std::cout << RecvBuffer << std::endl;
-    Sleep(3000);
+
+    std::string SendBuf;
+    SendBuf.resize(256);
+    std::string RecvBuf;
+   
+    while (1)
+    {        
+        std::getline(std::cin, SendBuf);
+        if (SendBuf.empty())
+        {
+            break;
+        }
+        int iSendSize = send(sock, &SendBuf[0], SendBuf.size(), 0);        
+        if (iSendSize == 0 || iSendSize == SOCKET_ERROR) {
+            std::cout << "서버가 종료되었거나 문제가 발생" << std::endl;
+            break;
+        }
+        RecvBuf.resize(256);
+        int iRecvSize = recv(sock, &RecvBuf[0], RecvBuf.size(), 0);
+        if (iRecvSize == 0 || iRecvSize == SOCKET_ERROR)        {
+            std::cout << "서버가 종료되었거나 문제가 발생" << std::endl;
+            break;
+        }
+        std::cout << RecvBuf << std::endl;
+        RecvBuf.clear();
+    }
     closesocket(sock);
     // 윈속 소멸
     WSACleanup();    
