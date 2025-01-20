@@ -148,8 +148,8 @@ namespace AStar
 	UINT Heuristic::euclidean(TIndex source_, TIndex target_)
 	{
 		TIndex a = getDelta(source_, target_);
-		TIndex&& delta = std::move(getDelta(source_, target_));
-		return static_cast<UINT>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
+		//TIndex&& delta = std::move(getDelta(source_, target_));
+		return static_cast<UINT>(10 * sqrt(pow(a.x, 2) + pow(a.y, 2)));
 	}
 
 	UINT Heuristic::octagonal(TIndex source_, TIndex target_)
