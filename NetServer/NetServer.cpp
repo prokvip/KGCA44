@@ -3,8 +3,50 @@
 #include <ws2tcpip.h>
 #include <mswsock.h>
 #include <iostream>
+#include <list>
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "mswsock.lib")
+
+struct THost
+{
+    SOCKET      sock;
+    SOCKADDR_IN addr;
+    char        Recvbuffer[256] = { 0, };
+    int         iRecvBytes;
+    bool        bConnect;
+};
+bool Check(THost& host, int iCode)
+{
+    if (iCode == SOCKET_ERROR)
+    {
+        int iError = WSAGetLastError();
+        if (iError != WSAEWOULDBLOCK)
+        {
+            host.bConnect = false;
+        }
+    }
+    else
+    {
+        return true;
+    }
+    return false;
+}
+bool Check( int iCode)
+{
+    if (iCode == SOCKET_ERROR)
+    {
+        int iError = WSAGetLastError();
+        if (iError != WSAEWOULDBLOCK)
+        {
+            exit(1);            
+        }
+    }
+    else
+    {
+        return true;
+    }
+    return false;
+}
 int main()
 {
     WSADATA wsa;
@@ -15,51 +57,102 @@ int main()
     ZeroMemory(&sa, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_addr.s_addr = htonl(INADDR_ANY);// 전화번호
-    sa.sin_port = htons(10000); // 받는 사람
-    //iRet = connect(sock, (SOCKADDR*)&sa, sizeof(sa));
+    sa.sin_port = htons(10000); // 받는 사람    
     iRet = bind(sock, (SOCKADDR*)&sa, sizeof(sa));
     if (iRet == SOCKET_ERROR) return 1;
     iRet = listen(sock, SOMAXCONN);
     if (iRet == SOCKET_ERROR) return 1;
+    
+    // 넌블록킹 소켓전환
+    u_long on = 1;
+    ioctlsocket(sock, FIONBIO, &on);
+    
     SOCKADDR_IN clientaddr;
     int addlen = sizeof(clientaddr);
 
-    std::string SendBuf;
-    while (1)
+    std::list<THost> userList;
+    while (userList.size() != 1)
     {
         SOCKET clientSock = accept(sock, (SOCKADDR*)&clientaddr,
             &addlen);
-        std::cout   << "접속(IP):" << inet_ntoa(clientaddr.sin_addr)
-                    << "포트번호" << ntohs(clientaddr.sin_port) 
-                    <<std::endl;
-        while (1)
+        if (Check(clientSock))
         {
-            char Recvbuffer[256] = { 0, };
-            int iRecvSize = recv(clientSock, Recvbuffer, sizeof(Recvbuffer), 0);
+            // 정상작업
+            std::cout << "접속(IP):" << inet_ntoa(clientaddr.sin_addr)
+                << "포트번호" << ntohs(clientaddr.sin_port)
+                << std::endl;
+            THost host;
+            host.addr = clientaddr;
+            host.sock = clientSock;
+            userList.push_back(host);
+        }
+    }
+       
+    while (1)
+    {
+        for (auto iter=userList.begin();
+             iter != userList.end();
+            iter++)
+        {
+            THost& host = *iter; 
+            if (host.bConnect == false) continue;
+            ZeroMemory(host.Recvbuffer, sizeof(char) * 256);
+            host.iRecvBytes = 0;
+            int iRecvSize = recv(host.sock, 
+                host.Recvbuffer, 
+                sizeof(host.Recvbuffer), 0);
             if (iRecvSize == 0)
             {
-                std::cout << "접속종료(IP):" << inet_ntoa(clientaddr.sin_addr)
-                    << "포트번호" << ntohs(clientaddr.sin_port)
-                    << std::endl;
-                closesocket(clientSock);
+                host.bConnect = false;              
             }
-            std::cout << Recvbuffer << std::endl;
-            SendBuf = Recvbuffer;
-            SendBuf += " 뭐라고하노";
-            int iSendSize = send(clientSock, 
-                &SendBuf[0], SendBuf.size(), 0);
-            if (iSendSize == SOCKET_ERROR)
+            if (Check(host, iRecvSize))
             {
-                std::cout << "접속종료(IP):" << inet_ntoa(clientaddr.sin_addr)
-                    << "포트번호" << ntohs(clientaddr.sin_port)
-                    << std::endl;
-                closesocket(clientSock);
-                std::cout << "서버에 문제가 있다." << std::endl;
-                break;
+                host.iRecvBytes = iRecvSize;
+                std::cout << host.Recvbuffer << std::endl;                
+            }            
+        }
+
+        for (auto recvHost = userList.begin();
+              recvHost != userList.end();           
+               recvHost++)
+        {
+            THost& sendData = *recvHost;
+            if (sendData.bConnect == false) continue;
+            if (sendData.iRecvBytes <= 0)
+            {         
+                continue;
             }
-            SendBuf.clear();
-        }        
-    }
+            for (auto sendHost = userList.begin();sendHost != userList.end(); sendHost++)
+            {               
+                THost& host = *sendHost;
+                if (host.bConnect == false) continue;
+                int iSendSize = send(host.sock, sendData.Recvbuffer, 
+                                     sendData.iRecvBytes, 0);
+                Check(host, iSendSize);
+            }
+        } 
+        
+        // 종료처리
+        for (auto iter = userList.begin();
+            iter != userList.end();  )
+        {
+            THost& host = *iter;
+            if (host.bConnect == false)
+            {
+                std::cout << "접속종료(IP):" <<
+                    inet_ntoa(host.addr.sin_addr)
+                    << "포트번호" << ntohs(host.addr.sin_port)
+                    << std::endl;
+                closesocket(host.sock);
+                iter = userList.erase(iter);
+            }
+            else
+            {
+                iter++;
+            }
+        }
+    }        
+    
     Sleep(10000);
     
     closesocket(sock);
