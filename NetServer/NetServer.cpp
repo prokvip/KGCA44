@@ -71,7 +71,7 @@ int main()
     int addlen = sizeof(clientaddr);
 
     std::list<THost> userList;
-    while (userList.size() != 1)
+    while (1)
     {
         SOCKET clientSock = accept(sock, (SOCKADDR*)&clientaddr,
             &addlen);
@@ -85,11 +85,8 @@ int main()
             host.addr = clientaddr;
             host.sock = clientSock;
             userList.push_back(host);
-        }
-    }
-       
-    while (1)
-    {
+        }       
+    
         for (auto iter=userList.begin();
              iter != userList.end();
             iter++)
@@ -108,7 +105,7 @@ int main()
             if (Check(host, iRecvSize))
             {
                 host.iRecvBytes = iRecvSize;
-                std::cout << host.Recvbuffer << std::endl;                
+                //std::cout << host.Recvbuffer<< std::endl;                
             }            
         }
 
@@ -123,8 +120,12 @@ int main()
                 continue;
             }
             for (auto sendHost = userList.begin();sendHost != userList.end(); sendHost++)
-            {               
+            {         
                 THost& host = *sendHost;
+                if (host.sock == sendData.sock)
+                {
+                    continue;
+                }
                 if (host.bConnect == false) continue;
                 int iSendSize = send(host.sock, sendData.Recvbuffer, 
                                      sendData.iRecvBytes, 0);
@@ -148,6 +149,7 @@ int main()
             }
             else
             {
+                ZeroMemory(host.Recvbuffer, sizeof(char) * 256);
                 iter++;
             }
         }

@@ -4,7 +4,9 @@
 #include <mswsock.h>
 #include <iostream>
 #include <string>
+#include <thread>   // std::thread
 #include <conio.h>
+#include <process.h> // _beginthreadex
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "mswsock.lib")
 
@@ -21,6 +23,49 @@ bool Check(int iCode)
         return false;
     }
     return true;
+}
+bool RecvWork(SOCKET sock)
+{
+    std::string RecvBuf;
+    RecvBuf.resize(256);
+    int iRecvSize = recv(sock, &RecvBuf[0], RecvBuf.size(), 0);
+    if (iRecvSize == 0)
+    {
+        std::cout << "서버가 정상종료" << std::endl;
+        return false;
+    }
+    if (Check(iRecvSize))
+    {
+        std::cout << RecvBuf << std::endl;
+    }
+    RecvBuf.clear();
+    return true;
+}
+bool SendWork(SOCKET sock)
+{
+    std::string SendBuf;
+    SendBuf.reserve(256);
+    std::getline(std::cin, SendBuf);
+    if (SendBuf.empty())
+    {
+        return false;
+    }
+    int iSendSize = send(sock, &SendBuf[0], SendBuf.size(), 0);
+    if (!Check(iSendSize)) {
+        return false;
+    }
+    SendBuf.clear();  
+    return true;
+}
+//쓰레드의 시작함수 : 반환되면 쓰레드는 정상종료된다.
+DWORD WorkSend(LPVOID lpThreadParameter)
+{
+    SOCKET* sock = (SOCKET*)lpThreadParameter;
+    while (1)
+    {
+        SendWork(*sock);
+    }
+    return 1;
 }
 int main()
 {
@@ -47,53 +92,22 @@ int main()
     u_long on = 1;
     ioctlsocket(sock, FIONBIO, &on);
 
-    std::string SendBuf;
-    SendBuf.reserve(256);
-    std::string RecvBuf;
-   
+    // 쓰레드 생성
+    DWORD ThreadId;
+    HANDLE hThread1    = CreateThread(
+        NULL,
+        0,
+        WorkSend,
+        &sock,
+        0,
+        &ThreadId);
     while (1)
     {        
-        if (_kbhit() == 1)
-        {
-            int iValue = _getche();
-            if (SendBuf.empty())
-            {
-                if (iValue == '\r')
-                {
-                    break;
-                }
-            }                  
-            SendBuf.push_back(iValue);
-            //std::getline(std::cin, SendBuf);
-           /* if (SendBuf.empty())
-            {
-                break;
-            }*/
-            if (iValue == '\r')
-            {
-                int iSendSize = send(sock, &SendBuf[0], SendBuf.size()-1, 0);
-                if (!Check(iSendSize)) {
-                    break;
-                }
-                SendBuf.clear();
-            }
-        }
-        RecvBuf.resize(256);
-        int iRecvSize = recv(sock, &RecvBuf[0], RecvBuf.size(), 0);
-        if (iRecvSize == 0 ) 
-        {
-            std::cout << "서버가 정상종료" << std::endl;
-            break;
-        }
-        if (Check(iRecvSize))
-        {
-            std::cout << std::endl;
-            std::cout << RecvBuf << std::endl;
-        }        
-        RecvBuf.clear();
+        if (!RecvWork(sock)) break;
     }
     closesocket(sock);
+
+    CloseHandle(hThread1);
     // 윈속 소멸
     WSACleanup();    
-    std::cout << "Hello World!\n";
 }
