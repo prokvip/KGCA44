@@ -122,10 +122,10 @@ int main()
             for (auto sendHost = userList.begin();sendHost != userList.end(); sendHost++)
             {         
                 THost& host = *sendHost;
-                /*if (host.sock == sendData.sock)
+                if (host.sock == sendData.sock)
                 {
                     continue;
-                }*/
+                }
                 if (host.bConnect == false) continue;
                 int iSendSize = send(host.sock, sendData.Recvbuffer, 
                                      sendData.iRecvBytes, 0);
