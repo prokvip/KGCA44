@@ -8,6 +8,7 @@
 #include <thread>   // std::thread
 #include <conio.h>
 #include <process.h> // _beginthreadex
+#include "TProtocol.h"
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "mswsock.lib")
 enum TResult{
@@ -21,9 +22,10 @@ public:
 	SOCKET  m_Sock;
 	bool    m_bRun;
 	std::string m_szRecvData;	
-	int     m_iSendbyte = 0;
-	int     m_iRecvbyte = 0;
+	int     m_iSendBytes = 0;
+	int     m_iRecvBytes = 0;
 public:
+	void    Reset();
 	bool    Init();
 	bool    Release();
 	bool    Run();
@@ -32,5 +34,8 @@ public:
 	bool	RecvWork();
 	bool	SendWork(std::string SendBuf);
 	TResult	Check(int iCode);
+	int     SendPacket(SOCKET sock,
+						const char* msg,
+						WORD type);
 };
 

@@ -1,4 +1,30 @@
 #include "TNetwork.h"
+int     TNetwork::SendPacket(SOCKET sock, 
+                             const char* msg,
+                             WORD type)
+{
+    UINT iMsgSize = strlen(msg);
+    UPACKET sendpacket;
+    ZeroMemory(&sendpacket, sizeof(sendpacket));
+    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
+    sendpacket.ph.type = type;
+    if (iMsgSize > 0 )
+    {
+        memcpy(sendpacket.msg, msg, iMsgSize);
+    }
+    char* pMsg = (char*)&sendpacket;
+
+    m_iSendBytes = send(m_Sock, pMsg, sendpacket.ph.len, 0);
+    if (Check(m_iSendBytes) == TResult::TNet_FALSE)
+    {
+        return false;
+    }
+    return true;
+}
+void    TNetwork::Reset()
+{
+    m_iRecvBytes = 0;
+}
 bool    TNetwork::Init()
 {
 	// 윈속 초기화( 버전선택)
@@ -44,9 +70,69 @@ bool	TNetwork::DisConnect()
 }
 bool    TNetwork::Run()
 {
+    UPACKET recvPacket;
+    ZeroMemory(&recvPacket, sizeof(recvPacket));
+    char* pRecvMsg = (char*)&recvPacket;
+    m_iRecvBytes = 0;
+    // [2],2
     while (m_bRun)
-    {
-        if (!RecvWork()) break;
+    {        
+        int iRecvByte = recv(m_Sock,&pRecvMsg[m_iRecvBytes],
+            PACKET_HEADER_SIZE - m_iRecvBytes, 0);
+        TResult ret  = Check(iRecvByte);
+        if (ret == TResult::TNet_FALSE)
+        {
+            exit(1);
+        }
+        if (ret == TResult::TNet_TRUE)
+        {
+            m_iRecvBytes += iRecvByte;
+            if (m_iRecvBytes > PACKET_HEADER_SIZE)
+            {
+                continue;
+            }
+        }
+        
+        if (m_iRecvBytes == PACKET_HEADER_SIZE)
+        {
+            while (recvPacket.ph.len > m_iRecvBytes)//m_iRecvBytes= 4
+            {
+                int iRecvByte = recv(m_Sock,
+                    &pRecvMsg[m_iRecvBytes],
+                    recvPacket.ph.len - m_iRecvBytes, 0);
+                if (Check(iRecvByte) == TResult::TNet_TRUE)
+                {
+                    m_iRecvBytes += iRecvByte;
+                }
+            }
+            // 패킷 완성
+            if (recvPacket.ph.type == PACKET_CHAT_MSG)
+            {
+                recvPacket.msg[recvPacket.ph.len-PACKET_HEADER_SIZE] = 0;
+                std::cout << recvPacket.msg << std::endl;
+                m_iRecvBytes = 0;
+                pRecvMsg = (char*)&recvPacket;
+            }
+            if (recvPacket.ph.type == PACKET_GAME_START)
+            {   
+                m_iRecvBytes = 0;
+                pRecvMsg = (char*)&recvPacket;
+            }
+            if (recvPacket.ph.type == PACKET_GAME_END)
+            {
+                m_iRecvBytes = 0;
+                pRecvMsg = (char*)&recvPacket;
+            }
+            if (recvPacket.ph.type == PACKET_CHAT_NAME_SC_REQ)
+            {
+                SendPacket(m_Sock, // 목적지
+                    "홍길동",
+                    PACKET_CHAT_NAME_CS_ACK);
+                m_iRecvBytes = 0;
+                pRecvMsg = (char*)&recvPacket;
+            }
+        }
+        //if (!RecvWork()) break;
     }
     return true;
 }
@@ -56,8 +142,8 @@ bool TNetwork::SendWork(std::string SendBuf)
     {
         return true;
     }
-    m_iSendbyte = send(m_Sock, &SendBuf[0], SendBuf.size(), 0);
-    if (Check(m_iSendbyte) == TResult::TNet_FALSE)
+    m_iSendBytes = send(m_Sock, &SendBuf[0], SendBuf.size(), 0);
+    if (Check(m_iSendBytes) == TResult::TNet_FALSE)
     {
         return false;
     }
@@ -65,15 +151,15 @@ bool TNetwork::SendWork(std::string SendBuf)
 }
 bool TNetwork::RecvWork()
 {
-    m_iRecvbyte = recv(m_Sock,&m_szRecvData[0], m_szRecvData.size(), 0);
-    if (m_iRecvbyte == 0)
+    m_iRecvBytes = recv(m_Sock,&m_szRecvData[0], m_szRecvData.size(), 0);
+    if (m_iRecvBytes == 0)
     {
         return false;
     }
-    if (Check(m_iRecvbyte)== TResult::TNet_TRUE)
+    if (Check(m_iRecvBytes)== TResult::TNet_TRUE)
     {
         std::string msg;
-        msg = m_szRecvData.substr(0, m_iRecvbyte);
+        msg = m_szRecvData.substr(0, m_iRecvBytes);
         std::cout << msg.c_str() << std::endl;
     }
     return true;
