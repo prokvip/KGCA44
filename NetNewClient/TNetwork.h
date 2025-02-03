@@ -21,6 +21,7 @@ class TNetwork
 public:
 	SOCKET  m_Sock;
 	bool    m_bRun;
+	bool    m_bThreadRun = false;
 	std::string m_szRecvData;	
 	int     m_iSendBytes = 0;
 	int     m_iRecvBytes = 0;

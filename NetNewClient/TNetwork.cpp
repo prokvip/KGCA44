@@ -1,4 +1,21 @@
 #include "TNetwork.h"
+//쓰레드의 시작함수 : 반환되면 쓰레드는 정상종료된다.
+DWORD WorkSend(LPVOID lpThreadParameter)
+{
+    TNetwork* net = (TNetwork*)lpThreadParameter;
+    std::string SendBuf;
+    SendBuf.reserve(256);
+    while (net->m_bRun)
+    {
+        std::getline(std::cin, SendBuf);
+        //net->SendWork(SendBuf);
+        net->SendPacket(net->m_Sock, // 목적지
+            SendBuf.c_str(),
+            PACKET_CHAT_MSG);
+    }
+    return 1;
+}
+
 int     TNetwork::SendPacket(SOCKET sock, 
                              const char* msg,
                              WORD type)
@@ -70,6 +87,9 @@ bool	TNetwork::DisConnect()
 }
 bool    TNetwork::Run()
 {
+    HANDLE hThread1 = CreateThread(NULL, 0,
+        WorkSend, this, CREATE_SUSPENDED, NULL);   
+
     UPACKET recvPacket;
     ZeroMemory(&recvPacket, sizeof(recvPacket));
     char* pRecvMsg = (char*)&recvPacket;
@@ -106,34 +126,45 @@ bool    TNetwork::Run()
                 }
             }
             // 패킷 완성
+            if (recvPacket.ph.type == PACKET_JOIN_USER)
+            {
+                USER_NAME* pData = (USER_NAME*)recvPacket.msg;
+                std::cout << pData->name << "님이 입장하셨습니다." << std::endl;
+            }
             if (recvPacket.ph.type == PACKET_CHAT_MSG)
             {
                 recvPacket.msg[recvPacket.ph.len-PACKET_HEADER_SIZE] = 0;
                 std::cout << recvPacket.msg << std::endl;
-                m_iRecvBytes = 0;
-                pRecvMsg = (char*)&recvPacket;
+              
             }
             if (recvPacket.ph.type == PACKET_GAME_START)
             {   
-                m_iRecvBytes = 0;
-                pRecvMsg = (char*)&recvPacket;
+               
             }
             if (recvPacket.ph.type == PACKET_GAME_END)
             {
-                m_iRecvBytes = 0;
-                pRecvMsg = (char*)&recvPacket;
+              
             }
             if (recvPacket.ph.type == PACKET_CHAT_NAME_SC_REQ)
             {
+                std::string SendBuf;
+                SendBuf.reserve(256);
+                std::getline(std::cin, SendBuf);
+
                 SendPacket(m_Sock, // 목적지
-                    "홍길동",
+                    SendBuf.c_str(),
                     PACKET_CHAT_NAME_CS_ACK);
-                m_iRecvBytes = 0;
-                pRecvMsg = (char*)&recvPacket;
+                m_bThreadRun = true;
+               
+                ResumeThread(hThread1);
             }
+            m_iRecvBytes = 0;
+            pRecvMsg = (char*)&recvPacket;
         }
         //if (!RecvWork()) break;
     }
+
+    CloseHandle(hThread1);
     return true;
 }
 bool TNetwork::SendWork(std::string SendBuf)

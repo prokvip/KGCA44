@@ -133,9 +133,7 @@ bool Check(int iCode)
     }
     return false;
 }
-int     SendPacket(SOCKET sock,
-    const char* msg,
-    WORD type)
+int  SendPacket(SOCKET sock, const char* msg,  WORD type)
 {
     UINT iMsgSize = 0;
     if (msg != nullptr)
