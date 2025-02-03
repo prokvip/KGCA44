@@ -129,6 +129,9 @@ bool    TNetwork::PostProcess()
         THost& host = *iter;
         if (host.m_bConnect == false)
         {
+            USER_NAME Data;
+            memcpy(Data.name, host.m_csName, sizeof(char) * 32);
+
             std::cout << "접속종료(IP):" <<
                 inet_ntoa(host.addr.sin_addr)
                 << "포트번호" << ntohs(host.addr.sin_port)
@@ -137,8 +140,12 @@ bool    TNetwork::PostProcess()
 
             iter = m_HostList.erase(iter);
 
-            // DrupHost
-            //m_RecvPool.emplace_back(m_tPacket);
+            UPACKET sendpacket;
+            ZeroMemory(&sendpacket, sizeof(sendpacket));
+            sendpacket.ph.len = PACKET_HEADER_SIZE + sizeof(USER_NAME);
+            sendpacket.ph.type = PACKET_DRUP_USER;
+            memcpy( sendpacket.msg, (char*)&Data, sizeof(USER_NAME));
+            m_RecvPool.emplace_back(sendpacket);
         }
         else
         {            

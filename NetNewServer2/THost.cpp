@@ -12,6 +12,7 @@ bool THost::Run(TNetwork& tNet)
     TResult ret = Check(iRecvByte);
     if (ret == TResult::TNet_FALSE)
     {
+        this->m_bConnect = false;
         return false;
     }
     if (ret == TResult::TNet_TRUE)

@@ -145,6 +145,11 @@ bool    TNetwork::Run()
             {
               
             }
+            if (recvPacket.ph.type == PACKET_DRUP_USER)
+            {
+                USER_NAME* pData = (USER_NAME*)recvPacket.msg;               
+                std::cout << pData->name << "´ÔÀÌ ÅðÀåÇÏ¼Ì½À´Ï´Ù." << std::endl;
+            }
             if (recvPacket.ph.type == PACKET_CHAT_NAME_SC_REQ)
             {
                 std::string SendBuf;
