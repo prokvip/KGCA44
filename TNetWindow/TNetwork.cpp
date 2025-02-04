@@ -257,9 +257,14 @@ bool    TNetwork::Frame()
             }
             if (recvPacket.ph.type == PACKET_CHAT_NAME_SC_REQ)
             {
+                
+#ifdef _CONSOLE
                 std::string SendBuf;
                 SendBuf.reserve(256);
                 std::getline(std::cin, SendBuf);
+#else
+                std::string SendBuf = "홍길동";
+#endif
 
                 SendPacket(m_Sock, // 목적지
                     SendBuf.c_str(),
