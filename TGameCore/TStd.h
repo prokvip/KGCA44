@@ -1,5 +1,4 @@
 #pragma once
-#include <winsock2.h>
 #include <windows.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -13,20 +12,17 @@
 #include <memory>
 #include <atlconv.h>  // A2W
 #include <wrl.h> // windows runtime c++ template library
-//#include "TVertex.h"
+#include "TVertex.h"
 #pragma comment(lib,"d3d11.lib") // 加己 眠啊辆加己 
 #pragma comment(lib,"d3dcompiler.lib") // 加己 眠啊辆加己 
-#pragma comment(lib,"TCore.lib") 
+#pragma comment(lib,"TGameCore.lib")
 #ifndef _DEBUG
     #pragma comment(lib, "DirectXTK_R.lib")
 #else
     #pragma comment(lib, "DirectXTK_d.lib")
 #endif
 
-#define GAME_START int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR    lpCmdLine,int       nCmdShow)  {
-#define GAME_SET    Sample sample;sample.SetWindowClass(hInstance);sample.SetWindow();sample.GameRun();
-#define GAME_END }
-#define GAME_RUN  GAME_START; GAME_SET; GAME_END;
+
 
 #define randf(x) (x*rand()/(float)RAND_MAX)
 #define randf2(x,off) (off+x*rand()/(float)RAND_MAX)

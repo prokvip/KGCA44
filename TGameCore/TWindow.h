@@ -19,9 +19,5 @@ public:
 		UINT iWindowY=600);
 	// 메세지 프로시쳐, 처리
 	bool   MessageProcess();
-
-	virtual LRESULT MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-public:
-	TWindow();
 };
 

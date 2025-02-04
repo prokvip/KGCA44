@@ -1,16 +1,8 @@
 #include "TWindow.h"
-//1 > TCore.vcxproj->F:\00_kgca44\output\Debug\TCore.lib
-//1 > "TCore.vcxproj" 프로젝트를 빌드했습니다.
-
 POINT g_ptClientSize;
 HWND  g_hWnd;
-TWindow* g_pWindow = nullptr;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (g_pWindow!=nullptr)
-    {
-        g_pWindow->MsgProc(hWnd, message, wParam, lParam);
-    }
     switch (message)
     {
     case WM_DESTROY:
@@ -18,10 +10,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return  DefWindowProc(hWnd, message, wParam, lParam);
-}
-LRESULT TWindow::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    return 0;
 }
 // 윈도우클래스 등록
 bool   TWindow::SetWindowClass(HINSTANCE hInstance)
@@ -71,11 +59,10 @@ bool   TWindow::SetWindow(
     g_hWnd = hWnd;
 	return true;
 }
-
 // 메세지 프로시쳐, 처리
 bool   TWindow::MessageProcess()
 {
-    MSG msg;
+    MSG msg;   
     if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
     {
         if (msg.message == WM_QUIT)
@@ -89,11 +76,8 @@ bool   TWindow::MessageProcess()
     }
     return false;
 }
-TWindow::TWindow()
-{
-    g_pWindow = this;
-}
-// 메세지 프로시쳐, 처리
+
+//// 메세지 프로시쳐, 처리
 //bool   TWindow::MessageProcess() 
 //{
 //    MSG msg;
