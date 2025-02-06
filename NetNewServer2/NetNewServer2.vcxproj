@@ -143,10 +143,12 @@
   <ItemGroup>
     <ClCompile Include="NetServer.cpp" />
     <ClCompile Include="THost.cpp" />
+    <ClCompile Include="TNetUDP.cpp" />
     <ClCompile Include="TNetwork.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="THost.h" />
+    <ClInclude Include="TNetUDP.h" />
     <ClInclude Include="TNetwork.h" />
     <ClInclude Include="TProtocol.h" />
   </ItemGroup>

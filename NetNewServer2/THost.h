@@ -24,7 +24,8 @@ public:
     bool        m_bConnect;
     UPACKET     m_tPacket;
     THost();
-    bool        Run(TNetwork& net);
+    bool        RunTCP(TNetwork& net);
+    bool        RunUDP(TNetwork& net);
     TResult     Check(int iCode);
 };
 

@@ -11,7 +11,7 @@ LRESULT Sample::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
             char buffer[MAX_PATH]={ 0, };
             SendMessageA(m_hEdit, WM_GETTEXT, MAX_PATH,(LPARAM)buffer);
-            m_Net.SendPacket(m_Net.m_Sock,buffer, PACKET_CHAT_MSG);
+            m_Net.SendPacketUDP(m_Net.m_Sock,buffer, PACKET_CHAT_MSG);
             }break;
         }
     }break;
@@ -34,11 +34,18 @@ void    Sample::Init()
         m_hInstance, NULL);
 
     m_Net.Init();
-    m_Net.Connect("192.168.0.88", 10000);
+    if (m_Net.m_bUseTCP)
+    {
+        m_Net.ConnectTCP("192.168.0.88", 10000);
+    }
+    else
+    {
+        m_Net.ConnectUDP("192.168.0.88", 10000);
+    }
 }
 void    Sample::Frame()
 {
-    m_Net.Frame();
+    m_Net.FrameUDP();
     if (m_Net.m_DataMsg.size() > 0)
     {
         for (int iMsg = 0; iMsg < m_Net.m_DataMsg.size(); iMsg++)
@@ -62,6 +69,8 @@ void    Sample::Render()
 }
 void    Sample::Release()
 {
+    m_Net.SendPacketUDP(m_Net.m_Sock, nullptr, PACKET_DRUP_USER);
+
     m_Net.Release();
 }
 

@@ -21,6 +21,11 @@ enum TResult{
 class TNetwork
 {
 public:
+	SOCKADDR_IN m_ServerAddr;
+	UPACKET     m_tPacket;
+	SOCKADDR_IN m_Address;
+public:
+	bool    m_bUseTCP = false;
 	SOCKET  m_Sock;
 	bool    m_bRun;
 	bool    m_bThreadRun = false;
@@ -31,17 +36,23 @@ public:
 public:
 	void    Reset();
 	bool    Init();
-	bool    Frame();
+	bool    FrameTCP();
+	bool    FrameUDP();
 	bool    Release();
 	bool    Run();
-	bool	Connect(std::string ip, UINT iPort);
+	bool	ConnectTCP(std::string ip, UINT iPort);
+	bool	ConnectUDP(std::string ip, UINT iPort);
 	bool	DisConnect();
 	bool	RecvWork();
 	bool	SendWork(std::string SendBuf);
 	TResult	Check(int iCode);
-	int     SendPacket(SOCKET sock,
+	int     SendPacketTCP(SOCKET sock,
 						const char* msg,
 						WORD type);
+	int     SendPacketUDP(SOCKET sock,
+		const char* msg,
+		WORD type);
 	void    Print(std::string msg);
+	bool    PacketProcess();
 };
 

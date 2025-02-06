@@ -25,6 +25,33 @@ int     TNetwork::SendPacket(SOCKET sock,
     }*/
     return true;
 }
+int     TNetwork::SendPacket(SOCKADDR_IN addr, 
+    const char* msg,
+    WORD type)
+{
+    UINT iMsgSize = 0;
+    if (msg != nullptr)
+    {
+        iMsgSize = strlen(msg);
+    }
+    UPACKET sendpacket;
+    ZeroMemory(&sendpacket, sizeof(sendpacket));
+    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
+    sendpacket.ph.type = type;
+    if (iMsgSize > 0)
+    {
+        memcpy(sendpacket.msg, msg, iMsgSize);
+    }
+    char* pMsg = (char*)&sendpacket;
+
+    int iSendbyte = sendto(m_Sock, pMsg, sendpacket.ph.len, 0,
+        (SOCKADDR*)&addr, sizeof(addr));
+    /*if (Check(iSendbyte) == TResult::TNet_FALSE)
+    {
+        return false;
+    }*/
+    return true;
+}
 void  TNetwork::Broadcasting(UPACKET& packet)
 {
     for (auto sendHost = m_HostList.begin(); sendHost != m_HostList.end(); sendHost++)
@@ -104,7 +131,7 @@ bool    TNetwork::RecvRun()
     {
         THost& host = *iter;
         if (host.m_bConnect == false) continue;
-        host.Run(*this);
+        host.RunTCP(*this);
     }
     return true;
 }

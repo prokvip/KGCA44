@@ -3,6 +3,7 @@
 
 class TNetwork
 {
+protected:
     SOCKET  m_Sock;
     bool    m_bRun = false;
     std::list<THost> m_HostList;
@@ -13,20 +14,33 @@ public:
     bool   Init();
     bool   Release();
 public:   
-    void  Broadcasting(UPACKET& packet);
-    int   SendPacket(SOCKET sock,const char* msg,WORD type);
-    bool  CreateServer(int iPort);
-    bool  Run();
+    virtual bool  CreateServer(int iPort);
+    virtual bool  Run();
+    virtual bool  RecvRun();
+    virtual bool  PostProcess();
+    virtual bool  PacketProcess();
+    virtual int   SendPacket(SOCKET sock, const char* msg, WORD type);
+    virtual int   SendPacket(SOCKADDR_IN addr, const char* msg, WORD type);
+    virtual void  Broadcasting(UPACKET& packet);
+public:
+   
     bool  AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr);
-    bool  Accept();
-    bool  RecvRun();
-    bool  PacketProcess();
-    bool  PostProcess();
+    bool  Accept();    
+  
 public:
     bool Check(THost& host, int iCode);
     bool CheckAccept(int iCode);
 };
+class TNetworkTCP : public TNetwork {};
+class TNetworkUDP : public TNetwork 
+{
+public:
+    virtual bool  CreateServer(int iPort);
+};
 
-class TNetworkClient : public TNetwork {};
-class TNetworkServer : public TNetwork {};
+
+class TNetworkClientTCP : public TNetworkTCP {};
+class TNetworkServerTCP : public TNetworkTCP {};
+class TNetworkClientUDP : public TNetworkUDP {};
+class TNetworkServerUDP : public TNetworkUDP {};
 
