@@ -4,13 +4,14 @@
 //copy "..\\..\\output\\debug\\TCore.lib" "..\\..\\TCore\\lib\\"
 
 #include "TGameCore.h"
-#include "TNetwork.h"
+#include "TNetworkTCP.h"
+#include "TNetworkUDP.h"
 class Sample : public TGameCore
 {
 	HWND   m_hEdit;
 	HWND   m_hSendBtn;
 	HWND   m_hListBtn;
-	TNetwork m_Net;
+	std::shared_ptr<TNetwork> m_pNet;
 public:
 	void    Init();
 	void    Frame();

@@ -1,7 +1,7 @@
 ﻿#include "TNetUDP.h"
 int main()
 {
-    TNetUDP tNet;
+    TNetworkTCP tNet;
     tNet.Init();
     tNet.CreateServer(10000);
     tNet.Run();    

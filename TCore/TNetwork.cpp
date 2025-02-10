@@ -9,7 +9,7 @@ DWORD WorkSend(LPVOID lpThreadParameter)
     {
         std::getline(std::cin, SendBuf);
         //net->SendWork(SendBuf);
-        net->SendPacketTCP(net->m_Sock, // 목적지
+        net->SendPacket(net->m_Sock, // 목적지
             SendBuf.c_str(),
             PACKET_CHAT_MSG);
     }
@@ -25,53 +25,10 @@ void    TNetwork::Print(std::string msg)
 #endif
 
 }
-int     TNetwork::SendPacketTCP(SOCKET sock, 
-                             const char* msg,
-                             WORD type)
-{
-    UINT iMsgSize = strlen(msg);
-    UPACKET sendpacket;
-    ZeroMemory(&sendpacket, sizeof(sendpacket));
-    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
-    sendpacket.ph.type = type;
-    if (iMsgSize > 0 )
-    {
-        memcpy(sendpacket.msg, msg, iMsgSize);
-    }
-    char* pMsg = (char*)&sendpacket;
-
-    m_iSendBytes = send(m_Sock, pMsg, sendpacket.ph.len, 0);
-    if (Check(m_iSendBytes) == TResult::TNet_FALSE)
-    {
-        return false;
-    }
-    return true;
-}
-int     TNetwork::SendPacketUDP(SOCKET sock,
+int     TNetwork::SendPacket(SOCKET sock,
     const char* msg,
-    WORD type)
-{
-    UINT iMsgSize = 0;
-    if(msg!=nullptr)iMsgSize = strlen(msg);
-    UPACKET sendpacket;
-    ZeroMemory(&sendpacket, sizeof(sendpacket));
-    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
-    sendpacket.ph.type = type;
-    if (iMsgSize > 0)
-    {
-        memcpy(sendpacket.msg, msg, iMsgSize);
-    }
-    char* pMsg = (char*)&sendpacket;
-
-    m_iSendBytes = sendto(m_Sock, pMsg, 
-        sendpacket.ph.len, 0, 
-        (SOCKADDR*)&m_ServerAddr,sizeof(m_ServerAddr));
-
-    if (Check(m_iSendBytes) == TResult::TNet_FALSE)
-    {
-        return false;
-    }
-    return true;
+    WORD type) {
+    return 0;
 }
 void    TNetwork::Reset()
 {
@@ -94,53 +51,7 @@ bool    TNetwork::Release()
 	WSACleanup();
 	return true;
 }
-bool	TNetwork::ConnectTCP(std::string ip, UINT iPort)
-{
-    //  TCP & IP 프로토콜
-    m_Sock = socket(AF_INET, SOCK_STREAM, 0);// IPPROTO_TCP);
-
-    SOCKADDR_IN sa;
-    ZeroMemory(&sa, sizeof(sa));
-    sa.sin_family = AF_INET;    
-    sa.sin_port = htons(10000); // 받는 사람
-    //sa.sin_addr.s_addr = inet_addr("192.168.0.88");// 전화번호
-    inet_pton(AF_INET, ip.c_str(), &sa.sin_addr);
-    int iRet = connect(m_Sock, (SOCKADDR*)&sa, sizeof(sa));
-    if (iRet == SOCKET_ERROR) return false;
-
-    // 넌블록킹 소켓전환
-    u_long on = 1;
-    ioctlsocket(m_Sock, FIONBIO, &on);
-
-    m_bRun = true;
-    return true;
-}
-bool    TNetwork::ConnectUDP(std::string ip, UINT iPort)
-{
-    
-    ZeroMemory(&m_ServerAddr, sizeof(m_ServerAddr));
-    m_ServerAddr.sin_family = AF_INET;
-    m_ServerAddr.sin_addr.s_addr = inet_addr(ip.c_str());// 전화번호
-    m_ServerAddr.sin_port = htons(iPort); // 받는 사람 
-
-    m_Sock = socket(AF_INET, SOCK_DGRAM, 0);// IPPROTO_TCP);
-    SOCKADDR_IN sa;
-    ZeroMemory(&sa, sizeof(sa));
-    sa.sin_family = AF_INET;
-    sa.sin_addr.s_addr = htonl(INADDR_ANY);// 전화번호
-    sa.sin_port = htons(iPort); // 받는 사람    
-    int iRet = bind(m_Sock, (SOCKADDR*)&sa, sizeof(sa));
-
-    // 넌블록킹 소켓전환
-    u_long on = 1;
-    ioctlsocket(m_Sock, FIONBIO, &on);
-
-    SendPacketUDP(m_Sock, nullptr, PACKET_JOIN_REQ);
-
-
-    m_bRun = true;
-    return true;
-}
+bool	TNetwork::Connect(std::string ip, UINT iPort) { return false; }
 bool	TNetwork::DisConnect()
 {
     closesocket(m_Sock);
@@ -222,7 +133,7 @@ bool    TNetwork::Run()
                 SendBuf.reserve(256);
                 std::getline(std::cin, SendBuf);
 
-                SendPacketTCP(m_Sock, // 목적지
+                SendPacket(m_Sock, // 목적지
                     SendBuf.c_str(),
                     PACKET_CHAT_NAME_CS_ACK);
                 m_bThreadRun = true;
@@ -238,76 +149,7 @@ bool    TNetwork::Run()
     CloseHandle(hThread1);
     return true;
 }
-bool    TNetwork::FrameTCP()
-{
-    if (m_bRun == false) return true;
-    ZeroMemory(&m_tPacket, sizeof(m_tPacket));
-    char* pRecvMsg = (char*)&m_tPacket;
-    m_iRecvBytes = 0;
-    // [2],2
-    //while (m_bRun)
-    {
-        int iRecvByte = recv(m_Sock, &pRecvMsg[m_iRecvBytes],
-            PACKET_HEADER_SIZE - m_iRecvBytes, 0);
-        TResult ret = Check(iRecvByte);
-        if (ret == TResult::TNet_FALSE)
-        {
-            exit(1);
-        }
-        if (ret == TResult::TNet_TRUE)
-        {
-            m_iRecvBytes += iRecvByte;
-            if (m_iRecvBytes > PACKET_HEADER_SIZE)
-            {
-                return true;
-            }
-        }
-
-        if (m_iRecvBytes == PACKET_HEADER_SIZE)
-        {
-            while (m_tPacket.ph.len > m_iRecvBytes)//m_iRecvBytes= 4
-            {
-                int iRecvByte = recv(m_Sock,
-                    &pRecvMsg[m_iRecvBytes],
-                    m_tPacket.ph.len - m_iRecvBytes, 0);
-                if (Check(iRecvByte) == TResult::TNet_TRUE)
-                {
-                    m_iRecvBytes += iRecvByte;
-                }
-            }
-            PacketProcess();
-
-            m_iRecvBytes = 0;
-            pRecvMsg = (char*)&m_tPacket;
-        }
-    }   
-    return true;
-}
-bool    TNetwork::FrameUDP()
-{
-    int iAddlen = sizeof(m_Address);
-    char* pRecvMsg = (char*)&m_tPacket;
-    int iRecvByte = recvfrom(m_Sock, pRecvMsg,
-        PACKET_MAX_PACKET_SIZE, 0,
-        (SOCKADDR*)&m_Address, &iAddlen);
-
-    if (iRecvByte == SOCKET_ERROR)
-    {
-        int iError = WSAGetLastError();
-        if (iError != WSAEWOULDBLOCK)
-        {
-            //return TResult::TNet_FALSE;
-            return false;
-        }
-        //return TResult::TNet_EWOULDBLOCK;
-    }
-    else
-    {
-        PacketProcess();
-    }
-    //return TResult::TNet_TRUE;
-    return true;    
-}
+bool    TNetwork::Frame() { return true; };
 bool TNetwork::SendWork(std::string SendBuf)
 {
     if (SendBuf.empty())
@@ -399,14 +241,10 @@ bool    TNetwork::PacketProcess()
 #else
         std::string SendBuf = "홍길동";
 #endif
-        if( m_bUseTCP)
-            SendPacketTCP(m_Sock, // 목적지
-            SendBuf.c_str(),
-            PACKET_CHAT_NAME_CS_ACK);
-        else
-            SendPacketUDP(m_Sock, // 목적지
-                SendBuf.c_str(),
-                PACKET_CHAT_NAME_CS_ACK);
+
+        SendPacket(m_Sock, // 목적지
+        SendBuf.c_str(),
+        PACKET_CHAT_NAME_CS_ACK);       
 
         m_bThreadRun = true;
     }

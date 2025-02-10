@@ -7,8 +7,7 @@ THost::THost()
 bool THost::RunTCP(TNetwork& tNet)
 {
     char* pRecvMsg = (char*)&m_tPacket;
-    int iRecvByte = recv(sock, &pRecvMsg[m_iRecvBytes],
-        PACKET_HEADER_SIZE - m_iRecvBytes, 0);
+    int iRecvByte = recv(sock, &pRecvMsg[m_iRecvBytes],PACKET_HEADER_SIZE - m_iRecvBytes, 0);
     TResult ret = Check(iRecvByte);
     if (ret == TResult::TNet_FALSE)
     {

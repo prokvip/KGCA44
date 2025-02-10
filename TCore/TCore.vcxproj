@@ -20,11 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TGameCore.h" />
+    <ClInclude Include="TNetwork.h" />
+    <ClInclude Include="TNetworkTCP.h" />
+    <ClInclude Include="TNetworkUDP.h" />
+    <ClInclude Include="TProtocol.h" />
     <ClInclude Include="TStd.h" />
     <ClInclude Include="TWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TGameCore.cpp" />
+    <ClCompile Include="TNetwork.cpp" />
+    <ClCompile Include="TNetworkTCP.cpp" />
+    <ClCompile Include="TNetworkUDP.cpp" />
     <ClCompile Include="TWindow.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -38,26 +45,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

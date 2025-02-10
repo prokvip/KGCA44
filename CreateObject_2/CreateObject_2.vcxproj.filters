@@ -13,6 +13,12 @@
     <ClCompile Include="TTime.cpp" />
     <ClCompile Include="TVertex.cpp" />
     <ClCompile Include="TWindow.cpp" />
+    <ClCompile Include="TEffectObj.cpp" />
+    <ClCompile Include="THeroObj.cpp" />
+    <ClCompile Include="TInputLayout.cpp" />
+    <ClCompile Include="TMapObj.cpp" />
+    <ClCompile Include="TShader.cpp" />
+    <ClCompile Include="TTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sample.h" />
@@ -32,6 +38,12 @@
     <ClInclude Include="..\..\data\shader\stdShader.h">
       <Filter>CoreShader</Filter>
     </ClInclude>
+    <ClInclude Include="TEffectObj.h" />
+    <ClInclude Include="THeroObj.h" />
+    <ClInclude Include="TInputLayout.h" />
+    <ClInclude Include="TMapObj.h" />
+    <ClInclude Include="TShader.h" />
+    <ClInclude Include="TTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.txt" />
@@ -44,6 +56,7 @@
     <Text Include="..\..\data\shader\DefaultMask.txt">
       <Filter>CoreShader</Filter>
     </Text>
+    <Text Include="SpriteData.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CoreShader">

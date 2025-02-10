@@ -12,6 +12,7 @@
     <ClCompile Include="TTime.cpp" />
     <ClCompile Include="TVertex.cpp" />
     <ClCompile Include="TWindow.cpp" />
+    <ClCompile Include="TDxState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sample.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="stdShader.h">
       <Filter>Shader</Filter>
     </ClInclude>
+    <ClInclude Include="TDxState.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">

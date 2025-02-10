@@ -34,24 +34,18 @@ public:
 	int     m_iRecvBytes = 0;
 	std::vector<std::string>  m_DataMsg;
 public:
+	virtual bool	Connect(std::string ip, UINT iPort);
+	virtual bool    Frame();
+	virtual bool    Release();
+	virtual int     SendPacket(SOCKET sock, const char* msg, WORD type);
+public:
 	void    Reset();
 	bool    Init();
-	bool    FrameTCP();
-	bool    FrameUDP();
-	bool    Release();
-	bool    Run();
-	bool	ConnectTCP(std::string ip, UINT iPort);
-	bool	ConnectUDP(std::string ip, UINT iPort);
+	bool    Run();	
 	bool	DisConnect();
 	bool	RecvWork();
 	bool	SendWork(std::string SendBuf);
-	TResult	Check(int iCode);
-	int     SendPacketTCP(SOCKET sock,
-						const char* msg,
-						WORD type);
-	int     SendPacketUDP(SOCKET sock,
-		const char* msg,
-		WORD type);
+	TResult	Check(int iCode);	
 	void    Print(std::string msg);
 	bool    PacketProcess();
 };
