@@ -1,4 +1,9 @@
 #include "TNetworkUDP.h"
+SOCKET TNetworkUDP::CreateSocket()
+{
+    m_Sock = socket(AF_INET, SOCK_DGRAM, 0);// IPPROTO_TCP);
+    return m_Sock;
+}
 bool    TNetworkUDP::Connect(std::string ip, UINT iPort)
 {
 
@@ -7,7 +12,7 @@ bool    TNetworkUDP::Connect(std::string ip, UINT iPort)
     m_ServerAddr.sin_addr.s_addr = inet_addr(ip.c_str());// 전화번호
     m_ServerAddr.sin_port = htons(iPort); // 받는 사람 
 
-    m_Sock = socket(AF_INET, SOCK_DGRAM, 0);// IPPROTO_TCP);
+    
     SOCKADDR_IN sa;
     ZeroMemory(&sa, sizeof(sa));
     sa.sin_family = AF_INET;

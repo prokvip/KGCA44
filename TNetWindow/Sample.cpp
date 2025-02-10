@@ -8,14 +8,61 @@ LRESULT Sample::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case 200:
-            {
-            char buffer[MAX_PATH]={ 0, };
-            SendMessageA(m_hEdit, WM_GETTEXT, MAX_PATH,(LPARAM)buffer);
-            m_pNet->SendPacket(m_pNet->m_Sock,buffer, PACKET_CHAT_MSG);
-            }break;
+        {
+            char buffer[MAX_PATH] = { 0, };
+            SendMessageA(m_hEdit, WM_GETTEXT, MAX_PATH, (LPARAM)buffer);
+            m_pNet->SendPacket(m_pNet->m_Sock, buffer, PACKET_CHAT_MSG);
+        }break;
         }
     }break;
-    }
+    case WM_ASYNC_SOCKET:
+    {
+        switch (WSAGETSELECTEVENT(lParam))
+        {
+        case FD_CONNECT:
+        {
+            m_pNet->m_bConnect = true;
+        }break;
+        case FD_CLOSE:
+        {
+            m_pNet->m_bConnect = false;
+        }break;
+        case FD_READ:
+        {
+            int k = 0;
+   //         // 2
+   //         // 2
+   //         // 10
+   //         int iRet = m_pNet->RecvWork();
+   //         if (iRet == 0)
+   //         {
+   //             m_pNet->m_bConnect = false;
+   //             m_pNet->m_iRecvBytes = 0;
+   //             m_pNet->m_pRecvBuffer = (char*)&m_pNet->m_tPacket;
+   //             break;
+   //         }
+			//if (iRet == SOCKET_ERROR)
+			//{
+			//	m_pNet->m_bConnect = false;
+   //             break;
+			//}
+			/*if (iRet != WSAEWOULDBLOCK)
+			{
+				PostMessage(hWnd, 
+                    WM_ASYNC_SOCKET, wParam, FD_READ);
+			}*/
+        }break;
+        // 
+        case FD_WRITE:
+        {
+            bool  m_bSendEnable = true;
+            int k = 0;
+            //m_pNet->SendWork("Hello");
+        }break;
+        }
+	}break;
+	}
+    
     return 0;
 }
 void    Sample::Init()
@@ -35,7 +82,17 @@ void    Sample::Init()
 
 	m_pNet = std::make_shared<TNetworkTCP>();
     m_pNet->Init();
+	m_pNet->CreateSocket();
+    //error C4996 : 'WSAAsyncSelect' : Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+    /*int iRet = WSAAsyncSelect(m_pNet->m_Sock, m_hWnd,
+        WM_ASYNC_SOCKET,
+        FD_CONNECT | FD_CLOSE | FD_READ | FD_WRITE);
+    if (iRet == SOCKET_ERROR)
+    {
+        MessageBoxA(m_hWnd, "WSAAsyncSelect", "Error", MB_OK);
+    }*/
     m_pNet->Connect("192.168.0.88", 10000);
+    
 }
 void    Sample::Frame()
 {

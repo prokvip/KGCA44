@@ -41,6 +41,9 @@ bool    TNetwork::Init()
 	int iRet = WSAStartup(MAKEWORD(2, 2), &wsa);
 	if (iRet != 0) return 1;
 
+    m_iRecvBytes = 0;
+    m_pRecvBuffer = (char*)&m_tPacket;
+
     m_bRun = false;
     m_szRecvData.resize(1024);
 	return true;
@@ -50,6 +53,10 @@ bool    TNetwork::Release()
 	// 윈속 소멸
 	WSACleanup();
 	return true;
+}
+SOCKET TNetwork::CreateSocket()
+{
+    return NULL;
 }
 bool	TNetwork::Connect(std::string ip, UINT iPort) { return false; }
 bool	TNetwork::DisConnect()
@@ -163,20 +170,58 @@ bool TNetwork::SendWork(std::string SendBuf)
     }
     return true;
 }
-bool TNetwork::RecvWork()
+int TNetwork::RecvWork()
 {
-    m_iRecvBytes = recv(m_Sock,&m_szRecvData[0], m_szRecvData.size(), 0);
-    if (m_iRecvBytes == 0)
+    int iRecvByte = 0;
+    if (m_pRecvBuffer != nullptr)
     {
-        return false;
+        if (m_iRecvBytes < PACKET_HEADER_SIZE)
+        {
+            iRecvByte = recv(m_Sock,
+                &m_pRecvBuffer[m_iRecvBytes],
+                PACKET_HEADER_SIZE - m_iRecvBytes, 0);
+            TResult ret = Check(iRecvByte);
+            if (ret == TResult::TNet_FALSE)
+            {
+                exit(1);
+            }
+            if (ret == TResult::TNet_TRUE)
+            {
+                m_iRecvBytes += iRecvByte;
+                // 패킷헤더 크기보다 
+                if (m_iRecvBytes < PACKET_HEADER_SIZE)
+                {
+                    return iRecvByte;
+                }
+                if (m_tPacket.ph.len == m_iRecvBytes)//m_iRecvBytes= 4
+                {
+                    PacketProcess();
+                    m_iRecvBytes = 0;
+                    m_pRecvBuffer = (char*)&m_tPacket;
+                }
+            }
+        }
+        else
+        {            
+            if (m_tPacket.ph.len > m_iRecvBytes)//m_iRecvBytes= 4
+            {
+                iRecvByte = recv(m_Sock,
+                    &m_pRecvBuffer[m_iRecvBytes],
+                    m_tPacket.ph.len - m_iRecvBytes, 0);
+                if (Check(iRecvByte) == TResult::TNet_TRUE)
+                {
+                    m_iRecvBytes += iRecvByte;
+                    if (m_iRecvBytes == m_tPacket.ph.len)
+                    {
+                        PacketProcess();
+                        m_iRecvBytes = 0;
+                        m_pRecvBuffer = (char*)&m_tPacket;
+                    }
+                }
+            }
+        }
     }
-    if (Check(m_iRecvBytes)== TResult::TNet_TRUE)
-    {
-        std::string msg;
-        msg = m_szRecvData.substr(0, m_iRecvBytes);
-        Print(msg);
-    }
-    return true;
+    return iRecvByte;
 }
 
 TResult TNetwork::Check(int iCode)

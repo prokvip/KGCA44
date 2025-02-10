@@ -31,8 +31,9 @@ class TNetwork {
 public:
     SOCKADDR_IN m_ServerAddr; ///< 서버 주소
     UPACKET     m_tPacket; ///< 패킷 데이터
+    char*       m_pRecvBuffer = nullptr;
     SOCKADDR_IN m_Address; ///< 주소 정보
-
+	bool        m_bConnect = false; ///< 연결 여부
 public:
     bool    m_bUseTCP = false; ///< TCP 사용 여부
     SOCKET  m_Sock; ///< 소켓
@@ -85,6 +86,8 @@ public:
      */
     bool Init();
 
+    virtual SOCKET  CreateSocket();
+
     /**
      * @brief 네트워크 실행
      * @return 실행 성공 여부
@@ -101,7 +104,7 @@ public:
      * @brief 데이터 수신 작업
      * @return 수신 작업 성공 여부
      */
-    bool RecvWork();
+    int RecvWork();
 
     /**
      * @brief 데이터 전송 작업

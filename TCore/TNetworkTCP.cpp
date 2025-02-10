@@ -1,9 +1,11 @@
 #include "TNetworkTCP.h"
-bool	TNetworkTCP::Connect(std::string ip, UINT iPort)
+SOCKET TNetworkTCP::CreateSocket()
 {
-    //  TCP & IP 프로토콜
     m_Sock = socket(AF_INET, SOCK_STREAM, 0);// IPPROTO_TCP);
-
+    return m_Sock;
+}
+bool	TNetworkTCP::Connect(std::string ip, UINT iPort)
+{   
     SOCKADDR_IN sa;
     ZeroMemory(&sa, sizeof(sa));
     sa.sin_family = AF_INET;
