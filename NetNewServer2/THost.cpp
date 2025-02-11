@@ -42,6 +42,10 @@ bool THost::RunTCP(TNetwork& tNet)
             }
             
         }
+      /*  if (m_tPacket.ph.type == PACKET_DRUP_USER)
+        {
+            m_bConnect = false;
+        }*/
         if (m_tPacket.ph.type == PACKET_CHAT_NAME_CS_ACK)
         {
             USER_NAME* pData = (USER_NAME*)m_tPacket.msg;

@@ -67,29 +67,67 @@ bool    TNetworkTCP::Frame()
     }
     return true;
 }
-int     TNetworkTCP::SendPacket(SOCKET sock,
-    const char* msg,
-    WORD type)
+int     TNetworkTCP::SendPacket(SOCKET sock, UPACKET& packet)
 {
-    UINT iMsgSize = 0;
-    if (msg != nullptr)
+    char* pMsg = (char*)&packet;
+    m_iSendBytes = send(sock, pMsg, packet.ph.len, 0);
+    if (Check(m_iSendBytes) == TResult::TNet_FALSE)
     {
-        iMsgSize = strlen(msg);
-    }    
-    UPACKET sendpacket;
-    ZeroMemory(&sendpacket, sizeof(sendpacket));
-    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
-    sendpacket.ph.type = type;
-    if (iMsgSize > 0)
-    {
-        memcpy(sendpacket.msg, msg, iMsgSize);
+        return false;
     }
+    return true;
+}
+int     TNetworkTCP::SendPacket(SOCKET sock, const char* msg, WORD type)
+{
+    UPACKET sendpacket = MakePacket(msg, type);   
     char* pMsg = (char*)&sendpacket;
-
     m_iSendBytes = send(m_Sock, pMsg, sendpacket.ph.len, 0);
     if (Check(m_iSendBytes) == TResult::TNet_FALSE)
     {
         return false;
     }
     return true;
+}
+TResult     TNetworkTCP::RecvWork()
+{
+	TResult tRet = TResult::TNet_FALSE;
+    int iRecvByte = 0;
+    if (m_pRecvBuffer != nullptr)
+    {
+        if (m_iRecvBytes < PACKET_HEADER_SIZE)
+        {
+            iRecvByte = recv(m_Sock,
+                &m_pRecvBuffer[m_iRecvBytes],
+                PACKET_HEADER_SIZE - m_iRecvBytes, 0);
+            
+            tRet = Check(iRecvByte);
+            if (tRet == TResult::TNet_TRUE)
+            {
+                m_iRecvBytes += iRecvByte;                
+                if (m_tPacket.ph.len == m_iRecvBytes)//m_iRecvBytes= 4
+                {
+                    AddRecvPacket(m_tPacket);
+                }
+            }
+        }
+        else
+        {
+            if (m_tPacket.ph.len > m_iRecvBytes)//m_iRecvBytes= 4
+            {
+                iRecvByte = recv(m_Sock,
+                    &m_pRecvBuffer[m_iRecvBytes],
+                    m_tPacket.ph.len - m_iRecvBytes, 0);
+                tRet = Check(iRecvByte);
+                if (tRet == TResult::TNet_TRUE)
+                {
+                    m_iRecvBytes += iRecvByte;
+                    if (m_iRecvBytes == m_tPacket.ph.len)
+                    {
+                        AddRecvPacket(m_tPacket);
+                    }
+                }
+            }
+        }
+    }
+    return tRet;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+//#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <mswsock.h>
@@ -19,6 +19,7 @@
  */
 enum TResult {
     TNet_FALSE = 0, ///< 작업 실패
+	TNet_DisConnect, ///< 연결 해제
     TNet_EWOULDBLOCK, ///< 작업이 블록되지 않음
     TNet_TRUE, ///< 작업 성공
 };
@@ -43,7 +44,12 @@ public:
     int     m_iSendBytes = 0; ///< 전송 바이트 수
     int     m_iRecvBytes = 0; ///< 수신 바이트 수
     std::vector<std::string>  m_DataMsg; ///< 데이터 메시지
-
+    std::vector<UPACKET>  m_RecvPackets; 
+    std::vector<UPACKET>  m_SendPackets; 
+	virtual void    AddRecvPacket(UPACKET& packet);
+	virtual void    AddSendPacket(UPACKET& packet);
+    virtual UPACKET MakePacket(const char* msg, WORD type);
+    virtual int     SendPacket(SOCKET sock, UPACKET& packet);
 public:
     /**
      * @brief 서버에 연결
@@ -104,7 +110,7 @@ public:
      * @brief 데이터 수신 작업
      * @return 수신 작업 성공 여부
      */
-    int RecvWork();
+    virtual TResult RecvWork();
 
     /**
      * @brief 데이터 전송 작업

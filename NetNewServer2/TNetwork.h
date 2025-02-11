@@ -14,6 +14,8 @@ public:
     bool   Init();
     bool   Release();
 public:   
+    virtual THost*  FindHost(SOCKET sock);
+    virtual THost*  FindHost(SOCKADDR_IN addr);
     virtual bool  CreateServer(int iPort);
     virtual bool  Run();
     virtual bool  RecvRun();
@@ -31,16 +33,7 @@ public:
     bool Check(THost& host, int iCode);
     bool CheckAccept(int iCode);
 };
-class TNetworkTCP : public TNetwork {};
-class TNetworkUDP : public TNetwork 
-{
-public:
-    virtual bool  CreateServer(int iPort);
-};
 
 
-class TNetworkClientTCP : public TNetworkTCP {};
-class TNetworkServerTCP : public TNetworkTCP {};
-class TNetworkClientUDP : public TNetworkUDP {};
-class TNetworkServerUDP : public TNetworkUDP {};
+
 

@@ -15,6 +15,7 @@ class Sample : public TGameCore
 	std::shared_ptr<TNetwork> m_pNet;
 public:
 	void    Init();
+	void    PreFrame();
 	void    Frame();
 	void    Render();
 	void    Release();

@@ -1,5 +1,5 @@
-#include "TNetUDP.h"
-bool  TNetUDP::CreateServer(int iPort)
+#include "TNetworkUDP.h"
+bool  TNetworkUDP::CreateServer(int iPort)
 {
     m_Sock = socket(AF_INET, SOCK_DGRAM, 0);// IPPROTO_TCP);
     SOCKADDR_IN sa;
@@ -16,7 +16,7 @@ bool  TNetUDP::CreateServer(int iPort)
     m_bRun = true;
     return true;
 }
-void  TNetUDP::Broadcasting(UPACKET& packet)
+void  TNetworkUDP::Broadcasting(UPACKET& packet)
 {
     for (auto sendHost = m_HostList.begin(); sendHost != m_HostList.end(); sendHost++)
     {
@@ -29,7 +29,7 @@ void  TNetUDP::Broadcasting(UPACKET& packet)
         Check(host, iSendSize);
     }
 }
-bool    TNetUDP::Run()
+bool    TNetworkUDP::Run()
 {
     while (m_bRun)
     {
@@ -39,7 +39,7 @@ bool    TNetUDP::Run()
     }
     return true;
 }
-bool    TNetUDP::RecvRun()
+bool    TNetworkUDP::RecvRun()
 {
     int iAddlen = sizeof(m_Address);
     char* pRecvMsg = (char*)&m_tPacket;
@@ -63,32 +63,41 @@ bool    TNetUDP::RecvRun()
         {
             AddHost( 0, m_Address);
             SendPacket(m_Address, nullptr, PACKET_JOIN_ACK);
+            SendPacket(m_Address, nullptr, PACKET_CHAT_NAME_SC_REQ);
         }
-        if (m_tPacket.ph.type == PACKET_CHAT_MSG)
+
+        if (m_tPacket.ph.type == PACKET_CHAT_NAME_CS_ACK)
         {
-            std::cout << m_tPacket.msg << std::endl;
+            USER_NAME* pData = (USER_NAME*)m_tPacket.msg;
+            THost* pHost = FindHost(m_Address);
+            if (pHost != nullptr)
+            {
+                memcpy(pHost->m_csName, pData->name, sizeof(char) * 32);
+            }
+            m_tPacket.ph.type = PACKET_JOIN_USER;
+            m_RecvPool.emplace_back(m_tPacket);
+        }
+        else
+        {
             m_RecvPool.emplace_back(m_tPacket);
         }
         if (m_tPacket.ph.type == PACKET_DRUP_USER)
         {
-            for (auto& host : m_HostList)
+            THost* pHost = FindHost(m_Address);
+            if (pHost != nullptr)
             {
-                if (host.addr.sin_addr.S_un.S_addr == 
-                    m_Address.sin_addr.S_un.S_addr)
-                {
-                    host.m_bConnect = false;
-                }
-            }
+                pHost->m_bConnect = false;
+            }            
         }
     }
     //return TResult::TNet_TRUE;   
     return true;
 }
-int     TNetUDP::SendPacket(SOCKADDR_IN addr, const char* msg,WORD type)
+int     TNetworkUDP::SendPacket(SOCKADDR_IN addr, const char* msg,WORD type)
 {   
     return TNetwork::SendPacket(addr, msg, type);
 }
-bool    TNetUDP::PostProcess()
+bool    TNetworkUDP::PostProcess()
 {
     // 종료처리
    for (auto iter = m_HostList.begin();

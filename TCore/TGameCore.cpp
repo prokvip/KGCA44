@@ -6,12 +6,15 @@ void   TGameCore::CoreInit()
 }
 void   TGameCore::CoreFrame() 
 {   
+    PreFrame();
     Frame();
+    PostFrame();
 }
 void   TGameCore::CoreRender() 
 {
-    Render();    
-
+    PreRender();    
+    Render();
+    PostRender();
 }
 void   TGameCore::CoreRelease()
 { 

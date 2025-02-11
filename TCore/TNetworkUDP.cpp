@@ -6,12 +6,11 @@ SOCKET TNetworkUDP::CreateSocket()
 }
 bool    TNetworkUDP::Connect(std::string ip, UINT iPort)
 {
-
     ZeroMemory(&m_ServerAddr, sizeof(m_ServerAddr));
-    m_ServerAddr.sin_family = AF_INET;
-    m_ServerAddr.sin_addr.s_addr = inet_addr(ip.c_str());// 전화번호
+    m_ServerAddr.sin_family = AF_INET;    
     m_ServerAddr.sin_port = htons(iPort); // 받는 사람 
-
+    //m_ServerAddr.sin_addr.s_addr = inet_addr(ip.c_str());// 전화번호
+    inet_pton(AF_INET, ip.c_str(), &m_ServerAddr.sin_addr);
     
     SOCKADDR_IN sa;
     ZeroMemory(&sa, sizeof(sa));
@@ -55,20 +54,9 @@ bool    TNetworkUDP::Frame()
     //return TResult::TNet_TRUE;
     return true;
 }
-int     TNetworkUDP::SendPacket(SOCKET sock,
-    const char* msg,
-    WORD type)
+int     TNetworkUDP::SendPacket(SOCKET sock, const char* msg,WORD type)
 {
-    UINT iMsgSize = 0;
-    if (msg != nullptr)iMsgSize = strlen(msg);
-    UPACKET sendpacket;
-    ZeroMemory(&sendpacket, sizeof(sendpacket));
-    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
-    sendpacket.ph.type = type;
-    if (iMsgSize > 0)
-    {
-        memcpy(sendpacket.msg, msg, iMsgSize);
-    }
+    UPACKET sendpacket = MakePacket(msg, type);
     char* pMsg = (char*)&sendpacket;
 
     m_iSendBytes = sendto(m_Sock, pMsg,
@@ -80,4 +68,32 @@ int     TNetworkUDP::SendPacket(SOCKET sock,
         return false;
     }
     return true;
+}
+int     TNetworkUDP::SendPacket(SOCKET sock, UPACKET& packet)
+{
+    char* pMsg = (char*)&packet;
+    m_iSendBytes = sendto(sock, pMsg,
+        packet.ph.len, 0,
+        (SOCKADDR*)&m_ServerAddr, sizeof(m_ServerAddr));
+
+    if (Check(m_iSendBytes) == TResult::TNet_FALSE)
+    {
+        return false;
+    }
+    return true;
+}
+TResult TNetworkUDP::RecvWork()
+{
+    TResult tRet = TResult::TNet_FALSE;
+    int iAddlen = sizeof(m_Address);
+    char* pRecvMsg = (char*)&m_tPacket;
+    int iRecvByte = recvfrom(m_Sock, pRecvMsg,
+        PACKET_MAX_PACKET_SIZE, 0,
+        (SOCKADDR*)&m_Address, &iAddlen);
+    tRet = Check(iRecvByte);
+    if (tRet == TResult::TNet_TRUE)
+    {
+        AddRecvPacket(m_tPacket);
+    }
+    return tRet;
 }

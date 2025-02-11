@@ -1,6 +1,6 @@
 #pragma once
 #include "TNetwork.h"
-class TNetUDP : public TNetwork
+class TNetworkUDP : public TNetwork
 {
 public:
 	UPACKET     m_tPacket;

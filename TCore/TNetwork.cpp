@@ -16,6 +16,17 @@ DWORD WorkSend(LPVOID lpThreadParameter)
     return 1;
 }
 
+void    TNetwork::AddRecvPacket(UPACKET& packet)
+{
+	m_RecvPackets.push_back(packet);
+    m_iRecvBytes = 0;
+    m_pRecvBuffer = (char*)&m_tPacket;
+    memset(m_pRecvBuffer, 0, PACKET_MAX_PACKET_SIZE);
+}
+void    TNetwork::AddSendPacket(UPACKET& packet)
+{
+    m_SendPackets.push_back(packet);
+}
 void    TNetwork::Print(std::string msg)
 {
 #ifdef _CONSOLE
@@ -25,9 +36,28 @@ void    TNetwork::Print(std::string msg)
 #endif
 
 }
-int     TNetwork::SendPacket(SOCKET sock,
-    const char* msg,
-    WORD type) {
+UPACKET TNetwork::MakePacket(const char* msg,WORD type)
+{
+    UINT iMsgSize = 0;
+    if (msg != nullptr)
+    {
+        iMsgSize = strlen(msg);
+    }
+    UPACKET sendpacket;
+    ZeroMemory(&sendpacket, sizeof(sendpacket));
+    sendpacket.ph.len = PACKET_HEADER_SIZE + iMsgSize;
+    sendpacket.ph.type = type;
+    if (iMsgSize > 0)
+    {
+        memcpy(sendpacket.msg, msg, iMsgSize);
+    }
+    return sendpacket;
+}
+int     TNetwork::SendPacket(SOCKET sock,const char* msg,WORD type) {
+    return 0;
+}
+int     TNetwork::SendPacket(SOCKET sock, UPACKET& packet)
+{
     return 0;
 }
 void    TNetwork::Reset()
@@ -157,7 +187,7 @@ bool    TNetwork::Run()
     return true;
 }
 bool    TNetwork::Frame() { return true; };
-bool TNetwork::SendWork(std::string SendBuf)
+bool    TNetwork::SendWork(std::string SendBuf)
 {
     if (SendBuf.empty())
     {
@@ -170,58 +200,9 @@ bool TNetwork::SendWork(std::string SendBuf)
     }
     return true;
 }
-int TNetwork::RecvWork()
-{
-    int iRecvByte = 0;
-    if (m_pRecvBuffer != nullptr)
-    {
-        if (m_iRecvBytes < PACKET_HEADER_SIZE)
-        {
-            iRecvByte = recv(m_Sock,
-                &m_pRecvBuffer[m_iRecvBytes],
-                PACKET_HEADER_SIZE - m_iRecvBytes, 0);
-            TResult ret = Check(iRecvByte);
-            if (ret == TResult::TNet_FALSE)
-            {
-                exit(1);
-            }
-            if (ret == TResult::TNet_TRUE)
-            {
-                m_iRecvBytes += iRecvByte;
-                // 패킷헤더 크기보다 
-                if (m_iRecvBytes < PACKET_HEADER_SIZE)
-                {
-                    return iRecvByte;
-                }
-                if (m_tPacket.ph.len == m_iRecvBytes)//m_iRecvBytes= 4
-                {
-                    PacketProcess();
-                    m_iRecvBytes = 0;
-                    m_pRecvBuffer = (char*)&m_tPacket;
-                }
-            }
-        }
-        else
-        {            
-            if (m_tPacket.ph.len > m_iRecvBytes)//m_iRecvBytes= 4
-            {
-                iRecvByte = recv(m_Sock,
-                    &m_pRecvBuffer[m_iRecvBytes],
-                    m_tPacket.ph.len - m_iRecvBytes, 0);
-                if (Check(iRecvByte) == TResult::TNet_TRUE)
-                {
-                    m_iRecvBytes += iRecvByte;
-                    if (m_iRecvBytes == m_tPacket.ph.len)
-                    {
-                        PacketProcess();
-                        m_iRecvBytes = 0;
-                        m_pRecvBuffer = (char*)&m_tPacket;
-                    }
-                }
-            }
-        }
-    }
-    return iRecvByte;
+TResult     TNetwork::RecvWork() {
+    TResult ret = TResult::TNet_FALSE;
+    return ret;
 }
 
 TResult TNetwork::Check(int iCode)
@@ -240,58 +221,62 @@ TResult TNetwork::Check(int iCode)
 
 bool    TNetwork::PacketProcess()
 {
-    // 패킷 완성
-    if (m_tPacket.ph.type == PACKET_JOIN_ACK)
-    {       
-        std::string msg;
-        msg += "접속되었습니다.";
-        Print(msg);
-    }
-    
-    if (m_tPacket.ph.type == PACKET_CHAT_MSG)
+    for (auto& packet : m_RecvPackets)
     {
-        Print(m_tPacket.msg);
-    }
+        // 패킷 완성
+        if (packet.ph.type == PACKET_JOIN_ACK)
+        {
+            std::string msg;
+            msg += "접속되었습니다.";
+            Print(msg);
+        }
 
-    if (m_tPacket.ph.type == PACKET_JOIN_USER)
-    {
-        USER_NAME* pData = (USER_NAME*)m_tPacket.msg;
-        std::string msg = pData->name;
-        msg += "님이 입장하셨습니다.";
-        Print(msg);
-    }
+        if (packet.ph.type == PACKET_CHAT_MSG)
+        {
+            Print(packet.msg);
+        }
 
-    if (m_tPacket.ph.type == PACKET_GAME_START)
-    {
+        if (packet.ph.type == PACKET_JOIN_USER)
+        {
+            USER_NAME* pData = (USER_NAME*)packet.msg;
+            std::string msg = pData->name;
+            msg += "님이 입장하셨습니다.";
+            Print(msg);
+        }
 
-    }
-    if (m_tPacket.ph.type == PACKET_GAME_END)
-    {
+        if (packet.ph.type == PACKET_GAME_START)
+        {
 
-    }
-    if (m_tPacket.ph.type == PACKET_DRUP_USER)
-    {
-        USER_NAME* pData = (USER_NAME*)m_tPacket.msg;
-        std::string msg = pData->name;
-        msg += "님이 퇴장하셨습니다.";
-        Print(msg);
-    }
-    if (m_tPacket.ph.type == PACKET_CHAT_NAME_SC_REQ)
-    {
+        }
+        if (packet.ph.type == PACKET_GAME_END)
+        {
+
+        }
+        if (packet.ph.type == PACKET_DRUP_USER)
+        {
+            USER_NAME* pData = (USER_NAME*)packet.msg;
+            std::string msg = pData->name;
+            msg += "님이 퇴장하셨습니다.";
+            Print(msg);
+        }
+        if (packet.ph.type == PACKET_CHAT_NAME_SC_REQ)
+        {
 
 #ifdef _CONSOLE
-        std::string SendBuf;
-        SendBuf.reserve(256);
-        std::getline(std::cin, SendBuf);
+            std::string SendBuf;
+            SendBuf.reserve(256);
+            std::getline(std::cin, SendBuf);
 #else
-        std::string SendBuf = "홍길동";
+            std::string SendBuf = "홍길동";
 #endif
 
-        SendPacket(m_Sock, // 목적지
-        SendBuf.c_str(),
-        PACKET_CHAT_NAME_CS_ACK);       
+            SendPacket(m_Sock, // 목적지
+                SendBuf.c_str(),
+                PACKET_CHAT_NAME_CS_ACK);
 
-        m_bThreadRun = true;
+            m_bThreadRun = true;
+        }
     }
+    m_RecvPackets.clear();
     return true;
 }

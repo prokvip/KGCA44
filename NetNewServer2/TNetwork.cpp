@@ -1,4 +1,20 @@
 #include "TNetwork.h"
+THost*  TNetwork::FindHost(SOCKET sock)
+{
+    return nullptr;
+}
+THost*  TNetwork::FindHost(SOCKADDR_IN addr)
+{
+    for (auto& host : m_HostList)
+    {
+        if (host.addr.sin_addr.S_un.S_addr ==
+            addr.sin_addr.S_un.S_addr)
+        {
+            return &host;
+        }
+    }
+    return nullptr;
+}
 int     TNetwork::SendPacket(SOCKET sock,
     const char* msg,
     WORD type)
@@ -119,6 +135,7 @@ bool    TNetwork::Accept()
     if (CheckAccept(clientSock))
     {
         AddHost(clientSock, clientaddr);
+        SendPacket(clientSock, nullptr, PACKET_JOIN_ACK);
         SendPacket(clientSock, nullptr, PACKET_CHAT_NAME_SC_REQ);
     }
     return true;
