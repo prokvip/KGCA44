@@ -1,4 +1,51 @@
 #include "TNetworkTCP.h"
+void TUser::Put(char* pBuffer, DWORD dwByte)
+{
+    //m_dwWritePos 다음 버퍼 위치
+    //m_dwStartPos 패킷의 시작 위치
+    //m_dwReadPos  받은 데이터 크기
+    if (m_dwWritePos + dwByte >= MAX_STREAM_SIZE)
+    {
+        if (m_dwReadPos > 0)
+        {
+            memmove(m_szPackStream, &m_szPackStream[m_dwStartPos], m_dwReadPos);
+        }
+        m_dwStartPos = 0;
+        m_dwWritePos = m_dwReadPos;
+    }
+    memcpy(&m_szPackStream[m_dwWritePos], pBuffer, dwByte);
+    m_dwWritePos += dwByte;
+    m_dwReadPos += dwByte;
+
+    if (m_dwReadPos >= PACKET_HEADER_SIZE)
+    {
+        UPACKET* pPacket = (UPACKET*)&m_szPackStream[m_dwStartPos];
+        // 받은 데이터 크기(1개의 패킷보다 크면)
+        if (pPacket->ph.len <= m_dwReadPos)
+        {
+            do {
+                T_PACKET tPacket;
+                ZeroMemory(&tPacket, sizeof(tPacket));
+                tPacket.pUser = this;
+                memcpy(&tPacket.packet, &m_szPackStream[m_dwStartPos], pPacket->ph.len);
+                I_Server.m_RecvPool.Push(tPacket);
+
+                m_dwReadPos -= pPacket->ph.len;
+                m_dwStartPos += pPacket->ph.len;
+                if (m_dwReadPos < PACKET_HEADER_SIZE)
+                {
+                    break;
+                }
+                pPacket = (UPACKET*)&m_szPackStream[m_dwStartPos];
+                if (pPacket->ph.type == 0)
+                {
+                    break;
+                }
+            } while (pPacket->ph.len <= m_dwReadPos);
+        }
+    }
+}
+
 SOCKET TNetworkTCP::CreateSocket()
 {
     m_Sock = socket(AF_INET, SOCK_STREAM, 0);// IPPROTO_TCP);

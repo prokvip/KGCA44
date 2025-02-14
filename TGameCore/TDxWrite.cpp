@@ -4,7 +4,7 @@
 int		TDxWrite::Add(std::wstring msg)
 {
 	UINT iNumsize = m_msgList.size();
-	if (iNumsize > 5)
+	if (iNumsize > 20)
 	{
 		m_msgList.pop_front();
 	}
