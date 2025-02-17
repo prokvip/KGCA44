@@ -5,6 +5,7 @@
 #include <mswsock.h>
 #include <iostream>
 #include <list>
+#include <vector>
 #include "TProtocol.h"
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "mswsock.lib")

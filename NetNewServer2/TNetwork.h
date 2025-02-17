@@ -1,8 +1,16 @@
 #pragma once
-#include "THost.h"
-
+#include "TSelectModel.h"
+enum class TNet_IO
+{
+    T_UseThread,
+    T_StandardSelect,
+    T_AsyncSelect,
+    T_EventSelect,    
+};
 class TNetwork
 {
+public:
+    std::shared_ptr<TSelectModel>  m_pModel=nullptr;
 protected:
     SOCKET  m_Sock;
     bool    m_bRun = false;
@@ -13,25 +21,35 @@ public:
 public:
     bool   Init();
     bool   Release();
-public:   
-    virtual THost*  FindHost(SOCKET sock);
-    virtual THost*  FindHost(SOCKADDR_IN addr);
-    virtual bool  CreateServer(int iPort);
+public:
+    virtual bool  CreateServer(int iPort) = 0;    
+    virtual bool  RecvRun() = 0;
+    virtual bool  PostProcess() = 0;
+    virtual int   Send(THost&, UPACKET&) = 0;
+public:    
     virtual bool  Run();
-    virtual bool  RecvRun();
-    virtual bool  PostProcess();
+    virtual void  Broadcasting(UPACKET& packet);   
     virtual bool  PacketProcess();
     virtual int   SendPacket(SOCKET sock, const char* msg, WORD type);
     virtual int   SendPacket(SOCKADDR_IN addr, const char* msg, WORD type);
-    virtual void  Broadcasting(UPACKET& packet);
+    virtual bool  Check(THost& host, int iCode);
 public:
-   
-    bool  AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr);
-    bool  Accept();    
-  
+    virtual THost* FindHost(SOCKET sock);
+    virtual THost* FindHost(SOCKADDR_IN addr);
+    virtual bool   AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr);
 public:
-    bool Check(THost& host, int iCode);
-    bool CheckAccept(int iCode);
+    /// TCP Àü¿ë
+    virtual bool Accept();
+    virtual bool CheckAccept(int iCode);
+public:
+    TNetwork(std::shared_ptr<TSelectModel> pModel)
+    {
+         m_pModel = pModel;
+         if (m_pModel != nullptr)
+         {
+             m_pModel->Init();
+         }
+    }
 };
 
 

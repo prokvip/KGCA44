@@ -146,6 +146,7 @@
     <ClCompile Include="TNetworkUDP.cpp" />
     <ClCompile Include="TNetwork.cpp" />
     <ClCompile Include="TNetworkTCP.cpp" />
+    <ClCompile Include="TSelectModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="THost.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="TNetwork.h" />
     <ClInclude Include="TNetworkTCP.h" />
     <ClInclude Include="TProtocol.h" />
+    <ClInclude Include="TSelectModel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

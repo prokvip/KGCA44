@@ -16,18 +16,14 @@ bool  TNetworkUDP::CreateServer(int iPort)
     m_bRun = true;
     return true;
 }
-void  TNetworkUDP::Broadcasting(UPACKET& packet)
+int   TNetworkUDP::Send(THost& host, UPACKET& packet)
 {
-    for (auto sendHost = m_HostList.begin(); sendHost != m_HostList.end(); sendHost++)
-    {
-        THost& host = *sendHost;
-        if (host.m_bConnect == false) continue;
-        char* pMsg = (char*)&packet;
-        int iSendSize = sendto(m_Sock, pMsg,
-            packet.ph.len, 0,
-            (SOCKADDR*)&host.addr, sizeof(host.addr));
-        Check(host, iSendSize);
-    }
+    char* pMsg = (char*)&packet;
+    int iSendSize = sendto(m_Sock, pMsg,
+        packet.ph.len, 0,
+        (SOCKADDR*)&host.addr, sizeof(host.addr));
+    Check(host, iSendSize);
+    return iSendSize;
 }
 bool    TNetworkUDP::Run()
 {
