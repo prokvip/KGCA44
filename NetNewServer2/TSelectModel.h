@@ -34,4 +34,5 @@ public:
 	THost* GetHost(SOCKET sock);
 	virtual bool  Init(TNetwork* pNet);
 	virtual bool  Run();
+	void    Rebuild();
 };

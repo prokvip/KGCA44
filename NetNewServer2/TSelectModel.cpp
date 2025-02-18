@@ -11,6 +11,29 @@ THost* TEventSelect::GetHost(SOCKET sock)
 	}
 	return nullptr;
 }
+void  TEventSelect::Rebuild()
+{
+	// rebuild
+	auto eventarray = m_EventArray;
+	auto sockarray = m_SockArray;
+	m_EventArray.clear();
+	m_SockArray.clear();
+
+	for (int iArray = 0; iArray < m_bDisconnectArray.size(); iArray++)
+	{
+		if (m_bDisconnectArray[iArray] != false)
+		{
+			m_EventArray.push_back(eventarray[iArray]);
+			m_SockArray.push_back(sockarray[iArray]);
+		}
+	}
+
+	m_bDisconnectArray.clear();
+	for (int iArray = 0; iArray < m_EventArray.size(); iArray++)
+	{
+		m_bDisconnectArray.push_back(true);
+	}
+}
 bool  TEventSelect::Init(TNetwork* pNet) {
 
 	m_pNet = pNet;
@@ -43,11 +66,11 @@ bool  TEventSelect::Run() {
 	int iRet = WSAEnumNetworkEvents(
 		m_SockArray[iIndex],
 		m_EventArray[iIndex],&NetworkEvent);
-	/*if (iRet == SOCKET_ERROR)
+	if (iRet == SOCKET_ERROR)
 	{
 		DWORD dwError = WSAGetLastError();
 		return false;
-	}*/
+	}
 	if (NetworkEvent.lNetworkEvents & FD_ACCEPT)
 	{
 		if (NetworkEvent.iErrorCode[FD_ACCEPT_BIT] != 0)
@@ -55,6 +78,7 @@ bool  TEventSelect::Run() {
 			THost* host = GetHost(m_SockArray[iIndex]);
 			if(host)host->m_bConnect = false;
 			m_bDisconnectArray[iIndex] = false;
+			Rebuild();
 			return false;
 		}
 		SOCKET sock = m_pNet->Accept();
@@ -72,13 +96,17 @@ bool  TEventSelect::Run() {
 			THost* host = GetHost(m_SockArray[iIndex]);
 			if (host)host->m_bConnect = false;
 			m_bDisconnectArray[iIndex] = false;
+			Rebuild();
 			return false;
 		}
 		//RECV()
 		THost* host = GetHost(m_SockArray[iIndex]);
 		if (host->m_bConnect != false)
 		{
-			host->RunTCP(*m_pNet);
+			if (host->RunTCP(*m_pNet) == false)
+			{
+				m_bDisconnectArray[iIndex] = false;
+			}
 		}
 	}
 	if (NetworkEvent.lNetworkEvents & FD_WRITE)
@@ -88,6 +116,7 @@ bool  TEventSelect::Run() {
 			THost* host = GetHost(m_SockArray[iIndex]);
 			if (host)host->m_bConnect = false;
 			m_bDisconnectArray[iIndex] = false;
+			Rebuild();
 			return false;
 		}
 		//SEND
@@ -136,7 +165,10 @@ bool  TEventSelect::Run() {
 			THost* host = GetHost(m_SockArray[iEvent]);
 			if (host->m_bConnect != false)
 			{
-				host->RunTCP(*m_pNet);
+				if (host->RunTCP(*m_pNet) == false)
+				{
+					m_bDisconnectArray[iEvent] = false;
+				}
 			}
 		}
 		if (NetworkEvent.lNetworkEvents & FD_WRITE)
@@ -161,25 +193,8 @@ bool  TEventSelect::Run() {
 		}
 	}
 
-	// rebuild
-	auto eventarray = m_EventArray;
-	auto sockarray = m_SockArray;
-	m_EventArray.clear();
-	m_SockArray.clear();
+	Rebuild();
 
-	for (int iArray = 0; iArray < m_bDisconnectArray.size(); iArray++)
-	{
-		if (m_bDisconnectArray[iArray] != false)
-		{
-			m_EventArray.push_back(eventarray[iArray]);
-			m_SockArray.push_back(sockarray[iArray]);
-		}
-	}
-
-	m_bDisconnectArray.clear();
-	for (int iArray = 0; iArray < m_EventArray.size(); iArray++)
-	{
-		m_bDisconnectArray.push_back(true);
-	}
 	return true; 
 }
+
