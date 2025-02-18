@@ -74,7 +74,8 @@ void    Sample::Init()
         0, 0, 400, 600, m_hWnd, (HMENU)300,
         m_hInstance, NULL);
 
-	m_pNet = std::make_shared<TNetworkUDP>();
+	//m_pNet = std::make_shared<TNetworkUDP>();
+    m_pNet = std::make_shared<TNetworkTCP>();
     m_pNet->Init();
 	m_pNet->CreateSocket();
     //error C4996 : 'WSAAsyncSelect' : Use WSAEventSelect() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings

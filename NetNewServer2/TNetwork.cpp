@@ -90,6 +90,7 @@ bool    TNetwork::AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr)
     THost host;
     host.addr = clientaddr;
     host.sock = clientSock;
+    host.m_bConnect = true;
     m_HostList.push_back(host);
     return true;
 }
@@ -105,11 +106,16 @@ int   TNetwork::SendPacket(SOCKADDR_IN addr, const char* msg, WORD type)
 };
 
 
-bool TNetwork::Accept()
+SOCKET TNetwork::Accept()
 {
-    return true;
+    return 0;
 }
 bool TNetwork::CheckAccept(int iCode)
 {    
     return false;
+}
+
+TNetwork::TNetwork(std::shared_ptr<TSelectModel> pModel)
+{
+    m_pModel = pModel;   
 }

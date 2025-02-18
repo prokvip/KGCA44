@@ -17,13 +17,15 @@ enum TResult {
 class TNetwork;
 class THost
 {
-public:
+public:    
     SOCKET      sock;
     SOCKADDR_IN addr;
     char        m_csName[32];    
     int         m_iRecvBytes = 0;
-    bool        m_bConnect;
-    UPACKET     m_tPacket;
+    bool        m_bConnect = false;
+    UPACKET     m_tPacket; 
+    WSAEVENT    m_hEvent;
+public:
     THost();
     bool        RunTCP(TNetwork& net);
     bool        RunUDP(TNetwork& net);

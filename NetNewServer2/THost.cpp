@@ -2,6 +2,8 @@
 #include "TNetwork.h"
 THost::THost()
 {
+    m_iRecvBytes = 0;
+    m_bConnect = false;    
     ZeroMemory(&m_tPacket, sizeof(m_tPacket));
 }
 bool THost::RunTCP(TNetwork& tNet)
@@ -46,6 +48,7 @@ bool THost::RunTCP(TNetwork& tNet)
         {
             m_bConnect = false;
         }*/
+
         if (m_tPacket.ph.type == PACKET_CHAT_NAME_CS_ACK)
         {
             USER_NAME* pData = (USER_NAME*)m_tPacket.msg;

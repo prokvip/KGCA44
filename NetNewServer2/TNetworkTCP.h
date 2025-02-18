@@ -3,7 +3,7 @@
 class TNetworkTCP : public TNetwork
 {
 public:
-	bool    Accept() override;
+	SOCKET    Accept() override;
 	bool	CheckAccept(int iCode)override;
 public:
 	virtual bool  CreateServer(int iPort) override;

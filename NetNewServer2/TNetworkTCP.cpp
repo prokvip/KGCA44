@@ -15,7 +15,7 @@ bool TNetworkTCP::CheckAccept(int iCode)
     }
     return false;
 }
-bool    TNetworkTCP::Accept()
+SOCKET    TNetworkTCP::Accept()
 {
     SOCKADDR_IN clientaddr;
     int addlen = sizeof(clientaddr);
@@ -27,7 +27,7 @@ bool    TNetworkTCP::Accept()
         SendPacket(clientSock, nullptr, PACKET_JOIN_ACK);
         SendPacket(clientSock, nullptr, PACKET_CHAT_NAME_SC_REQ);
     }
-    return true;
+    return clientSock;
 }
 bool    TNetworkTCP::CreateServer(int iPort)
 {
@@ -47,14 +47,20 @@ bool    TNetworkTCP::CreateServer(int iPort)
     ioctlsocket(m_Sock, FIONBIO, &on);
 
     m_bRun = true;
+
+    if (m_pModel != nullptr)
+    {
+        m_pModel->Init(this);
+    }
     return true;
 }
 bool    TNetworkTCP::Run()
 {
     while (m_bRun)
     {
-        Accept();
-        RecvRun();
+        if (m_pModel) m_pModel->Run();
+        ///*Accept();
+        //RecvRun();*/
         PacketProcess();
         PostProcess();
     }

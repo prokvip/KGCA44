@@ -12,10 +12,12 @@ class TNetwork
 public:
     std::shared_ptr<TSelectModel>  m_pModel=nullptr;
 protected:
-    SOCKET  m_Sock;
+    
     bool    m_bRun = false;
-    std::list<THost> m_HostList;
+    
 public:
+    SOCKET  m_Sock;
+    std::list<THost> m_HostList;
     std::list<UPACKET>  m_RecvPool;
     std::list<UPACKET>  m_SendPool;
 public:
@@ -39,17 +41,10 @@ public:
     virtual bool   AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr);
 public:
     /// TCP Àü¿ë
-    virtual bool Accept();
+    virtual SOCKET Accept();
     virtual bool CheckAccept(int iCode);
 public:
-    TNetwork(std::shared_ptr<TSelectModel> pModel)
-    {
-         m_pModel = pModel;
-         if (m_pModel != nullptr)
-         {
-             m_pModel->Init();
-         }
-    }
+    TNetwork(std::shared_ptr<TSelectModel> pModel);
 };
 
 
