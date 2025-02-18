@@ -36,4 +36,10 @@ public:
 	virtual bool  Run();
 	void    Rebuild();
 	void    Disconnect(UINT iIndex);
+public:
+	bool  NetEvent_Check(UINT iEventt);
+	bool  NetEvent_Recv(UINT iEvent, WSANETWORKEVENTS NetworkEvent);
+	bool  NetEvent_Close(UINT iEvent, WSANETWORKEVENTS NetworkEvent);
+	bool  NetEvent_Write(UINT iEvent, WSANETWORKEVENTS NetworkEvent);
+	
 };
