@@ -19,6 +19,16 @@ void  TEventSelect::Rebuild()
 	m_EventArray.clear();
 	m_SockArray.clear();
 
+	UINT iIndex = 1;
+	for (auto& host : m_pNet->m_HostList)
+	{
+		if (host.m_bConnect == false)
+		{
+			m_bDisconnectArray[iIndex] = false ;
+		}
+		iIndex++;
+	}
+
 	for (int iArray = 0; iArray < m_bDisconnectArray.size(); iArray++)
 	{
 		if (m_bDisconnectArray[iArray] != false)
@@ -34,6 +44,13 @@ void  TEventSelect::Rebuild()
 		m_bDisconnectArray.push_back(true);
 	}
 }
+void  TEventSelect::Disconnect(UINT iIndex)
+{
+	THost* host = GetHost(m_SockArray[iIndex]);
+	if (host)host->m_bConnect = false;
+	m_bDisconnectArray[iIndex] = false;	
+}
+
 bool  TEventSelect::Init(TNetwork* pNet) {
 
 	m_pNet = pNet;
@@ -51,23 +68,25 @@ bool  TEventSelect::Init(TNetwork* pNet) {
 }
 bool  TEventSelect::Run() {
 
+	Rebuild();
+
 	DWORD dwTimeout = 0;
 	INT iIndex = WSAWaitForMultipleEvents(
 		m_EventArray.size(),&m_EventArray.at(0),
 		FALSE, dwTimeout, FALSE	);
 	if (iIndex == SOCKET_ERROR)
 	{
+		Disconnect(iIndex);
 		return false;
 	}
 	if (iIndex == WSA_WAIT_FAILED) return false;
 	if (iIndex == WSA_WAIT_TIMEOUT) return true;
 	// 어떤 이벤트냐?
 	WSANETWORKEVENTS NetworkEvent;
-	int iRet = WSAEnumNetworkEvents(
-		m_SockArray[iIndex],
-		m_EventArray[iIndex],&NetworkEvent);
+	int iRet = WSAEnumNetworkEvents(m_SockArray[iIndex],m_EventArray[iIndex],&NetworkEvent);
 	if (iRet == SOCKET_ERROR)
 	{
+		Disconnect(iIndex);
 		DWORD dwError = WSAGetLastError();
 		return false;
 	}
@@ -75,10 +94,7 @@ bool  TEventSelect::Run() {
 	{
 		if (NetworkEvent.iErrorCode[FD_ACCEPT_BIT] != 0)
 		{
-			THost* host = GetHost(m_SockArray[iIndex]);
-			if(host)host->m_bConnect = false;
-			m_bDisconnectArray[iIndex] = false;
-			Rebuild();
+			exit(1);
 			return false;
 		}
 		SOCKET sock = m_pNet->Accept();
@@ -93,43 +109,29 @@ bool  TEventSelect::Run() {
 	{
 		if (NetworkEvent.iErrorCode[FD_READ_BIT] != 0)
 		{
-			THost* host = GetHost(m_SockArray[iIndex]);
-			if (host)host->m_bConnect = false;
-			m_bDisconnectArray[iIndex] = false;
-			Rebuild();
-			return false;
+			Disconnect(iIndex);
 		}
 		//RECV()
 		THost* host = GetHost(m_SockArray[iIndex]);
 		if (host->m_bConnect != false)
 		{
-			if (host->RunTCP(*m_pNet) == false)
-			{
-				m_bDisconnectArray[iIndex] = false;
-			}
+			host->RunTCP(*m_pNet);
 		}
 	}
 	if (NetworkEvent.lNetworkEvents & FD_WRITE)
 	{
 		if (NetworkEvent.iErrorCode[FD_WRITE_BIT] != 0)
 		{
-			THost* host = GetHost(m_SockArray[iIndex]);
-			if (host)host->m_bConnect = false;
-			m_bDisconnectArray[iIndex] = false;
-			Rebuild();
-			return false;
+			Disconnect(iIndex);
 		}
 		//SEND
 	}
 	if (NetworkEvent.lNetworkEvents & FD_CLOSE)
 	{
 		if (NetworkEvent.iErrorCode[FD_CLOSE_BIT] != 0)
-		{
-			// ERROR			
+		{			
 		}
-		THost* host = GetHost(m_SockArray[iIndex]);
-		host->m_bConnect = false;
-		m_bDisconnectArray[iIndex] = false;
+		Disconnect(iIndex);
 	}
 
 	// 동시에 이벤트가 발생하면 
@@ -149,51 +151,38 @@ bool  TEventSelect::Run() {
 			m_EventArray[iEvent], &NetworkEvent);
 		if (iRet == SOCKET_ERROR)
 		{
-			THost* host = GetHost(m_SockArray[iEvent]);
-			if (host)host->m_bConnect = false;
-			m_bDisconnectArray[iEvent] = false;
+			Disconnect(iEvent);
+			return false;
 		}
 		if (NetworkEvent.lNetworkEvents & FD_READ)
 		{
 			if (NetworkEvent.iErrorCode[FD_READ_BIT] != 0)
 			{
-				THost* host = GetHost(m_SockArray[iEvent]);
-				if (host)host->m_bConnect = false;
-				m_bDisconnectArray[iEvent] = false;
+				Disconnect(iEvent);
 			}
 			//RECV()
 			THost* host = GetHost(m_SockArray[iEvent]);
 			if (host->m_bConnect != false)
 			{
-				if (host->RunTCP(*m_pNet) == false)
-				{
-					m_bDisconnectArray[iEvent] = false;
-				}
+				host->RunTCP(*m_pNet);
 			}
 		}
 		if (NetworkEvent.lNetworkEvents & FD_WRITE)
 		{
 			if (NetworkEvent.iErrorCode[FD_WRITE_BIT] != 0)
-			{
-				THost* host = GetHost(m_SockArray[iEvent]);
-				if (host)host->m_bConnect = false;
-				m_bDisconnectArray[iEvent] = false;
+			{	
+				Disconnect(iEvent);			
 			}
-			//SEND
+			
 		}
 		if (NetworkEvent.lNetworkEvents & FD_CLOSE)
 		{
 			if (NetworkEvent.iErrorCode[FD_CLOSE_BIT] != 0)
-			{
-				// ERROR			
+			{							
 			}
-			THost* host = GetHost(m_SockArray[iEvent]);
-			if (host)host->m_bConnect = false;
-			m_bDisconnectArray[iEvent] = false;
+			Disconnect(iEvent);
 		}
 	}
-
-	Rebuild();
 
 	return true; 
 }

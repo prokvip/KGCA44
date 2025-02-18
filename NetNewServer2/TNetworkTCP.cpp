@@ -61,8 +61,8 @@ bool    TNetworkTCP::Run()
         if (m_pModel) m_pModel->Run();
         ///*Accept();
         //RecvRun();*/
-        PacketProcess();
-        PostProcess();
+       PacketProcess();
+       PostProcess();
     }
     return true;
 }

@@ -35,4 +35,5 @@ public:
 	virtual bool  Init(TNetwork* pNet);
 	virtual bool  Run();
 	void    Rebuild();
+	void    Disconnect(UINT iIndex);
 };

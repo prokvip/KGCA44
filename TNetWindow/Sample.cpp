@@ -86,7 +86,7 @@ void    Sample::Init()
     {
         MessageBoxA(m_hWnd, "WSAAsyncSelect", "Error", MB_OK);
     }
-    m_pNet->Connect("192.168.0.88", 10000);
+    m_pNet->Connect("192.168.0.12", 10000);
     
 }
 void    Sample::PreFrame()
