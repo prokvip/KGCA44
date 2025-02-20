@@ -138,6 +138,7 @@ void   Sample::AsyncCopy(const TCHAR* filename)
 				m_DxWrite.Add(L"복사 중...");
 			}
 		}
+
 		if (ret == TRUE && dwWrited > 0)
 		{
 			m_bWriteFinish = true;
@@ -166,9 +167,9 @@ void   Sample::Frame()
 		BOOL bRet = GetOverlappedResult(m_hLoadFile, &m_loadOV,&dwTrans, FALSE);
 		if (bRet == TRUE)
 		{
-			m_DxWrite.Add(L"로드 완료..");
-			m_bLoadFinish = true;
+			m_DxWrite.Add(L"로드 완료..");			
 			AsyncCopy(L"copy.zip");
+			m_bLoadFinish = true;
 			CloseHandle(m_hLoadFile);			
 		}
 		else
@@ -176,7 +177,7 @@ void   Sample::Frame()
 			m_DxWrite.Add(L"로드 중..");
 		}
 	}
-	if (m_bWriteFinish == false)
+	if (m_bLoadFinish == true && m_bWriteFinish == false)
 	{
 		DWORD dwTrans;
 		// 비동기 작업의 결과를 확인
