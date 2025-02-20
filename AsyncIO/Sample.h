@@ -23,7 +23,7 @@ public:
 	OVERLAPPED m_CopyOV;
 	bool m_bLoadFinish = false;
 	bool m_bWriteFinish = false;
-	bool m_bLoadStart = false;
-	bool m_bWriteStart = false;
+public:
+	void  FileInformation(HANDLE hFile);
 };
 

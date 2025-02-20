@@ -1,4 +1,45 @@
 #include "Sample.h"
+
+#define _DEBUG_LOAD
+
+template<typename ... Args>
+std::string format_string(const std::string& format, Args ... args)
+{
+	size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1;
+	std::unique_ptr<char[]> buffer(new char[size]);
+	snprintf(buffer.get(), size, format.c_str(), args ...);
+	return std::string(buffer.get(), buffer.get() + size - 1);
+}
+void   Sample::FileInformation(HANDLE hFile)
+{
+	DWORD iSector_Clustor = 0;
+	DWORD iByte_Sector = 0;
+	DWORD iFree_Clustor = 0;
+	DWORD iTotal_Clustor = 0;
+
+	GetDiskFreeSpace(L"D:\\",
+		&iSector_Clustor,
+		&iByte_Sector,
+		&iFree_Clustor,
+		&iTotal_Clustor);
+
+	ULARGE_INTEGER avail, total, free;
+	avail.QuadPart = 0L;
+	total.QuadPart = 0L;
+	free.QuadPart = 0L;
+	GetDiskFreeSpaceEx(TEXT("D:\\"), &avail, &total, &free);
+
+	BY_HANDLE_FILE_INFORMATION info;
+	GetFileInformationByHandle(hFile, &info);
+
+
+	UINT m_avail, m_total, m_free;
+	m_total = (int)(total.QuadPart >> 30);
+	m_free = (int)(free.QuadPart >> 30);
+	std::string msg = format_string("C: Total Size: %d GB , Free Size : %d GB\n", m_total, m_free);
+
+
+}
 void   Sample::FileWrite(const TCHAR* filename)
 {
 	HANDLE hWriteFile =
@@ -17,7 +58,7 @@ void   Sample::FileWrite(const TCHAR* filename)
 			// 정상출력
 		}
 	}
-	CloseHandle(hWriteFile);	
+	CloseHandle(hWriteFile);
 }
 void   Sample::FileRead(const TCHAR* filename)
 {
@@ -41,7 +82,7 @@ void   Sample::FileRead(const TCHAR* filename)
 	CloseHandle(hReadFile);
 }
 void   Sample::Load(const TCHAR* filename)
-{	
+{
 	HANDLE hLoadFile =
 		CreateFile(filename, GENERIC_READ,
 			0, NULL, OPEN_EXISTING,
@@ -52,7 +93,7 @@ void   Sample::Load(const TCHAR* filename)
 		m_pFileBuffer = new TCHAR[m_FileSize.LowPart];
 		DWORD dwLength = m_FileSize.LowPart;
 		DWORD dwRead;
-		BOOL ret = ReadFile(hLoadFile, 
+		BOOL ret = ReadFile(hLoadFile,
 			m_pFileBuffer, dwLength,
 			&dwRead, NULL);
 
@@ -77,7 +118,7 @@ void   Sample::Copy(const TCHAR* filename)
 			m_FileSize.LowPart,
 			&dwWrited, NULL);
 		if (ret == TRUE && dwWrited > 0)
-		{			
+		{
 			m_DxWrite.Add(L"복사 완성");
 		}
 	}
@@ -89,14 +130,21 @@ void   Sample::AsyncLoad(const TCHAR* filename)
 	m_hLoadFile =
 		CreateFile(filename, GENERIC_READ,
 			0, NULL, OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED , NULL);
+			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED
+#ifdef _DEBUG_LOAD
+			| FILE_FLAG_SEQUENTIAL_SCAN
+#endif
+			, NULL);
 	if (m_hLoadFile != INVALID_HANDLE_VALUE)
 	{
+
+		FileInformation(m_hLoadFile);
+
 		GetFileSizeEx(m_hLoadFile, &m_FileSize);
 		m_pFileBuffer = new TCHAR[m_FileSize.LowPart];
 		DWORD dwLength = m_FileSize.LowPart;
 		DWORD dwRead;
-	
+
 		BOOL ret = ReadFile(m_hLoadFile,
 			m_pFileBuffer, dwLength,
 			&dwRead, &m_loadOV);
@@ -115,7 +163,7 @@ void   Sample::AsyncLoad(const TCHAR* filename)
 			m_DxWrite.Add(L"로드 완성");
 		}
 	}
-	
+
 }
 void   Sample::AsyncCopy(const TCHAR* filename)
 {
@@ -123,7 +171,7 @@ void   Sample::AsyncCopy(const TCHAR* filename)
 	m_hCopyFile =
 		CreateFile(filename, GENERIC_WRITE,
 			0, NULL, CREATE_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED , NULL);
+			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
 	if (m_hCopyFile != INVALID_HANDLE_VALUE)
 	{
 		DWORD dwLength = m_FileSize.LowPart;
@@ -146,7 +194,7 @@ void   Sample::AsyncCopy(const TCHAR* filename)
 			CloseHandle(m_hCopyFile);
 			delete[] m_pFileBuffer;
 		}
-	}	
+	}
 }
 void   Sample::Init()
 {
@@ -155,7 +203,7 @@ void   Sample::Init()
 	//FileRead(L"test.txt");
 	//Load(L"bigdata.zip");
 	//Copy(L"datacopy.zip");
-	AsyncLoad(L"data.zip");	
+	AsyncLoad(L"data.zip");
 }
 void   Sample::Frame()
 {
@@ -164,13 +212,13 @@ void   Sample::Frame()
 	{
 		DWORD dwTrans;
 		// 비동기 작업의 결과를 확인
-		BOOL bRet = GetOverlappedResult(m_hLoadFile, &m_loadOV,&dwTrans, FALSE);
+		BOOL bRet = GetOverlappedResult(m_hLoadFile, &m_loadOV, &dwTrans, FALSE);
 		if (bRet == TRUE)
 		{
-			m_DxWrite.Add(L"로드 완료..");			
+			m_DxWrite.Add(L"로드 완료..");
 			AsyncCopy(L"copy.zip");
 			m_bLoadFinish = true;
-			CloseHandle(m_hLoadFile);			
+			CloseHandle(m_hLoadFile);
 		}
 		else
 		{
@@ -183,17 +231,17 @@ void   Sample::Frame()
 		// 비동기 작업의 결과를 확인
 		BOOL bRet = GetOverlappedResult(m_hCopyFile, &m_CopyOV, &dwTrans, FALSE);
 		if (bRet == TRUE)
-		{			
+		{
 			m_DxWrite.Add(L"복사 완료..");
 			m_bWriteFinish = true;
 			CloseHandle(m_hCopyFile);
-			delete[] m_pFileBuffer;			
-		}		
+			delete[] m_pFileBuffer;
+		}
 		else
 		{
 			m_DxWrite.Add(L"복사 중..");
 		}
-	}		
+	}
 };
 void   Sample::Render()
 {
