@@ -147,6 +147,7 @@
     <ClCompile Include="TNetwork.cpp" />
     <ClCompile Include="TNetworkTCP.cpp" />
     <ClCompile Include="TSelectModel.cpp" />
+    <ClCompile Include="TStdSelect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="THost.h" />

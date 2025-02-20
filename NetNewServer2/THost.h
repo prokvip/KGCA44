@@ -24,7 +24,6 @@ public:
     int         m_iRecvBytes = 0;
     bool        m_bConnect = false;
     UPACKET     m_tPacket; 
-    WSAEVENT    m_hEvent;
 public:
     THost();
     bool        RunTCP(TNetwork& net);

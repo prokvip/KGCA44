@@ -20,9 +20,14 @@ public:
 
 class TStdSelect : public TSelectModel
 {
+	FD_SET			m_rSet;
+	FD_SET			m_wSet;
+	FD_SET			m_eSet;
 public:
-	virtual bool  Init(TNetwork* pNet) { return true; }
-	virtual bool  Run() { return true; }
+	virtual bool  Init(TNetwork* pNet);
+	virtual bool  Run();
+	void    Rebuild();
+	bool	NetEvent_Check(int iEvent);
 };
 
 class TEventSelect : public TSelectModel

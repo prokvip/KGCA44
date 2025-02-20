@@ -59,10 +59,13 @@ bool    TNetworkTCP::Run()
     while (m_bRun)
     {
         if (m_pModel) m_pModel->Run();
-        ///*Accept();
-        //RecvRun();*/
-       PacketProcess();
-       PostProcess();
+        else
+        {
+            Accept();
+            RecvRun();
+        }
+        PacketProcess();
+        PostProcess();
     }
     return true;
 }
