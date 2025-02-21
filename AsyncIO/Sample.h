@@ -2,6 +2,7 @@
 #include "TGameCore.h"
 class Sample : public TGameCore
 {
+public:
 	TCHAR* m_pFileBuffer = nullptr;
 	LARGE_INTEGER		m_FileSize;
 public:

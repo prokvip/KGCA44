@@ -40,6 +40,34 @@ void   Sample::FileInformation(HANDLE hFile)
 
 
 }
+VOID WINAPI COMPLETION_ROUTINE_Load(
+	_In_    DWORD dwErrorCode,
+	_In_    DWORD dwNumberOfBytesTransfered,
+	_Inout_ LPOVERLAPPED lpOverlapped)
+{
+	Sample* pSample = (Sample*)lpOverlapped->hEvent;
+	if (pSample)
+	{
+		CloseHandle(pSample->m_hLoadFile);
+		pSample->m_DxWrite.Add(L"로드 완성");
+		pSample->m_bLoadFinish = true;
+		pSample->AsyncCopy(L"copy.zip");
+	}
+}
+VOID WINAPI COMPLETION_ROUTINE_Write(
+	_In_    DWORD dwErrorCode,
+	_In_    DWORD dwNumberOfBytesTransfered,
+	_Inout_ LPOVERLAPPED lpOverlapped)
+{
+	Sample* pSample = (Sample*)lpOverlapped->hEvent;
+	if (pSample)
+	{
+		delete[] pSample->m_pFileBuffer;
+		CloseHandle(pSample->m_hCopyFile);
+		pSample->m_DxWrite.Add(L"복사 완성");
+	}
+}
+
 void   Sample::FileWrite(const TCHAR* filename)
 {
 	HANDLE hWriteFile =
@@ -148,6 +176,9 @@ void   Sample::AsyncLoad(const TCHAR* filename)
 		BOOL ret = ReadFile(m_hLoadFile,
 			m_pFileBuffer, dwLength,
 			&dwRead, &m_loadOV);
+		/*BOOL ret = ReadFile(m_hLoadFile,
+			m_pFileBuffer, dwLength,
+			&m_loadOV, COMPLETION_ROUTINE_Load);*/
 		if (ret == FALSE)
 		{
 			if (GetLastError() == ERROR_IO_PENDING)
@@ -171,7 +202,11 @@ void   Sample::AsyncCopy(const TCHAR* filename)
 	m_hCopyFile =
 		CreateFile(filename, GENERIC_WRITE,
 			0, NULL, CREATE_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED
+#ifdef _DEBUG_LOAD
+			| FILE_FLAG_WRITE_THROUGH
+#endif
+			, NULL);
 	if (m_hCopyFile != INVALID_HANDLE_VALUE)
 	{
 		DWORD dwLength = m_FileSize.LowPart;
@@ -179,6 +214,9 @@ void   Sample::AsyncCopy(const TCHAR* filename)
 		BOOL ret = WriteFile(m_hCopyFile, m_pFileBuffer,
 			m_FileSize.LowPart,
 			&dwWrited, &m_CopyOV);
+		/*BOOL ret = WriteFileEx(m_hCopyFile, m_pFileBuffer,
+			m_FileSize.LowPart,
+			 &m_CopyOV, COMPLETION_ROUTINE_Write);*/
 		if (ret == FALSE)
 		{
 			if (GetLastError() == ERROR_IO_PENDING)
