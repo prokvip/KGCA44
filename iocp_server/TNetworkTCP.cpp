@@ -175,9 +175,7 @@ int     TNetworkTCP::SendPacket(SOCKET sock,
     }*/
     return true;
 }
-int     TNetworkTCP::SendPacket(THost* host,
-    const char* msg,
-    WORD type)
+int     TNetworkTCP::SendPacket(THost* host,  const char* msg, WORD type)
 {
     UINT iMsgSize = 0;
     if (msg != nullptr)
@@ -195,20 +193,24 @@ int     TNetworkTCP::SendPacket(THost* host,
     char* pMsg = (char*)&sendpacket;
     
     OVERLAPPED2* ov = new OVERLAPPED2(OVERLAPPED2::MODE_SEND);
-    WSABUF m_wsaRecvBuffers;
-    m_wsaRecvBuffers.buf = pMsg;
-    m_wsaRecvBuffers.len = PACKET_MAX_PACKET_SIZE;
+
+    host->m_wsaSendBuffers.buf = pMsg;
+    host->m_wsaSendBuffers.len = PACKET_MAX_PACKET_SIZE;
     DWORD dwSendByte;
     int iSendbyte = WSASend(host->sock,
-                &m_wsaRecvBuffers, 
+                &host->m_wsaSendBuffers,
                 1, 
                 &dwSendByte,
                 0,
                 &ov->m_ov, 
                 nullptr);
-    /*if (Check(iSendbyte) == TResult::TNet_FALSE)
+    if (iSendbyte == SOCKET_ERROR)
     {
-        return false;
-    }*/
+        if (GetLastError() != ERROR_IO_PENDING)
+        {
+            host->m_bConnect = false;
+            return false;
+        }
+    }
     return true;
 }

@@ -11,6 +11,7 @@ public:
 	virtual bool  RecvRun() override;
 	virtual int   SendPacket(SOCKET sock,const char* msg,	WORD type) override;
 	virtual int   SendPacket(SOCKADDR_IN addr, const char* msg, WORD type) override;
+	int     SendPacket(THost* host, const char* msg, WORD type);
 	virtual bool  PostProcess() override;
 	virtual int   Send(THost&, UPACKET&)override;	
 public:

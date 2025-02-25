@@ -14,7 +14,7 @@ typedef struct
 {
 	PACKET_HEADER ph;
 	char		  msg[PACKET_DATA_SIZE];
-}UPACKET;
+}UPACKET,*P_UPACKET;
 
 typedef struct
 {	

@@ -107,7 +107,10 @@ int   TNetwork::SendPacket(SOCKADDR_IN addr, const char* msg, WORD type)
 {
     return 0;
 };
-
+int   TNetwork::SendPacket(THost* host, const char* msg, WORD type)
+{
+    return 0;
+}
 
 SOCKET TNetwork::Accept()
 {

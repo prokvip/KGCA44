@@ -17,14 +17,7 @@ DWORD WINAPI ThreadWorkerProc(LPVOID lpParameter)
 		{		
 			THost* pHost = (THost*)CompletionKey;
 			OVERLAPPED2* ov = (OVERLAPPED2*)Overlapped;
-			if (ov->m_iFlag == OVERLAPPED2::MODE_RECV)
-			{
-				delete ov;
-			}
-			if (ov->m_iFlag == OVERLAPPED2::MODE_SEND)
-			{
-				delete ov;
-			}
+			pHost->Dispatch(dwTransfer, ov);
 		}
 		else
 		{
@@ -67,14 +60,17 @@ SOCKET    TNetModel::Accept()
 		::CreateIoCompletionPort((HANDLE)clientSock, m_hIOCP,
 			(ULONG_PTR)pHost, 0);
 		
-		m_pNet->SendPacket(clientSock, nullptr, PACKET_JOIN_ACK);
-		m_pNet->SendPacket(clientSock, nullptr, PACKET_CHAT_NAME_SC_REQ);
+		m_pNet->SendPacket(pHost, nullptr, PACKET_JOIN_ACK);
+		m_pNet->SendPacket(pHost, nullptr, PACKET_CHAT_NAME_SC_REQ);
+		pHost->AsyncRecvTCP(*m_pNet);
 	}
 	return clientSock;
 }
 bool  TNetModel::Run()
 {
-	m_pNet->Accept();
+	Accept();
+	m_pNet->PacketProcess();
+	m_pNet->PostProcess();
 	return true;
 }
 

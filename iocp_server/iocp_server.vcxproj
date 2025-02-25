@@ -147,8 +147,8 @@
     <ClCompile Include="TNetwork.cpp" />
     <ClCompile Include="TNetworkTCP.cpp" />
     <ClCompile Include="TNetModel.cpp" />
-    <ClCompile Include="TObjectPool.cpp" />
     <ClCompile Include="TStdSelect.cpp" />
+    <ClCompile Include="TStreamPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="THost.h" />
@@ -158,6 +158,7 @@
     <ClInclude Include="TObjectPool.h" />
     <ClInclude Include="TProtocol.h" />
     <ClInclude Include="TNetModel.h" />
+    <ClInclude Include="TStreamPacket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

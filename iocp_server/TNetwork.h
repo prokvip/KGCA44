@@ -37,6 +37,7 @@ public:
     virtual bool  PacketProcess();
     virtual int   SendPacket(SOCKET sock, const char* msg, WORD type);
     virtual int   SendPacket(SOCKADDR_IN addr, const char* msg, WORD type);
+    virtual int   SendPacket(THost* host, const char* msg, WORD type);
     virtual bool  Check(THost& host, int iCode);
 public:
     virtual THost* FindHost(SOCKET sock);

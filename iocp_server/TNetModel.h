@@ -4,22 +4,7 @@
 
 class TNetwork;
 
-struct OVERLAPPED2 : TObjectPool<OVERLAPPED2>
-{
-	enum { MODE_RECV=0, MODE_SEND=1,};
-	OVERLAPPED m_ov;
-	UINT  m_iFlag;
-	OVERLAPPED2()
-	{
-		m_iFlag = MODE_RECV;
-		ZeroMemory(&m_ov, sizeof(m_ov));
-	}
-	OVERLAPPED2(UINT flag)
-	{
-		m_iFlag = flag;
-		ZeroMemory(&m_ov, sizeof(m_ov));
-	}
-};
+
 
 // IOCP(Input,Output, Completion, Port)
 class TNetModel

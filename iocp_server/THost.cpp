@@ -1,13 +1,57 @@
 #include "THost.h"
 #include "TNetwork.h"
+
 THost::THost()
 {
     m_iRecvBytes = 0;
     m_bConnect = false;    
     ZeroMemory(&m_tPacket, sizeof(m_tPacket));
+    m_StreamPacket.m_pHost = this;
+}
+void THost::Dispatch(DWORD dwTransfer, OVERLAPPED2* ov)
+{
+    //주) 받은 데이터를 패킷으로 분리해서 처리한다.
+    if (ov->m_iFlag == OVERLAPPED2::MODE_RECV)
+    {       
+        m_StreamPacket.Put((char*)&m_tPacket, dwTransfer);
+        //m_tNet->m_RecvPool.emplace_back(m_tPacket);
+    }
+    if (ov->m_iFlag == OVERLAPPED2::MODE_SEND)
+    {        
+    }
+    delete ov;
+}
+bool THost::AsyncRecvTCP(TNetwork& tNet)
+{
+    m_tNet = &tNet;
+    OVERLAPPED2* ov = new OVERLAPPED2(OVERLAPPED2::MODE_RECV);
+
+    char* pRecvMsg = (char*)&m_tPacket;
+    m_wsaRecvBuffers.buf = pRecvMsg;
+    m_wsaRecvBuffers.len = PACKET_MAX_PACKET_SIZE;
+    DWORD dwRecvByte;
+    DWORD dwFlags=0;
+    int iRecvByte = WSARecv(sock,
+        &m_wsaRecvBuffers,
+        1,
+        &dwRecvByte,
+        &dwFlags,
+        &ov->m_ov,
+        nullptr);
+   
+    if (iRecvByte == SOCKET_ERROR)
+    {
+        if (GetLastError() != ERROR_IO_PENDING)
+        {        
+            this->m_bConnect = false;
+            return false;
+        }
+    }
+    return true;
 }
 bool THost::RunTCP(TNetwork& tNet)
 {
+    m_tNet = &tNet;
     char* pRecvMsg = (char*)&m_tPacket;
     int iRecvByte = recv(sock, &pRecvMsg[m_iRecvBytes],PACKET_HEADER_SIZE - m_iRecvBytes, 0);
     TResult ret = Check(iRecvByte);
@@ -67,6 +111,7 @@ bool THost::RunTCP(TNetwork& tNet)
 }
 bool THost::RunUDP(TNetwork& tNet)
 {
+    m_tNet = &tNet;
     //char* pRecvMsg = (char*)&m_tPacket;
     //int iRecvByte = recvfrom(sock, &pRecvMsg[m_iRecvBytes],
     //    PACKET_HEADER_SIZE - m_iRecvBytes, 0);
