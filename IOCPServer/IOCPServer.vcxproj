@@ -144,12 +144,16 @@
     <ClCompile Include="NetServer.cpp" />
     <ClCompile Include="THost.cpp" />
     <ClCompile Include="TNetwork.cpp" />
+    <ClCompile Include="TSync.cpp" />
+    <ClCompile Include="TThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="THost.h" />
     <ClInclude Include="TNetwork.h" />
     <ClInclude Include="TObjectPool.h" />
     <ClInclude Include="TProtocol.h" />
+    <ClInclude Include="TSync.h" />
+    <ClInclude Include="TThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

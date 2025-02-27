@@ -11,17 +11,32 @@ enum class TNet_IO
     T_EventSelect,    
 };
 
-class TNetwork
+class TAcceptor : public TThread
 {
+    TNetwork* m_pNet;
 public:
-    bool    m_bRun = false;    
-    SOCKET  m_Sock;
+    virtual bool  RunThread();
+    virtual void  Accept();
+    TAcceptor(TNetwork* pNet):m_pNet(pNet)
+    {
+        CreateThread();
+    }
+};
+class TNetwork : public TLockObj
+{    
     std::list<THost*>   m_HostList;
-    std::list<UPACKET>  m_RecvPool;
+    std::list<UPACKET>  m_RecvPool;    
     std::list<UPACKET>  m_SendPool;
+public:
+    SOCKET  m_Sock;
+    bool    m_bRun = false;
+    HANDLE m_hWorkerThread[MAX_NUM_WORK_THREAD];
+    HANDLE m_hIOCP;
 public:
     bool   Init();
     bool   Release();
+    void   AddRecvPacket(UPACKET& packet);
+    virtual THost* AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr);
 public:
     virtual bool  CreateServer(int iPort);    
     virtual bool  PostProcess();
@@ -36,12 +51,9 @@ public:
 public:
     virtual THost* FindHost(SOCKET sock);
     virtual THost* FindHost(SOCKADDR_IN addr);
-    virtual THost* AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr);
     virtual SOCKET Accept();
 private:
-public:
-    HANDLE m_hWorkerThread[MAX_NUM_WORK_THREAD];
-    HANDLE m_hIOCP;
+
 public:
     TNetwork();
 };

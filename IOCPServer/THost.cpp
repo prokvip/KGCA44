@@ -54,7 +54,7 @@ bool THost::AsyncRecvTCP()
     }
     return true;
 }
-void   THost::Put(char* recvBuffer,	int iRecvSize)
+void THost::Put(char* recvBuffer,	int iRecvSize)
 {
 	// 받는 버퍼의 용량이 부족하면
 	if (m_iWritePos + iRecvSize >= MAX_RECV_SIZE)
@@ -96,7 +96,6 @@ void   THost::Put(char* recvBuffer,	int iRecvSize)
 		} while (m_iReadPos >= m_pPacket->ph.len);
 	}
 };
-
 void THost::PacketProcess(UPACKET& packet)
 {
 	if (packet.ph.type == PACKET_CHAT_NAME_CS_ACK)
@@ -104,10 +103,10 @@ void THost::PacketProcess(UPACKET& packet)
 		USER_NAME* pData = (USER_NAME*)packet.msg;
 		memcpy(m_csName, pData->name, sizeof(char) * 32);
 		packet.ph.type = PACKET_JOIN_USER;
-		m_tNet->m_RecvPool.emplace_back(packet);
+		m_tNet->AddRecvPacket(packet);
 	}
 	else
 	{
-		m_tNet->m_RecvPool.emplace_back(packet);
+		m_tNet->AddRecvPacket(packet);
 	}
 }

@@ -4,11 +4,13 @@
 #include <dwrite.h>
 #include <string>
 #include <list>
+#include "TSync.h"
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
 
-class TDxWrite
+class TDxWrite : public TLockObj
 {
+	std::list<std::wstring>	m_msgList;
 public:
 	ID2D1Factory*		m_pd2dFactory = nullptr;
 	ID2D1RenderTarget*  m_pd2dRT = nullptr;
@@ -16,9 +18,9 @@ public:
 	IDWriteTextFormat*  m_pTextFormat20 = nullptr;
 	IDWriteTextFormat* m_pTextFormat50 = nullptr;
 	ID2D1SolidColorBrush* m_pColorBrush = nullptr;
-	std::list<std::wstring>	m_msgList;
+public:	
 	int		Add(std::wstring msg);
-public:
+
 	HRESULT   Create(IDXGISurface* pBackBuffer);
 public:
 	virtual void   Init();

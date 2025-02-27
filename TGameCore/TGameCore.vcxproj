@@ -181,6 +181,7 @@ copy "..\\..\\output\\Debug\\TGameCore.lib" "..\\..\\TGameCore\\lib\\"</Command>
     <ClCompile Include="TSceneResult.cpp" />
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TSound.cpp" />
+    <ClCompile Include="TSync.cpp" />
     <ClCompile Include="TTexture.cpp" />
     <ClCompile Include="TTime.cpp" />
     <ClCompile Include="TVector.cpp" />
@@ -218,6 +219,7 @@ copy "..\\..\\output\\Debug\\TGameCore.lib" "..\\..\\TGameCore\\lib\\"</Command>
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TSound.h" />
     <ClInclude Include="TStd.h" />
+    <ClInclude Include="TSync.h" />
     <ClInclude Include="TTexture.h" />
     <ClInclude Include="TTime.h" />
     <ClInclude Include="TVector.h" />

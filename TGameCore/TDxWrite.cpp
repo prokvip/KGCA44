@@ -3,6 +3,7 @@
 
 int		TDxWrite::Add(std::wstring msg)
 {
+	TSync lock(this);
 	UINT iNumsize = m_msgList.size();
 	if (iNumsize > 20)
 	{
@@ -118,17 +119,22 @@ void   TDxWrite::PreRender()
 	if (m_pd2dRT)m_pd2dRT->BeginDraw();
 }
 void   TDxWrite::PostRender()
-{
+{	
 	D2D1_RECT_F rt = { 300.0f, 0.0f, 800.0f, 600.0f };
-	for (auto data : m_msgList)
 	{
-		rt.top += 20;
-		Draw(rt, data);
+		TSync lock(this);
+		for (auto data : m_msgList)
+		{
+			rt.top += 20;
+			Draw(rt, data);
+		}
 	}
 	if (m_pd2dRT) m_pd2dRT->EndDraw();
 }
 void   TDxWrite::Release()
 {
+	m_msgList.clear();
+
 	if (m_pColorBrush)m_pColorBrush->Release();
 	if(m_pd2dFactory)m_pd2dFactory->Release();
 	if (m_pd2dRT)m_pd2dRT->Release();

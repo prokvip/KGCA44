@@ -41,7 +41,33 @@ DWORD WINAPI ThreadWorkerProc(LPVOID lpParameter)
     }
     return 0;
 }
-
+void  TAcceptor::Accept()
+{
+    SOCKADDR_IN clientaddr;
+    int addlen = sizeof(clientaddr);
+    SOCKET clientSock = accept(m_pNet->m_Sock, (SOCKADDR*)&clientaddr, &addlen);
+    if (clientSock == SOCKET_ERROR)
+    {
+        int iError = WSAGetLastError();
+        if (iError != WSAEWOULDBLOCK)
+        {
+            exit(1);
+        }
+    }
+    else
+    {
+        TSync lock(this);
+        THost* pHost = m_pNet->AddHost(clientSock, clientaddr);
+    }
+}
+bool  TAcceptor::RunThread()
+{
+    while (m_bRun)
+    {
+        Accept();
+    }
+    return true;
+}
 bool    TNetwork::CreateServer(int iPort)
 {
     m_Sock = socket(AF_INET, SOCK_STREAM, 0);// IPPROTO_TCP);
@@ -76,13 +102,27 @@ SOCKET  TNetwork::Accept()
     }
     else
     {
-        THost* pHost = AddHost(clientSock, clientaddr);
-        ::CreateIoCompletionPort((HANDLE)clientSock, m_hIOCP,(ULONG_PTR)pHost, 0);
-        SendPacket(pHost, nullptr, PACKET_JOIN_ACK);
-        SendPacket(pHost, nullptr, PACKET_CHAT_NAME_SC_REQ);
-        pHost->AsyncRecvTCP();
+        AddHost(clientSock, clientaddr);      
     }
     return clientSock;
+}
+THost*  TNetwork::AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr)
+{
+    std::cout << "접속(IP):" << inet_ntoa(clientaddr.sin_addr)
+        << "포트번호" << ntohs(clientaddr.sin_port)
+        << std::endl;
+    THost* pHost = new THost;
+    pHost->m_tNet = this;
+    pHost->addr = clientaddr;
+    pHost->sock = clientSock;
+    pHost->m_bConnect = true;
+    m_HostList.push_back(pHost);
+
+    ::CreateIoCompletionPort((HANDLE)clientSock, m_hIOCP, (ULONG_PTR)pHost, 0);
+    SendPacket(pHost, nullptr, PACKET_JOIN_ACK);
+    SendPacket(pHost, nullptr, PACKET_CHAT_NAME_SC_REQ);
+    pHost->AsyncRecvTCP();
+    return pHost;
 }
 bool    TNetwork::Init()
 {
@@ -97,6 +137,7 @@ bool    TNetwork::Init()
         DWORD threadID;
         m_hWorkerThread[iThread] = CreateThread(0, 0, ThreadWorkerProc, this, 0, &threadID);
     }
+   
     return true;
 }
 bool    TNetwork::Run()
@@ -126,20 +167,29 @@ void    TNetwork::Broadcasting(UPACKET& packet)
         Send(host, packet);
     }
 }
-
-bool    TNetwork::PacketProcess()
+void    TNetwork::AddRecvPacket(UPACKET& packet)
 {
-    for (auto recvHost = m_RecvPool.begin();recvHost != m_RecvPool.end();recvHost++)
     {
-        UPACKET& packet = *recvHost;
-       
-        Broadcasting(packet);
+        TSync lock(this);
+        m_RecvPool.emplace_back(packet);
     }
-    m_RecvPool.clear();
+}
+bool    TNetwork::PacketProcess()
+{    
+    {
+        TSync lock(this);
+        for (auto recvHost = m_RecvPool.begin(); recvHost != m_RecvPool.end(); recvHost++)
+        {
+            UPACKET& packet = *recvHost;
+
+            Broadcasting(packet);
+        }
+        m_RecvPool.clear();
+    }
     return true;
 }
 bool    TNetwork::PostProcess()
-{
+{    
     // 종료처리
     for (auto iter = m_HostList.begin();
         iter != m_HostList.end(); )
@@ -156,14 +206,16 @@ bool    TNetwork::PostProcess()
                 << std::endl;
             closesocket(host->sock);
 
-            iter = m_HostList.erase(iter);
+            {
+                iter = m_HostList.erase(iter);
+            }
             delete host;
             UPACKET sendpacket;
             ZeroMemory(&sendpacket, sizeof(sendpacket));
             sendpacket.ph.len = PACKET_HEADER_SIZE + sizeof(USER_NAME);
             sendpacket.ph.type = PACKET_DRUP_USER;
             memcpy(sendpacket.msg, (char*)&Data, sizeof(USER_NAME));
-            m_RecvPool.emplace_back(sendpacket);
+            AddRecvPacket(sendpacket);
         }
         else
         {
@@ -203,20 +255,6 @@ THost*  TNetwork::FindHost(SOCKADDR_IN addr)
     }
     return nullptr;
 }
-THost*  TNetwork::AddHost(SOCKET clientSock, SOCKADDR_IN clientaddr)
-{
-    std::cout << "접속(IP):" << inet_ntoa(clientaddr.sin_addr)
-        << "포트번호" << ntohs(clientaddr.sin_port)
-        << std::endl;
-    THost* host = new THost;
-    host->m_tNet = this;
-    host->addr = clientaddr;
-    host->sock = clientSock;
-    host->m_bConnect = true;
-    m_HostList.push_back(host);
-    return host;
-}
-
 int     TNetwork::Send(THost* host, UPACKET& packet)
 {
     char* pMsg = (char*)&packet;
@@ -272,4 +310,5 @@ int     TNetwork::SendPacket(THost* host, const char* msg, WORD type)
 }
 TNetwork::TNetwork()
 {
+
 }
