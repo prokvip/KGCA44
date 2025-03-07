@@ -1,11 +1,11 @@
 #pragma once
 #include "USceneComponent.h"
-class UPrimitiveComponent :   public USceneComponent
+class UPrimitiveComponent : public USceneComponent
 {
 public:
 public:
-	ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
-	ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;	
+	ComPtr<ID3D11Buffer>		m_pVertexBuffer = nullptr;
+	ComPtr<ID3D11Buffer>		m_pIndexBuffer = nullptr;
 	std::vector<PNCT_VERTEX>	m_vVertexList;
 	std::vector<DWORD>			m_vIndexList;
 public:

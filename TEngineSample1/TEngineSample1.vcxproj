@@ -133,10 +133,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\data\shader\stdShader.h" />
     <ClInclude Include="AActor.h" />
     <ClInclude Include="ACharacter.h" />
     <ClInclude Include="APawn.h" />
     <ClInclude Include="Sample.h" />
+    <ClInclude Include="UMaterial.h" />
+    <ClInclude Include="UMaterialInterface.h" />
     <ClInclude Include="UPrimitiveComponent.h" />
     <ClInclude Include="USceneComponent.h" />
     <ClInclude Include="USkinnedMeshComponent.h" />
@@ -151,6 +154,8 @@
     <ClCompile Include="ACharacter.cpp" />
     <ClCompile Include="APawn.cpp" />
     <ClCompile Include="Sample.cpp" />
+    <ClCompile Include="UMaterial.cpp" />
+    <ClCompile Include="UMaterialInterface.cpp" />
     <ClCompile Include="UPrimitiveComponent.cpp" />
     <ClCompile Include="USceneComponent.cpp" />
     <ClCompile Include="USkinnedMeshComponent.cpp" />
@@ -166,10 +171,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
-    <None Include="ClassDiagram3.cd" />
+    <Text Include="..\..\data\shader\pnct.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

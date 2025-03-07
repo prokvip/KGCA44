@@ -51,6 +51,15 @@
     <ClInclude Include="ACharacter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="UMaterialInterface.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UMaterial.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\data\shader\stdShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample.cpp">
@@ -89,11 +98,14 @@
     <ClCompile Include="ACharacter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="UMaterialInterface.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UMaterial.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
-    <None Include="ClassDiagram3.cd" />
+    <Text Include="..\..\data\shader\pnct.txt" />
   </ItemGroup>
 </Project>

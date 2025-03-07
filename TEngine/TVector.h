@@ -4,6 +4,7 @@
 #define T_Epsilon ((float)0.0001f)
 #define T_Pi ((float)3.141592f)
 class TMatrix3;
+class TMatrix;
 class TVector2
 {
 public:
@@ -33,18 +34,24 @@ public:
 	float  x;
 	float  y;
 	float  z;
-	TVector3(float x, float y, float z)
-	{
-		this->x = x;
-		this->y = x;
-		this->z = x;
-	}
-	TVector3()
-	{
-		x = 0;
-		y = 0;
-		z = 0;
-	}
+public:
+	void operator +=(const TVector3& v);
+	void  operator -=(const TVector3& v);
+	TVector3 operator +(const TVector3& v);
+	TVector3 operator -(const TVector3& v);
+	TVector3 operator /(const float s);
+	TVector3 operator *(const float s);
+	bool operator ==(const TVector3& v);
+	bool operator !=(const TVector3& v);
+	TVector3 operator * (const TMatrix& m);
+	float operator | (const TVector3& v); // 내적
+	TVector3 operator ^ (const TVector3& v); // 외적
+public:
+	float  Length();
+	void   Normalize();
+	TVector3   Normal();
+	TVector3(float x, float y, float z);
+	TVector3();
 };
 class TVector4
 {
