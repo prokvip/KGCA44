@@ -54,8 +54,8 @@ void   TEngine::CoreFrame()
 
     float fYaw = 0;
     float fPitch = 0;    
-    fYaw = -g_ptDeltaMouse.x * g_fSPF;
-    fPitch = -g_ptDeltaMouse.y * g_fSPF;
+    fYaw   = (g_ptDeltaMouse.x * g_fSPF * 90.0f ) / 180.0f * T_Pi;
+    fPitch = (g_ptDeltaMouse.y * g_fSPF * 90.0f ) / 180.0f * T_Pi;
 
     float fDistance = 0.0f;
 	if (g_GameKey.dwWkey == KEY_HOLD)
@@ -65,12 +65,10 @@ void   TEngine::CoreFrame()
     if (g_GameKey.dwSkey == KEY_HOLD)
     {
         fDistance -= g_fSPF * 10.0f;
-    }
-    if (m_nMouseWheelDelta != 0)
-    {
-        fDistance = ((m_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
-        fDistance = fDistance * g_fSPF * 300.0f;
-    }     
+    }    
+    //fDistance = (m_nMouseWheelDelta > 0) ? (1.0f) : (-1.0f);
+    fDistance += (m_nMouseWheelDelta / 120.0f) * g_fSPF * 300.0f;
+         
     m_pSceneCamera->Update(TVector4(fPitch,fYaw,0, fDistance));
     Tick();
 }
