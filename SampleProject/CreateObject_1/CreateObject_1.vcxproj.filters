@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Sample.cpp" />
+    <ClCompile Include="TDevice.cpp" />
+    <ClCompile Include="TDxWrite.cpp" />
+    <ClCompile Include="TGameCore.cpp" />
+    <ClCompile Include="TInput.cpp" />
+    <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObject2D.cpp" />
+    <ClCompile Include="TSound.cpp" />
+    <ClCompile Include="TTime.cpp" />
+    <ClCompile Include="TVertex.cpp" />
+    <ClCompile Include="TWindow.cpp" />
+    <ClCompile Include="TDxState.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sample.h" />
+    <ClInclude Include="TDevice.h" />
+    <ClInclude Include="TDxWrite.h" />
+    <ClInclude Include="TGameCore.h" />
+    <ClInclude Include="TInput.h" />
+    <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObject2D.h" />
+    <ClInclude Include="TSound.h" />
+    <ClInclude Include="TStd.h" />
+    <ClInclude Include="TTime.h" />
+    <ClInclude Include="TVertex.h" />
+    <ClInclude Include="TWindow.h" />
+    <ClInclude Include="stdShader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TDxState.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{fa9a69bf-6e1d-4a76-8390-f3b8bfc99680}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="VertexShader.txt">
+      <Filter>Shader</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

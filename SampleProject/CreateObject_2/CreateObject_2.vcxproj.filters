@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Sample.cpp" />
+    <ClCompile Include="TDevice.cpp" />
+    <ClCompile Include="TDxState.cpp" />
+    <ClCompile Include="TDxWrite.cpp" />
+    <ClCompile Include="TGameCore.cpp" />
+    <ClCompile Include="TInput.cpp" />
+    <ClCompile Include="TObject.cpp" />
+    <ClCompile Include="TObject2D.cpp" />
+    <ClCompile Include="TSound.cpp" />
+    <ClCompile Include="TTime.cpp" />
+    <ClCompile Include="TVertex.cpp" />
+    <ClCompile Include="TWindow.cpp" />
+    <ClCompile Include="TEffectObj.cpp" />
+    <ClCompile Include="THeroObj.cpp" />
+    <ClCompile Include="TInputLayout.cpp" />
+    <ClCompile Include="TMapObj.cpp" />
+    <ClCompile Include="TShader.cpp" />
+    <ClCompile Include="TTexture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sample.h" />
+    <ClInclude Include="stdShader.h" />
+    <ClInclude Include="TDevice.h" />
+    <ClInclude Include="TDxState.h" />
+    <ClInclude Include="TDxWrite.h" />
+    <ClInclude Include="TGameCore.h" />
+    <ClInclude Include="TInput.h" />
+    <ClInclude Include="TObject.h" />
+    <ClInclude Include="TObject2D.h" />
+    <ClInclude Include="TSound.h" />
+    <ClInclude Include="TStd.h" />
+    <ClInclude Include="TTime.h" />
+    <ClInclude Include="TVertex.h" />
+    <ClInclude Include="TWindow.h" />
+    <ClInclude Include="..\..\data\shader\stdShader.h">
+      <Filter>CoreShader</Filter>
+    </ClInclude>
+    <ClInclude Include="TEffectObj.h" />
+    <ClInclude Include="THeroObj.h" />
+    <ClInclude Include="TInputLayout.h" />
+    <ClInclude Include="TMapObj.h" />
+    <ClInclude Include="TShader.h" />
+    <ClInclude Include="TTexture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="VertexShader.txt" />
+    <Text Include="..\..\data\shader\BlendMask.txt">
+      <Filter>CoreShader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\DefaultBlack.txt">
+      <Filter>CoreShader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\DefaultMask.txt">
+      <Filter>CoreShader</Filter>
+    </Text>
+    <Text Include="SpriteData.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CoreShader">
+      <UniqueIdentifier>{4f7b8272-e012-48a0-b86a-b36e57ed64f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
