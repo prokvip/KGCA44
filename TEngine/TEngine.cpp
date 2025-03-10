@@ -1,6 +1,6 @@
 #include "TEngine.h"
 #include "TDxState.h"
-
+TCamera* TEngine::g_pCamera = nullptr;
 void   TEngine::CoreInit()
 {
     m_DxDevice.Init();
@@ -23,6 +23,21 @@ void   TEngine::CoreInit()
     {
         I_InputLayout.Init(I_Shader.g_pDefaultShader->m_pCode.Get());
     }
+
+    m_pSceneCamera = std::make_shared<TCamera>();
+	g_pCamera = m_pSceneCamera.get();
+
+    TVector3 vCameraPos = TVector3(0, 0, -10.0f);
+    TVector3 vCameraTarget = TVector3(0, 0, 0.0f);
+    TVector3 vCameraUp = TVector3(0, 1.0f, 0.0f);
+    m_pSceneCamera->CreateViewMatrix(vCameraPos, vCameraTarget, vCameraUp);
+
+    float fAspect = (float)g_ptClientSize.x / (float)g_ptClientSize.y;
+    float fFovY = (float)T_Pi * 0.25f;
+    float fNearZ = 1.0f;
+    float fFarZ = 1000.0f;
+    m_pSceneCamera->CreateProjMatrix(fFovY, fAspect, fNearZ, fFarZ);
+
     Init();
 }
 void   TEngine::CoreFrame() 
@@ -37,6 +52,7 @@ void   TEngine::CoreFrame()
         TDevice::m_bWireFrame = !TDevice::m_bWireFrame;
     }
 
+    m_pSceneCamera->Update(TVector4(0,0,0,0));
     Tick();
 }
 void   TEngine::CoreRender() 

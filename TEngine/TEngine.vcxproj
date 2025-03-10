@@ -149,12 +149,14 @@ md "../../TEngine/lib</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="TCamera.cpp" />
     <ClCompile Include="TDevice.cpp" />
     <ClCompile Include="TDxState.cpp" />
     <ClCompile Include="TDxWrite.cpp" />
     <ClCompile Include="TEngine.cpp" />
     <ClCompile Include="TInput.cpp" />
     <ClCompile Include="TInputLayout.cpp" />
+    <ClCompile Include="TMath.cpp" />
     <ClCompile Include="TMatrix.cpp" />
     <ClCompile Include="TShader.cpp" />
     <ClCompile Include="TSound.cpp" />
@@ -166,12 +168,14 @@ md "../../TEngine/lib</Command>
     <ClCompile Include="TWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="TCamera.h" />
     <ClInclude Include="TDevice.h" />
     <ClInclude Include="TDxState.h" />
     <ClInclude Include="TDxWrite.h" />
     <ClInclude Include="TEngine.h" />
     <ClInclude Include="TInput.h" />
     <ClInclude Include="TInputLayout.h" />
+    <ClInclude Include="TMath.h" />
     <ClInclude Include="TMatrix.h" />
     <ClInclude Include="TShader.h" />
     <ClInclude Include="TSound.h" />

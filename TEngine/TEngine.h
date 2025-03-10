@@ -7,6 +7,7 @@
 #include "TShader.h"
 #include "TTexture.h"
 #include "TInputlayout.h"
+#include "TCamera.h"
 #include <vector>
 #include <map>
 #include <set>
@@ -14,6 +15,8 @@
 class TEngine : public TWindow
 {	
 public:
+	static TCamera* g_pCamera;
+	std::shared_ptr<TCamera> m_pSceneCamera;
 	TTime		m_GameTimer;
 	TInput		m_Input;
 	TDevice		m_DxDevice;
