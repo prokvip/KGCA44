@@ -361,3 +361,22 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/TEngine/Inc/TCamera.h
+/TEngine/Inc/TDevice.h
+/TEngine/Inc/TDxState.h
+/TEngine/Inc/TDxWrite.h
+/TEngine/Inc/TEngine.h
+/TEngine/Inc/TInput.h
+/TEngine/Inc/TInputLayout.h
+/TEngine/Inc/TMath.h
+/TEngine/Inc/TMatrix.h
+/TEngine/Inc/TShader.h
+/TEngine/Inc/TSound.h
+/TEngine/Inc/TStd.h
+/TEngine/Inc/TSync.h
+/TEngine/Inc/TTexture.h
+/TEngine/Inc/TTime.h
+/TEngine/Inc/TVector.h
+/TEngine/Inc/TVertex.h
+/TEngine/Inc/TWindow.h
+/TEngine/lib/TEngine_D.lib

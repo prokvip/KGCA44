@@ -21,7 +21,7 @@ LRESULT TWindow::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	    case WM_MOUSEWHEEL:
         {
             // +120, -120 ¥‹¿ß
-            m_nMouseWheelDelta = (short)HIWORD(wParam);
+            m_nMouseWheelDelta += (short)HIWORD(wParam);
             //m_nMouseWheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);     
             g_nMouseWheelDelta = m_nMouseWheelDelta;
         };

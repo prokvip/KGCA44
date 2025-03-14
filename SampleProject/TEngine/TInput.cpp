@@ -39,10 +39,8 @@ void    TInput::Frame()
 {
 	GetCursorPos(&m_ptMouse);			// 화면좌표
 	ScreenToClient(g_hWnd, &m_ptMouse); // 클라이언트좌표
-	POINT ptDeltaMouse;
-	ptDeltaMouse.x = g_ptMouse.x - m_ptMouse.x;
-	ptDeltaMouse.y = g_ptMouse.y - m_ptMouse.y;
-	g_ptMouse = m_ptMouse;
+	
+	
 	// 키 매핑
 	g_GameKey.dwWkey		= KeyCheck('W');
 	g_GameKey.dwSkey		= KeyCheck('S');
@@ -66,18 +64,10 @@ void    TInput::Frame()
 	}
 	if (m_bDrag)
 	{
-		//g_ptDeltaMouse.x = m_ptDragStart.x - m_ptMouse.x;
-		//g_ptDeltaMouse.y = m_ptDragStart.y - m_ptMouse.y;
-		g_ptDeltaMouse.x = ptDeltaMouse.x;
-		g_ptDeltaMouse.y = ptDeltaMouse.y;
+		g_ptDeltaMouse.x = m_ptMouse.x - g_ptMouse.x;
+		g_ptDeltaMouse.y = m_ptMouse.y - g_ptMouse.y;
 	}
-
-//#ifdef _DEBUG
-//		m_szTime = std::to_wstring(g_ptDeltaMouse.x);
-//		m_szTime += L" ";
-//		m_szTime += std::to_wstring(g_ptDeltaMouse.y);
-//		m_szTime += L"\n";
-//#endif
+	g_ptMouse = m_ptMouse;
 }
 void    TInput::Render() 
 {	
