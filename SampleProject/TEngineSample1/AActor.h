@@ -16,6 +16,8 @@ class AActor :  public UObject
 	//UInputComponent* InputComponent;
 	std::list<UActorComponent*> m_pReplicatedComponents;
 public:
+	TVector3 m_vLook;
+	TVector3 m_vRight;
 	TMatrix m_matOffset;
 	TMatrix m_matParent;
 	TMatrix m_matScale;

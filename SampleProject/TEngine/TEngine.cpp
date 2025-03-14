@@ -1,6 +1,15 @@
 #include "TEngine.h"
 #include "TDxState.h"
 TCamera* TEngine::g_pCamera = nullptr;
+void   TEngine::SetCamera(TCamera* pCamera)
+{
+    if (pCamera == nullptr)
+    {
+        g_pCamera = m_pSceneCamera.get();
+        return;
+    }
+    g_pCamera = pCamera;
+}
 void   TEngine::CoreInit()
 {
     m_DxDevice.Init();
@@ -25,7 +34,7 @@ void   TEngine::CoreInit()
     }
 
     m_pSceneCamera = std::make_shared<TCamera>();
-	g_pCamera = m_pSceneCamera.get();
+    SetCamera(m_pSceneCamera.get());
 
     TVector3 vCameraPos = TVector3(0, 0, -10.0f);
     TVector3 vCameraTarget = TVector3(0, 0, 0.0f);
@@ -56,26 +65,8 @@ void   TEngine::CoreFrame()
         TDevice::m_DepthEnable = !TDevice::m_DepthEnable;
     }
 
-    float fYaw = 0;
-    float fPitch = 0;    
-    fYaw = -g_ptDeltaMouse.x * g_fSPF;
-    fPitch = -g_ptDeltaMouse.y * g_fSPF;
+    g_pCamera->Tick();
 
-    float fDistance = 0.0f;
-	if (g_GameKey.dwWkey == KEY_HOLD)
-	{
-        fDistance += g_fSPF * 10.0f;
-	}    
-    if (g_GameKey.dwSkey == KEY_HOLD)
-    {
-        fDistance -= g_fSPF * 10.0f;
-    }
-    if (m_nMouseWheelDelta != 0)
-    {
-        fDistance = ((m_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
-        fDistance = fDistance * g_fSPF * 300.0f;
-    }     
-    m_pSceneCamera->Update(TVector4(fPitch,fYaw,0, fDistance));
     Tick();
 }
 void   TEngine::CoreRender() 

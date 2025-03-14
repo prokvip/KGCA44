@@ -1,6 +1,7 @@
 #include "TCamera.h"
 #include "TMath.h"
-	void TCamera::CreateViewMatrix(TVector3 vPosition,
+#include "tstd.h"
+void TCamera::CreateViewMatrix(TVector3 vPosition,
 	TVector3 vTarget,
 	TVector3 vUp)
 {
@@ -81,7 +82,29 @@ TMatrix TCamera::Update(TVector4 vDirValue)
 
 	return UpdateVector();
 }
+void    TCamera::Tick()
+{
+	float fYaw = 0;
+	float fPitch = 0;
+	fYaw = -g_ptDeltaMouse.x * g_fSPF;
+	fPitch = -g_ptDeltaMouse.y * g_fSPF;
 
+	float fDistance = 0.0f;
+	if (g_GameKey.dwWkey == KEY_HOLD)
+	{
+		fDistance += g_fSPF * 10.0f;
+	}
+	if (g_GameKey.dwSkey == KEY_HOLD)
+	{
+		fDistance -= g_fSPF * 10.0f;
+	}
+	if (g_nMouseWheelDelta != 0)
+	{
+		fDistance = ((g_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
+		fDistance = fDistance * g_fSPF * 300.0f;
+	}
+	Update(TVector4(fPitch, fYaw, 0, fDistance));
+}
 TMatrix TCamera::UpdateVector()
 {
 	m_vLook.x = m_matView._13;

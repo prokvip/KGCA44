@@ -80,9 +80,10 @@ extern POINT g_ptClientSize;
 extern POINT g_ptMouse;
 extern HWND  g_hWnd;
 extern TGameKey g_GameKey;
-extern float   g_fSPF;
-extern float   g_fGT;
+extern float    g_fSPF;
+extern float    g_fGT;
 extern POINT    g_ptDeltaMouse;
+extern short    g_nMouseWheelDelta;
 static void DX_CHECK(HRESULT hr, const TCHAR* function)
 {
     if (FAILED(hr))

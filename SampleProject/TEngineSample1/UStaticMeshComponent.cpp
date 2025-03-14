@@ -41,8 +41,8 @@ void	UStaticMeshComponent::PreRender()
 	TDevice::m_pd3dContext->IASetIndexBuffer(
 		m_pIndexBuffer.Get(),
 		DXGI_FORMAT_R32_UINT, 0);
-	TDevice::m_pd3dContext->IASetPrimitiveTopology(
-		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//TDevice::m_pd3dContext->IASetPrimitiveTopology(
+	//	D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 void	UStaticMeshComponent::Render()
 {

@@ -1,6 +1,7 @@
 #include "TWindow.h"
 POINT g_ptClientSize;
 HWND  g_hWnd;
+short g_nMouseWheelDelta;
 TWindow* g_pWindow = nullptr;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -22,6 +23,7 @@ LRESULT TWindow::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // +120, -120 ¥‹¿ß
             m_nMouseWheelDelta = (short)HIWORD(wParam);
             //m_nMouseWheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);     
+            g_nMouseWheelDelta = m_nMouseWheelDelta;
         };
     }
     return 0;
