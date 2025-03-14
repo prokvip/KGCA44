@@ -39,15 +39,16 @@ void AActor::Tick()
 	if (Mesh != nullptr) Mesh->Tick();
 }
 void AActor::Render() 
-{
-	m_vScale = { 2,1,1 };
-	m_vRotation = { 0.0f,g_fGT, 0.0f };
-	//m_vPosition = { cosf(g_fGT) * 2.0f,sinf(g_fGT) * 2.0f,0 };;
-	
+{	
 	m_matScale.Scale(m_vScale);
 	m_matRotation.RotateY(m_vRotation.y);
 	m_matTrans.Trans(m_vPosition);
-	m_matWorld = m_matScale * m_matRotation * m_matTrans;
+	m_matWorld = 
+		m_matOffset *
+		m_matScale * 
+		m_matRotation * 
+		m_matTrans *
+		m_matParent;
 
 	m_cbData.matView = TMatrix::Transpose(TEngine::g_pCamera->m_matView);
 	m_cbData.matProj = TMatrix::Transpose(TEngine::g_pCamera->m_matProj);

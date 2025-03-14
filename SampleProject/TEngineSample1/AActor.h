@@ -11,7 +11,13 @@ struct cbData
 	TMatrix  matProj;
 };
 class AActor :  public UObject
-{
+{public:
+	USceneComponent* RootComponent;
+	//UInputComponent* InputComponent;
+	std::list<UActorComponent*> m_pReplicatedComponents;
+public:
+	TMatrix m_matOffset;
+	TMatrix m_matParent;
 	TMatrix m_matScale;
 	TMatrix m_matRotation;
 	TMatrix m_matTrans;

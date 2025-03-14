@@ -51,6 +51,10 @@ void   TEngine::CoreFrame()
     {
         TDevice::m_bWireFrame = !TDevice::m_bWireFrame;
     }
+    if (m_Input.KeyCheck('B') == KEY_PUSH)
+    {
+        TDevice::m_DepthEnable = !TDevice::m_DepthEnable;
+    }
 
     float fYaw = 0;
     float fPitch = 0;    

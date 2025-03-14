@@ -1,5 +1,9 @@
 #include "TMatrix.h"
-
+TMatrix TMatrix::m_matIdentity;
+TMatrix TMatrix::Identity()
+{
+	return m_matIdentity;
+}
 TMatrix3 TMatrix3::operator *(const TMatrix3& mat)
 {
 	TMatrix3 ret;

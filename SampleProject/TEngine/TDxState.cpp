@@ -1,11 +1,12 @@
 #include "TDxState.h"
 #include "TDevice.h"
-ComPtr<ID3D11SamplerState> TDxState::m_pLinearSS = nullptr;
-ComPtr<ID3D11SamplerState> TDxState::m_pPointSS = nullptr;
-ComPtr<ID3D11BlendState> TDxState::m_pAlphaBlend = nullptr;
-ComPtr<ID3D11RasterizerState> TDxState::m_pRSSolid = nullptr;
-ComPtr<ID3D11RasterizerState> TDxState::m_pRSWireFrame = nullptr;
-
+ComPtr<ID3D11SamplerState>		TDxState::m_pLinearSS = nullptr;
+ComPtr<ID3D11SamplerState>		TDxState::m_pPointSS = nullptr;
+ComPtr<ID3D11BlendState>		TDxState::m_pAlphaBlend = nullptr;
+ComPtr<ID3D11RasterizerState>	TDxState::m_pRSSolid = nullptr;
+ComPtr<ID3D11RasterizerState>	TDxState::m_pRSWireFrame = nullptr;
+ComPtr<ID3D11DepthStencilState> TDxState::m_pDSSDepthEnable=nullptr;
+ComPtr<ID3D11DepthStencilState> TDxState::m_pDSSDepthDisable = nullptr;
 void  TDxState::Create()
 {
 	D3D11_BLEND_DESC bd;
@@ -84,6 +85,26 @@ void  TDxState::Create()
 	if (FAILED(hr))
 	{
 
+	}
+
+
+	// ±íÀÌ/½ºÅÙ½Ç »óÅÂ
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
+	dsDesc.DepthEnable = TRUE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	dsDesc.StencilEnable = FALSE;
+	hr = TDevice::m_pd3dDevice->CreateDepthStencilState(
+		&dsDesc, m_pDSSDepthEnable.GetAddressOf());
+	if (FAILED(hr))
+	{
+	}
+	dsDesc.DepthEnable = FALSE;
+	hr = TDevice::m_pd3dDevice->CreateDepthStencilState(
+		&dsDesc, m_pDSSDepthDisable.GetAddressOf());
+	if (FAILED(hr))
+	{
 	}
 }
 

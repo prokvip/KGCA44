@@ -33,7 +33,7 @@ public:
 	void Rotate(float fRadian);	
 	void Trans(float x, float y);
 	void Trans(TVector2 s);
-	TMatrix3 Transpose();// 전치행렬
+	TMatrix3 Transpose();// 전치행렬	
 public:
 	TMatrix3 operator *(const TMatrix3& m);
 public:
@@ -43,7 +43,8 @@ public:
 
 class TMatrix : public float4x4
 {
-public:
+	static TMatrix m_matIdentity;
+public:	
 	void SetIdentity(); // 단위행렬
 	void Scale(float x, float y, float z);
 	void Scale(TVector3 s);
@@ -57,6 +58,7 @@ public:
 	TMatrix operator *(const TMatrix& m);
 public:
 	static TMatrix Transpose(const TMatrix& m);
+	static TMatrix Identity();
 	
 public:
 	TMatrix();

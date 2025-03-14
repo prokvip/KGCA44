@@ -87,6 +87,16 @@ void Sample::Tick()
 	m_pActor->Tick();
 }
 void Sample::Render() {
+	m_pActor->m_matOffset = TMatrix::Identity();
+	m_pActor->m_vScale = { 1,1,1 };
+	m_pActor->m_vRotation = { 0.0f, 0, 0.0f };
+	m_pActor->m_vPosition = { 0,0,0 };
+	m_pActor->Render();
+
+	m_pActor->m_matOffset.Trans(3.0f,1.0f,0.0f);
+	m_pActor->m_vScale = { 1,1,1 };
+	m_pActor->m_vRotation = { 0.0f, g_fGT, 0.0f };
+	m_pActor->m_vPosition = { 0,0,0 };
 	m_pActor->Render();
 }
 void Sample::Release() {
