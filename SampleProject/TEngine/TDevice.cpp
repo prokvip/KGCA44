@@ -156,8 +156,11 @@ void   TDevice::PreRender()
     m_pd3dContext->ClearRenderTargetView(m_pRTV.Get(), ClearColor);
 	m_pd3dContext->ClearDepthStencilView(m_pDSV.Get(),
         D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-	m_pd3dContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_pd3dContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+}
+void  TDevice::SetDefaultState()
+{    
     m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pLinearSS.GetAddressOf());
     m_pd3dContext->OMSetBlendState(TDxState::m_pAlphaBlend.Get(), 0, -1);
     if (!m_bWireFrame)

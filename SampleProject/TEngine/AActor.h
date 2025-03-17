@@ -38,7 +38,9 @@ public:
 public:
 	virtual void Init();
 	virtual void Tick() ;
-	virtual void Render() ;
+	virtual void PreRender();
+	virtual void Render();
+	virtual void PostRender();
 	virtual void Destroy() ;
 public:
 	AActor();

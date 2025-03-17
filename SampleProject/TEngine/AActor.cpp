@@ -38,8 +38,8 @@ void AActor::Tick()
 	
 	if (Mesh != nullptr) Mesh->Tick();
 }
-void AActor::Render() 
-{	
+void AActor::PreRender()
+{
 	m_matScale.Scale(m_vScale);
 	TMatrix matX, matY, matZ;
 	matX.RotateX(m_vRotation.x);
@@ -48,10 +48,10 @@ void AActor::Render()
 	m_matRotation = matZ * matX * matY;
 
 	m_matTrans.Trans(m_vPosition);
-	m_matWorld = 
+	m_matWorld =
 		m_matOffset *
-		m_matScale * 
-		m_matRotation * 
+		m_matScale *
+		m_matRotation *
 		m_matTrans *
 		m_matParent;
 
@@ -68,6 +68,9 @@ void AActor::Render()
 	m_cbData.matProj = TMatrix::Transpose(TEngine::g_pCamera->m_matProj);
 	m_cbData.matWorld = TMatrix::Transpose(m_matWorld);
 
+}
+void AActor::PostRender()
+{
 	TDevice::m_pd3dContext->UpdateSubresource(
 		m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
 	// 0번 레지스터에 셰이더상수 m_pConstantBuffer를 연결
@@ -77,6 +80,11 @@ void AActor::Render()
 	{
 		Mesh->Render();
 	}
+}
+void AActor::Render() 
+{	
+	PreRender();
+	PostRender();
 }
 void AActor::Destroy() {
 	if (Mesh != nullptr) Mesh->Destroy();

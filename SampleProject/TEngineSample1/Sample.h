@@ -1,9 +1,10 @@
 #pragma once
 #include "TEngine.h"
-#include "AActor.h"
+#include "TSkyObject.h"
 class Sample : public TEngine
 {
 	std::shared_ptr<TCamera> m_pGameCamera;
+	std::shared_ptr<TSkyObject> m_SkyObj;
 	std::shared_ptr<AActor> m_SMHero;
 	std::shared_ptr<AActor> m_SMBox;
 	std::shared_ptr<AActor> m_SMPlane;

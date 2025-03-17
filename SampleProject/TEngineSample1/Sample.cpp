@@ -196,6 +196,8 @@ void Sample::Init()
 	float fFarZ = 1000.0f;
 	m_pGameCamera->CreateProjMatrix(fFovY, fAspect, fNearZ, fFarZ);
 
+	m_SkyObj = std::make_shared<TSkyObject>();
+	
 
 	CreateDefaultShapes();
 	m_SMLine = std::make_shared<AActor>();
@@ -239,6 +241,9 @@ void Sample::Init()
 	pMaterialPlane->Load(L"../../data/shader/pnct.txt",
 		L"../../data/texture/kgca08.bmp");
 	m_SMPlane->GetMesh()->SetMaterial(pMaterialPlane);
+
+
+	m_SkyObj->Load(GetShape(L"box"));
 
 	g_pCamera->m_fPitch = T_Pi * 0.25f;
 	g_pCamera->CreateViewMatrix(
@@ -307,6 +312,13 @@ void Sample::Render() {
 
 	TDevice::m_pd3dContext->IASetPrimitiveTopology(
 		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
+	m_SkyObj->m_matOffset = TMatrix::Identity();
+	m_SkyObj->m_vScale = { 10,10,10 };
+	m_SkyObj->m_vRotation = { 0, 0, 0.0f };
+	m_SkyObj->m_vPosition = { 0,0,0 };
+	m_SkyObj->Render();
+	//return;
 
 	m_SMPlane->m_matOffset = TMatrix::Identity();
 	m_SMPlane->m_vScale = { 100,100,100 };

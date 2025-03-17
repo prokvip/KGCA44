@@ -4,8 +4,11 @@ ComPtr<ID3D11SamplerState>		TDxState::m_pLinearSS = nullptr;
 ComPtr<ID3D11SamplerState>		TDxState::m_pPointSS = nullptr;
 ComPtr<ID3D11BlendState>		TDxState::m_pAlphaBlend = nullptr;
 ComPtr<ID3D11RasterizerState>	TDxState::m_pRSSolid = nullptr;
+ComPtr<ID3D11RasterizerState>	TDxState::m_pRSSolidNone = nullptr;
 ComPtr<ID3D11RasterizerState>	TDxState::m_pRSWireFrame = nullptr;
 ComPtr<ID3D11DepthStencilState> TDxState::m_pDSSDepthEnable=nullptr;
+ComPtr<ID3D11DepthStencilState> TDxState::m_pDSSDepthEnableZero = nullptr;
+ComPtr<ID3D11DepthStencilState> TDxState::m_pDSSDepthDisableZero = nullptr;
 ComPtr<ID3D11DepthStencilState> TDxState::m_pDSSDepthDisable = nullptr;
 void  TDxState::Create()
 {
@@ -79,6 +82,13 @@ void  TDxState::Create()
 	{
 
 	}
+	rsDesc.CullMode = D3D11_CULL_NONE;
+	hr = TDevice::m_pd3dDevice->CreateRasterizerState(
+		&rsDesc, m_pRSSolidNone.GetAddressOf());
+	if (FAILED(hr))
+	{
+
+	}
 	rsDesc.FillMode = D3D11_FILL_WIREFRAME;
 	hr = TDevice::m_pd3dDevice->CreateRasterizerState(
 		&rsDesc, m_pRSWireFrame.GetAddressOf());
@@ -103,6 +113,20 @@ void  TDxState::Create()
 	dsDesc.DepthEnable = FALSE;
 	hr = TDevice::m_pd3dDevice->CreateDepthStencilState(
 		&dsDesc, m_pDSSDepthDisable.GetAddressOf());
+	if (FAILED(hr))
+	{
+	}
+	dsDesc.DepthEnable = FALSE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	hr = TDevice::m_pd3dDevice->CreateDepthStencilState(
+		&dsDesc, m_pDSSDepthDisableZero.GetAddressOf());
+	if (FAILED(hr))
+	{
+	}
+	dsDesc.DepthEnable = TRUE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	hr = TDevice::m_pd3dDevice->CreateDepthStencilState(
+		&dsDesc, m_pDSSDepthEnableZero.GetAddressOf());
 	if (FAILED(hr))
 	{
 	}

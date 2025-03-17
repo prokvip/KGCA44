@@ -12,15 +12,26 @@
 #include <map>
 #include <set>
 #include <algorithm>
+#include "TSkyObject.h"
 class TEngine : public TWindow
 {	
 public:
+	std::shared_ptr<TSkyObject> m_SkyObj;
 	static TCamera* g_pCamera;
 	std::shared_ptr<TCamera> m_pSceneCamera;
 	TTime		m_GameTimer;
 	TInput		m_Input;
 	TDevice		m_DxDevice;
 	TDxWrite    m_DxWrite;
+public:
+
+	std::map<std::wstring, std::shared_ptr<UStaticMeshComponent>>  m_Shapes;
+public:
+	UStaticMeshComponent* GetShape(std::wstring name);
+	void CreateDefaultShapes();
+	void CreateBoxShapes();
+	void CreatePlaneShapes();
+	void CreateLineShapes();
 public:
 	virtual void   Init() {};
 	virtual void   Tick() {};
