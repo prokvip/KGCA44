@@ -18,6 +18,7 @@ class AActor :  public UObject
 public:
 	TVector3 m_vLook;
 	TVector3 m_vRight;
+	TVector3 m_vUp;
 	TMatrix m_matOffset;
 	TMatrix m_matParent;
 	TMatrix m_matScale;
