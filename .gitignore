@@ -381,3 +381,4 @@ FodyWeavers.xsd
 /TEngine/Inc/TWindow.h
 /TEngine/lib/TEngine_D.lib
 /TEngine/Inc
+/fbx/include
