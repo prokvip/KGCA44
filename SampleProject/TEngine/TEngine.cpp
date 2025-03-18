@@ -78,7 +78,7 @@ void   TEngine::CoreFrame()
         float fYaw = 0;
         float fPitch = 0;
         fYaw   = g_ptDeltaMouse.x * g_fSPF * 10.0f;
-        fPitch = g_ptDeltaMouse.y * g_fSPF * 10.0f;
+        fPitch = -g_ptDeltaMouse.y * g_fSPF * 10.0f;
 
         float fDistance = 0.0f;
         if (g_GameKey.dwWkey == KEY_HOLD)
