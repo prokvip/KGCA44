@@ -181,10 +181,10 @@ void   TVector3::Normalize()
 	y *= fInvertLength;
 	z *= fInvertLength;	
 }
-TVector3   TVector3::Normal()
+TVector3   TVector3::Normal(TVector3& v)
 {
-	float fInvertLength = 1.0f / Length();
-	return TVector3(x * fInvertLength, y * fInvertLength, z * fInvertLength);
+	float fInvertLength = 1.0f / v.Length();
+	return TVector3(v.x * fInvertLength, v.y * fInvertLength, v.z * fInvertLength);
 }
 
 TVector3::TVector3()

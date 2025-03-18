@@ -49,7 +49,7 @@ public:
 public:
 	float  Length();
 	void   Normalize();
-	TVector3   Normal();
+	static TVector3   Normal(TVector3& v);
 	TVector3(float x, float y, float z);
 	TVector3();
 };

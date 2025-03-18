@@ -11,11 +11,11 @@ void TCamera::CreateViewMatrix(TVector3 vPosition,
 
 	TMatrix m;
 	TVector3 vDirection = vTarget - vPosition;
-	vDirection = vDirection.Normal();
+	vDirection = TVector3::Normal(vDirection);
 	float fDot = vUp | vDirection; // ³»Àû
 	TVector3 vC = vDirection * fDot;
 	TVector3 vUpVector = vUp - (vDirection * fDot);
-	vUpVector = vUpVector.Normal();
+	vUpVector = TVector3::Normal(vUpVector);
 	TVector3 vRightVector = vUpVector ^ vDirection;
 
 	m._11 = vRightVector.x;	m._12 = vUpVector.x;		m._13 = vDirection.x;

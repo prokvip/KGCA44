@@ -95,8 +95,10 @@ void Sample::Tick()
 
 		auto dirZ = g_pCamera->m_vLook;
 		dirZ.y = 0.0f;
-		dirZ.Normal();
-		auto dirX = (TVector3(0, 1, 0) ^ dirZ).Normal();
+		dirZ = TVector3::Normal(dirZ);
+		TVector3 vX = (TVector3(0, 1, 0) ^ dirZ);
+		TVector3 dirX = TVector3::Normal(vX);
+
 		vMovement = dirZ * fDistance;
 		m_SMHero->m_vPosition += vMovement;
 
@@ -110,11 +112,12 @@ void Sample::Tick()
 			m_SMHero->m_matWorld._23 = 0.0f;
 			m_SMHero->m_matWorld._31 = dirZ.x;
 			m_SMHero->m_matWorld._32 = dirZ.y;
-			m_SMHero->m_matWorld._33 = dirZ.z;
-			m_SMHero->m_matWorld._41 = m_SMHero->m_vPosition.x;
-			m_SMHero->m_matWorld._42 = m_SMHero->m_vPosition.y;
-			m_SMHero->m_matWorld._43 = m_SMHero->m_vPosition.z;
+			m_SMHero->m_matWorld._33 = dirZ.z;			
 		}
+		m_SMHero->m_matWorld._41 = m_SMHero->m_vPosition.x;
+		m_SMHero->m_matWorld._42 = m_SMHero->m_vPosition.y;
+		m_SMHero->m_matWorld._43 = m_SMHero->m_vPosition.z;
+
 		fDistance = 0.0f;
 		TVector3 vCameraMovement;
 		if (g_GameKey.dwAkey == KEY_HOLD)
@@ -132,10 +135,10 @@ void Sample::Tick()
 
 		
 		g_pCamera->m_vPosition += vMovement + vCameraMovement;
+		
 		g_pCamera->CreateViewMatrix(
 			g_pCamera->m_vPosition,
-			m_SMHero->m_vPosition);
-		g_pCamera->UpdateVector();
+			m_SMHero->m_vPosition);		
 	}	
 }
 void Sample::Render() {
@@ -162,17 +165,21 @@ void Sample::Render() {
 	m_SMPlane->UpdateVector();
 	m_SMPlane->Render();
 
-	m_SMHero->m_matOffset = TMatrix::Identity();
+	//m_SMHero->m_matOffset = TMatrix::Identity();
+	//m_SMHero->UpdateVector();
 	m_SMHero->Render();	
 	
 
 	TDevice::m_pd3dContext->IASetPrimitiveTopology(
 		D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	m_SMLine->m_vScale = { 1000,1,1 };
+	m_SMLine->UpdateVector();
 	m_SMLine->Render();
 	m_SMLine->m_vScale = { 1,1000,1 };
+	m_SMLine->UpdateVector();
 	m_SMLine->Render();
 	m_SMLine->m_vScale = { 1,1,1000 };
+	m_SMLine->UpdateVector();
 	m_SMLine->Render();
 }
 void Sample::Release() 
