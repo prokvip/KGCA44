@@ -1,6 +1,6 @@
 #pragma once
 #include "TEngine.h"
-//https://aps.autodesk.com/developer/overview/fbx-sdk
+// Scene Camera( First Persion Character camera)
 class Sample : public TEngine
 {
 public:

@@ -1,6 +1,6 @@
 #pragma once
 #include "TEngine.h"
-
+// back view camera : Third PersonCharacter camera;
 class Sample : public TEngine
 {
 	std::shared_ptr<TCamera> m_pGameCamera;

@@ -85,6 +85,7 @@ void Sample::Tick()
 		fPitch = -g_ptDeltaMouse.y * g_fSPF;
 		TVector3 vMovement;
 		float fDistance = 0.0f;
+		float fCameraDstance = 0.0f;
 		if (g_GameKey.dwWkey == KEY_HOLD)
 		{
 			fDistance += g_fSPF * 10.0f;
@@ -95,8 +96,8 @@ void Sample::Tick()
 		}
 		if (g_nMouseWheelDelta != 0)
 		{
-			fDistance = ((g_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
-			fDistance = fDistance * g_fSPF * 300.0f;
+			fCameraDstance = ((g_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
+			fCameraDstance = fCameraDstance * g_fSPF * 300.0f;
 		}
 		vMovement = m_SMHero->m_vLook * fDistance;
 		
@@ -113,7 +114,7 @@ void Sample::Tick()
 		}	
 
 		m_SMHero->m_vPosition += vMovement;
-		g_pCamera->m_vPosition += vMovement;
+		g_pCamera->m_vPosition += vMovement +  g_pCamera->m_vLook*fCameraDstance;
 		g_pCamera->CreateViewMatrix(
 			g_pCamera->m_vPosition,
 			m_SMHero->m_vPosition);
@@ -127,11 +128,13 @@ void Sample::Render() {
 	m_SMPlane->m_vScale = { 100,100,100 };
 	m_SMPlane->m_vRotation = { T_Pi*0.5f, 0, 0.0f };
 	m_SMPlane->m_vPosition = { 0,-5.0f,0 };
+	m_SMPlane->UpdateVector();
 	m_SMPlane->Render();
 
 	m_SMHero->m_matOffset = TMatrix::Identity();
 	m_SMHero->m_vScale = { 1,3,1 };
 	m_SMHero->m_vRotation = { 0.0f, 0, 0.0f };
+	m_SMHero->UpdateVector();
 	m_SMHero->Render();
 
 	m_SMBox->m_matOffset = TMatrix::Identity();
@@ -139,6 +142,7 @@ void Sample::Render() {
 	m_SMBox->m_vRotation = { 0.0f, 0, 0.0f };
 	m_SMBox->m_vPosition = { 0,0,0 };
 	m_SMBox->GetMesh()->SetMaterial(m_Materials[0]);
+	m_SMBox->UpdateVector();
 	m_SMBox->Render();
 		
 	m_SMBox->m_matOffset.Trans(3, 0, 0);
@@ -146,6 +150,7 @@ void Sample::Render() {
 	m_SMBox->m_vRotation = { 0.0f, g_fGT, 0.0f };
 	m_SMBox->m_vPosition = { 0,0,0 };	
 	m_SMBox->GetMesh()->SetMaterial(m_Materials[1]);
+	m_SMBox->UpdateVector();
 	m_SMBox->Render();
 
 	// direction line
@@ -154,20 +159,26 @@ void Sample::Render() {
 	m_SMBox->m_vRotation = { 0, 0, 0.0f };
 	m_SMBox->m_vPosition = { 0,0,0 };
 	m_SMBox->GetMesh()->SetMaterial(m_Materials[2]);
+	m_SMBox->UpdateVector();
 	m_SMBox->Render();
 	m_SMBox->m_vScale = { 0.05f,1000,0.05f };
+	m_SMBox->UpdateVector();
 	m_SMBox->Render();
 	m_SMBox->m_vScale = { 0.05f,0.05f,1000 };
+	m_SMBox->UpdateVector();
 	m_SMBox->Render();
 
 
 	TDevice::m_pd3dContext->IASetPrimitiveTopology(
 		D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	m_SMLine->m_vScale = { 1000,1,1 };
+	m_SMLine->UpdateVector();
 	m_SMLine->Render();
 	m_SMLine->m_vScale = { 1,1000,1 };
+	m_SMLine->UpdateVector();
 	m_SMLine->Render();
 	m_SMLine->m_vScale = { 1,1,1000 };
+	m_SMLine->UpdateVector();
 	m_SMLine->Render();
 }
 void Sample::Release() 

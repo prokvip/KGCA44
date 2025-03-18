@@ -8,15 +8,35 @@
 #pragma comment(lib,"libxml2-md.lib")
 #pragma comment(lib,"zlib-md.lib")
 
+class TFbxNode
+{
+	std::wstring                m_szName;
+	std::wstring                m_szTexName;
+	std::vector<PNCT_VERTEX>	m_vVertexList;
+	std::vector<DWORD>			m_vIndexList;
+	std::vector<TFbxNode>	    m_Childs;
+};
+class TFbxFile
+{
+public:
+	std::vector<TFbxNode>  m_lists;
+};
 
 class TFbxImporter
 {
 public:
-	FbxManager*		m_pManager;
-	FbxImporter*	m_pImporter;
-	FbxScene*		m_pScene;
-	FbxNode*		m_pRootNode;
+	FbxManager* m_pManager;
+	FbxImporter* m_pImporter;
+	FbxScene* m_pScene;
+	FbxNode* m_pRootNode;
+	std::vector<FbxMesh*>  m_FbxMeshs;
 public:
-	bool  Load(std::wstring loadfile, AActor& actor);
+	bool  Load(std::string loadfile, AActor* actor);
+	void  PreProcess(FbxNode* pNode);
+	void  ParseMesh(
+		FbxMesh* fbxmesh, AActor* actor);
+	void ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
+		int vertexIndex, int uvIndex, FbxVector2& uv);
+	void  Destroy();
 };
 

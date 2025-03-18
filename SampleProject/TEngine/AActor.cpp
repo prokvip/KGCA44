@@ -4,10 +4,11 @@
 
 AActor::AActor() {
 	m_vScale = { 1,1,1 };
-	CreateConstantBuffer();
+	
 };
  AActor::~AActor() {};
-void AActor::SetMesh(UStaticMeshComponent* mesh)
+void AActor::SetMesh(
+	std::shared_ptr<UStaticMeshComponent> mesh)
 {
 	Mesh = mesh;
 }
@@ -31,34 +32,21 @@ bool	AActor::CreateConstantBuffer()
 	}
 	return true;
 }
-void AActor::Init() {
+void AActor::Init() 
+{
+	CreateConstantBuffer();
 }
 void AActor::Tick() 
 {
-	
+	UpdateVector();
 	if (Mesh != nullptr) Mesh->Tick();
 }
 void AActor::PreRender()
 {
-	//m_matScale.Scale(m_vScale);
-	//TMatrix matX, matY, matZ;
-	//matX.RotateX(m_vRotation.x);
-	//matY.RotateY(m_vRotation.y);
-	//matZ.RotateZ(m_vRotation.z);
-	//m_matRotation = matZ * matX * matY;
-
-	//m_matTrans.Trans(m_vPosition);
-	//m_matWorld =
-	//	m_matOffset *
-	//	m_matScale *
-	//	m_matRotation *
-	//	m_matTrans *
-	//	m_matParent;
-
+	//UpdateVector();
 	m_cbData.matView = TMatrix::Transpose(TEngine::g_pCamera->m_matView);
 	m_cbData.matProj = TMatrix::Transpose(TEngine::g_pCamera->m_matProj);
 	m_cbData.matWorld = TMatrix::Transpose(m_matWorld);
-
 }
 void AActor::PostRender()
 {
@@ -71,11 +59,24 @@ void AActor::PostRender()
 	{
 		Mesh->Render();
 	}
+	
 }
-void AActor::Render() 
-{	
-	PreRender();
-	PostRender();
+void AActor::UpdateVector()
+{
+	m_matScale.Scale(m_vScale);
+	TMatrix matX, matY, matZ;
+	matX.RotateX(m_vRotation.x);
+	matY.RotateY(m_vRotation.y);
+	matZ.RotateZ(m_vRotation.z);
+	m_matRotation = matZ * matX * matY;
+
+	m_matTrans.Trans(m_vPosition);
+	m_matWorld =
+		m_matOffset *
+		m_matScale *
+		m_matRotation *
+		m_matTrans *
+		m_matParent;
 
 	m_vLook.x = m_matWorld._31;
 	m_vLook.y = m_matWorld._32;
@@ -90,6 +91,11 @@ void AActor::Render()
 	m_vLook.Normalize();
 	m_vRight.Normalize();
 	m_vUp.Normalize();
+}
+void AActor::Render() 
+{	
+	PreRender();
+	PostRender();	
 }
 void AActor::Destroy() {
 	if (Mesh != nullptr) Mesh->Destroy();

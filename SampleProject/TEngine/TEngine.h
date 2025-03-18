@@ -27,7 +27,7 @@ public:
 
 	std::map<std::wstring, std::shared_ptr<UStaticMeshComponent>>  m_Shapes;
 public:
-	UStaticMeshComponent* GetShape(std::wstring name);
+	std::shared_ptr<UStaticMeshComponent> GetShape(std::wstring name);
 	void CreateDefaultShapes();
 	void CreateBoxShapes();
 	void CreatePlaneShapes();

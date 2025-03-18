@@ -78,7 +78,7 @@ void   TEngine::CoreFrame()
         float fYaw = 0;
         float fPitch = 0;
         fYaw   = g_ptDeltaMouse.x * g_fSPF * 10.0f;
-        fPitch = -g_ptDeltaMouse.y * g_fSPF * 10.0f;
+        fPitch = g_ptDeltaMouse.y * g_fSPF * 10.0f;
 
         float fDistance = 0.0f;
         if (g_GameKey.dwWkey == KEY_HOLD)
@@ -160,7 +160,7 @@ bool TEngine::GameRun()
         {
             CoreFrame();
             CoreRender();      
-            m_nMouseWheelDelta = 0;
+            g_nMouseWheelDelta = m_nMouseWheelDelta = 0;
         }        
     }	
     CoreRelease();
@@ -277,12 +277,12 @@ void TEngine::CreateDefaultShapes()
     CreatePlaneShapes();
     CreateLineShapes();
 }
-UStaticMeshComponent* TEngine::GetShape(std::wstring name)
+std::shared_ptr<UStaticMeshComponent> TEngine::GetShape(std::wstring name)
 {
     auto shape = m_Shapes.find(name);
     if (shape != m_Shapes.end())
     {
-        return shape->second.get();
+        return shape->second;
     }
     return nullptr;
 }

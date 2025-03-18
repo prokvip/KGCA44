@@ -1,6 +1,6 @@
 #pragma once
 #include "TEngine.h"
-
+// 전후좌우 카메라.
 class Sample : public TEngine
 {
 	std::shared_ptr<TCamera> m_pGameCamera;

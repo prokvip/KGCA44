@@ -4,7 +4,7 @@ class TSkyObject : public AActor
 {
 	std::vector< std::shared_ptr<UMaterial>> m_Materials;
 public:
-	bool  Load(UStaticMeshComponent* sm);
+	bool  Load(std::shared_ptr<UStaticMeshComponent>);
 	void  Render()  override;
 	void  PostRender() override;
 };

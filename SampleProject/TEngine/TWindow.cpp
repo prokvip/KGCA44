@@ -16,6 +16,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 LRESULT TWindow::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {  
+    
     switch (message)
     {
 	    case WM_MOUSEWHEEL:

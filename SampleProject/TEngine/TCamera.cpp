@@ -26,6 +26,7 @@ void TCamera::CreateViewMatrix(TVector3 vPosition,
 	m._42 = -(vPosition.x * m._12 + vPosition.y * m._22 + vPosition.z * m._32);
 	m._43 = -(vPosition.x * m._13 + vPosition.y * m._23 + vPosition.z * m._33);
 	m_matView = m;
+	UpdateVector();
 }
 // 원근투영,  직교투영	
 void TCamera::CreateProjMatrix(

@@ -159,6 +159,7 @@ void Sample::Render() {
 		m_SMPlane->m_matRotation *
 		m_SMPlane->m_matTrans *
 		m_SMPlane->m_matParent;
+	m_SMPlane->UpdateVector();
 	m_SMPlane->Render();
 
 	m_SMHero->m_matOffset = TMatrix::Identity();

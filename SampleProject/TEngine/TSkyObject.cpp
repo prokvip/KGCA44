@@ -1,7 +1,7 @@
 #include "TSkyObject.h"
 #include "TEngine.h"
 #include "TDxState.h"
-bool TSkyObject::Load(UStaticMeshComponent* sm)
+bool TSkyObject::Load(std::shared_ptr<UStaticMeshComponent> sm)
 {
 	Init();
 	SetMesh(sm);	
