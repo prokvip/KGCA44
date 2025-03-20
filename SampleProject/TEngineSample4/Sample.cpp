@@ -104,19 +104,19 @@ void Sample::Tick()
 
 		if( bWSkey == true )
 		{
-			m_SMHero->m_matWorld._11 = dirX.x;
-			m_SMHero->m_matWorld._12 = dirX.y;
-			m_SMHero->m_matWorld._13 = dirX.z;
-			m_SMHero->m_matWorld._21 = 0.0f;
-			m_SMHero->m_matWorld._22 = 1.0f;
-			m_SMHero->m_matWorld._23 = 0.0f;
-			m_SMHero->m_matWorld._31 = dirZ.x;
-			m_SMHero->m_matWorld._32 = dirZ.y;
-			m_SMHero->m_matWorld._33 = dirZ.z;			
+			m_SMHero->m_matOffset._11 = dirX.x;
+			m_SMHero->m_matOffset._12 = dirX.y;
+			m_SMHero->m_matOffset._13 = dirX.z;
+			m_SMHero->m_matOffset._21 = 0.0f;
+			m_SMHero->m_matOffset._22 = 1.0f;
+			m_SMHero->m_matOffset._23 = 0.0f;
+			m_SMHero->m_matOffset._31 = dirZ.x;
+			m_SMHero->m_matOffset._32 = dirZ.y;
+			m_SMHero->m_matOffset._33 = dirZ.z;
 		}
-		m_SMHero->m_matWorld._41 = m_SMHero->m_vPosition.x;
-		m_SMHero->m_matWorld._42 = m_SMHero->m_vPosition.y;
-		m_SMHero->m_matWorld._43 = m_SMHero->m_vPosition.z;
+		/*m_SMHero->m_matOffset._41 = m_SMHero->m_vPosition.x;
+		m_SMHero->m_matOffset._42 = m_SMHero->m_vPosition.y;
+		m_SMHero->m_matOffset._43 = m_SMHero->m_vPosition.z;*/
 
 		fDistance = 0.0f;
 		TVector3 vCameraMovement;
@@ -165,13 +165,9 @@ void Sample::Render() {
 	m_SMPlane->UpdateVector();
 	m_SMPlane->Render();
 
-	//m_SMHero->m_matOffset = TMatrix::Identity();
-	//m_SMHero->UpdateVector();
-	m_SMHero->Render();	
-	
+	m_SMHero->Render();		
 
-	TDevice::m_pd3dContext->IASetPrimitiveTopology(
-		D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	TDevice::m_pd3dContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	m_SMLine->m_vScale = { 1000,1,1 };
 	m_SMLine->UpdateVector();
 	m_SMLine->Render();

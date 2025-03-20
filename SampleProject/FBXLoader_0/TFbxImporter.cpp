@@ -2,11 +2,12 @@
 bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 {
 	m_pManager	= FbxManager::Create();
+	FbxIOSettings* ios = FbxIOSettings::Create(m_pManager, IOSROOT);
+	m_pManager->SetIOSettings(ios);
+
 	m_pImporter = FbxImporter::Create(m_pManager,"");
 	m_pScene	= FbxScene::Create(m_pManager,"");
 	
-	FbxAxisSystem::MayaZUp.ConvertScene(m_pScene);
-
 	if (!m_pImporter->Initialize(loadfile.c_str()))
 	{
 		Destroy();
@@ -17,6 +18,16 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 		Destroy();
 		return false;
 	}
+
+	FbxAxisSystem	 m_SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem::MayaZUp.ConvertScene(m_pScene);
+	FbxSystemUnit	m_SceneSystemUnit = m_pScene->GetGlobalSettings().GetSystemUnit();
+
+	if (m_SceneSystemUnit.GetScaleFactor() != 1)	//if (m_SceneSystemUnit != FbxSystemUnit::cm)
+	{
+		FbxSystemUnit::cm.ConvertScene(m_pScene);
+	}
+
 	// vb, ib, texture, animation
 	m_pRootNode = m_pScene->GetRootNode();
 	PreProcess(m_pRootNode);
@@ -43,7 +54,15 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor)
 	geom.SetT(trans);
 	geom.SetR(rot);
 	geom.SetS(scale);
+	
+	FbxAMatrix matGlobal = pNode->EvaluateGlobalTransform(0);
+	if (matGlobal.IsIdentity()==false)
+	{
+		geom = matGlobal *geom;
+	}
+
 	FbxAMatrix normalMatrix = geom;
+
 	normalMatrix = normalMatrix.Inverse();
 	normalMatrix = normalMatrix.Transpose();
 
@@ -170,6 +189,7 @@ void  TFbxImporter::PreProcess(FbxNode* pNode)
 	if (pMesh != nullptr)
 	{
 		m_FbxMeshs.emplace_back(pMesh);
+		m_FbxNodes.emplace_back(pNode);
 	}
 	int iNumChild = pNode->GetChildCount();
 	for (int iNode = 0; iNode < iNumChild; iNode++)

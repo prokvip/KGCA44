@@ -9,9 +9,9 @@ void Sample::Init()
 	if (m_FbxImporter.Load(
 		//"../../data/fbx/box.fbx",
 		//"../../data/fbx/SM_Barrel.fbx",
-		//"../../data/fbx/MultiCamera/MultiCameras.fbx",
-		////"../../data/fbx/ship/ship.fbx",
-		"../../data/fbx/sphereBox.fbx",
+		"../../data/fbx/MultiCamera/MultiCameras.fbx",
+		//"../../data/fbx/ship/ship.fbx",
+		//"../../data/fbx/sphereBox.fbx",
 		&m_FbxBox))
 	{
 		for (int iMesh = 0; iMesh < m_FbxBox.GetMesh()->m_Childs.size(); iMesh++)
@@ -41,7 +41,7 @@ void Sample::Init()
 		{ 0, 0, 0.0f },
 		{ 0, 1.0f, 0.0f });
 	float fAspect = (float)g_ptClientSize.x / (float)g_ptClientSize.y;
-	g_pCamera->CreateProjMatrix((float)T_Pi * 0.25f, fAspect, 1.0f, 10000.0f);
+	g_pCamera->CreateProjMatrix((float)T_Pi * 0.25f, fAspect, 1.0f, 1000.0f);
 }
 void Sample::Tick() 
 {

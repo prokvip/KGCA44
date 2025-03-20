@@ -20,8 +20,7 @@ bool TSkyObject::Load(std::shared_ptr<UStaticMeshComponent> sm)
 	for (int iPlane = 0; iPlane < iNumTexture; iPlane++)
 	{
 		auto material = std::make_shared<UMaterial>();
-		material->Load(L"../../data/shader/pnct.txt",
-			g_szSkyTextures[iPlane]);
+		material->Load(L"../../data/shader/pnct.txt",g_szSkyTextures[iPlane]);
 		m_Materials.emplace_back(material);
 	}
 	return true;
@@ -41,27 +40,21 @@ void	TSkyObject::PostRender()
 	matView._41 = 0.0f;
 	matView._42 = 0.0f;
 	matView._43 = 0.0f;
-	m_cbData.matView = 
-		TMatrix::Transpose(matView);
+	m_cbData.matView = TMatrix::Transpose(matView);
 
-	TDevice::m_pd3dContext->UpdateSubresource(
-		m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
+	TDevice::m_pd3dContext->UpdateSubresource(m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
 	// 0번 레지스터에 셰이더상수 m_pConstantBuffer를 연결
-	TDevice::m_pd3dContext->VSSetConstantBuffers(
-		0, 1, m_pConstantBuffer.GetAddressOf());
+	TDevice::m_pd3dContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
 
 	TDevice::m_pd3dContext->RSSetState(TDxState::m_pRSSolidNone.Get());
 	TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
-	TDevice::m_pd3dContext->OMSetDepthStencilState(TDxState::m_pDSSDepthDisableZero.Get(), 0);
+	TDevice::m_pd3dContext->OMSetDepthStencilState(TDxState::m_pDSSDepthEnableZero.Get(), 0);
 	for (int iPlane = 0; iPlane < m_Materials.size(); iPlane++)
 	{
-		TDevice::m_pd3dContext->PSSetShaderResources(
-			0, 1, &m_Materials[iPlane]->m_pTexture->m_pTexSRV);
+		TDevice::m_pd3dContext->PSSetShaderResources(0, 1, &m_Materials[iPlane]->m_pTexture->m_pTexSRV);
 		if (GetMesh()->m_pIndexBuffer == nullptr)
-			TDevice::m_pd3dContext->Draw(
-				GetMesh()->m_vVertexList.size(), 0);
+			TDevice::m_pd3dContext->Draw(GetMesh()->m_vVertexList.size(), 0);
 		else
-			TDevice::m_pd3dContext->DrawIndexed(
-				6, 6* iPlane, 0);
+			TDevice::m_pd3dContext->DrawIndexed(6, 6* iPlane, 0);
 	}	
 }

@@ -30,6 +30,7 @@ public:
 	FbxScene* m_pScene;
 	FbxNode* m_pRootNode;
 	std::vector<FbxMesh*>  m_FbxMeshs;
+	std::vector<FbxNode*>  m_FbxNodes;
 public:
 	bool  Load(std::string loadfile, AActor* actor);
 	void  PreProcess(FbxNode* pNode);

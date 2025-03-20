@@ -77,6 +77,7 @@ void  TDxState::Create()
 	rsDesc.FillMode = D3D11_FILL_SOLID;
 	rsDesc.CullMode = D3D11_CULL_BACK;
 	rsDesc.DepthClipEnable = TRUE;
+	//rsDesc.ScissorEnable = TRUE;
 	hr = TDevice::m_pd3dDevice->CreateRasterizerState(
 		&rsDesc, m_pRSSolid.GetAddressOf());
 	if (FAILED(hr))
