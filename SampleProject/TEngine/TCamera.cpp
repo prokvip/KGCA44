@@ -71,7 +71,7 @@ TMatrix TCamera::Update(TVector4 vDirValue)
 		m_fPitch,
 		m_fRoll);
 
-	m_vPosition += m_vLook * vDirValue.w;
+	m_vPosition += m_vLook * vDirValue.w * m_fSpeed;
 	m_fRadius += vDirValue.w;
 
 	TBASIS_EX::TMatrix matRotation;
@@ -87,8 +87,8 @@ void    TCamera::Tick()
 {
 	float fYaw = 0;
 	float fPitch = 0;
-	fYaw = -g_ptDeltaMouse.x * g_fSPF;
-	fPitch = -g_ptDeltaMouse.y * g_fSPF;
+	fYaw = g_ptDeltaMouse.x * g_fSPF * 10.0f;
+	fPitch = g_ptDeltaMouse.y * g_fSPF * 10.0f;
 
 	float fDistance = 0.0f;
 	if (g_GameKey.dwWkey == KEY_HOLD)
@@ -102,8 +102,17 @@ void    TCamera::Tick()
 	if (g_nMouseWheelDelta != 0)
 	{
 		fDistance = ((g_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
-		fDistance = fDistance * g_fSPF * 300.0f;
+		fDistance = fDistance * g_fSPF;
 	}
+	if (g_GameKey.dwSpace == KEY_HOLD)
+	{
+		m_fSpeed += g_fSPF * 500.0f;
+	}
+	else
+	{
+		m_fSpeed -= g_fSPF * 500.0f;
+	}
+	if (m_fSpeed < 10.0f) m_fSpeed = 10.0f;
 	Update(TVector4(fPitch, fYaw, 0, fDistance));
 }
 TMatrix TCamera::UpdateVector()
@@ -123,4 +132,8 @@ TMatrix TCamera::UpdateVector()
 	m_vUp.Normalize();
 	//D3DXVec3Normalize(&m_vLookVector, &m_vLookVector);
 	return m_matView;
+}
+
+void    TBackViewCamera::Tick()
+{
 }

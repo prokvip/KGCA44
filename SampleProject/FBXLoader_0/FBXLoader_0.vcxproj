@@ -153,9 +153,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\data\shader\object.txt" />
     <Text Include="..\..\data\shader\pnct.txt">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Text>
+    <Text Include="..\..\data\shader\sky.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

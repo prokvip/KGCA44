@@ -52,7 +52,7 @@ void	TSkyObject::PostRender()
 
 	TDevice::m_pd3dContext->RSSetState(TDxState::m_pRSSolidNone.Get());
 	TDevice::m_pd3dContext->PSSetSamplers(0, 1, TDxState::m_pPointSS.GetAddressOf());
-	TDevice::m_pd3dContext->OMSetDepthStencilState(TDxState::m_pDSSDepthEnableZero.Get(), 0);
+	TDevice::m_pd3dContext->OMSetDepthStencilState(TDxState::m_pDSSDepthDisableZero.Get(), 0);
 	for (int iPlane = 0; iPlane < m_Materials.size(); iPlane++)
 	{
 		TDevice::m_pd3dContext->PSSetShaderResources(

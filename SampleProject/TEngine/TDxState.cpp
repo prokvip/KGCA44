@@ -76,6 +76,7 @@ void  TDxState::Create()
 	ZeroMemory(&rsDesc, sizeof(rsDesc));
 	rsDesc.FillMode = D3D11_FILL_SOLID;
 	rsDesc.CullMode = D3D11_CULL_BACK;
+	rsDesc.DepthClipEnable = TRUE;
 	hr = TDevice::m_pd3dDevice->CreateRasterizerState(
 		&rsDesc, m_pRSSolid.GetAddressOf());
 	if (FAILED(hr))
@@ -103,7 +104,7 @@ void  TDxState::Create()
 	ZeroMemory(&dsDesc, sizeof(dsDesc));
 	dsDesc.DepthEnable = TRUE;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;	
 	dsDesc.StencilEnable = FALSE;
 	hr = TDevice::m_pd3dDevice->CreateDepthStencilState(
 		&dsDesc, m_pDSSDepthEnable.GetAddressOf());

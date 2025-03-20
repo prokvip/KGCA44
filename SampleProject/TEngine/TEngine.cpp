@@ -35,8 +35,8 @@ void   TEngine::CoreInit()
 
     CreateDefaultShapes();
     auto pMaterial = std::make_shared<UMaterial>();
-    pMaterial->Load(L"../../data/shader/pnct.txt",
-        L"../../data/texture/kgca08.bmp");
+    pMaterial->Load(L"../../data/shader/sky.txt",
+                    L"../../data/texture/kgca08.bmp");
     m_SkyObj = std::make_shared<TSkyObject>();
     m_SkyObj->Load(GetShape(L"box"));
     m_SkyObj->GetMesh()->SetMaterial(pMaterial);
@@ -74,33 +74,14 @@ void   TEngine::CoreFrame()
         TDevice::m_DepthEnable = !TDevice::m_DepthEnable;
     }
     if (g_pCamera == m_pSceneCamera.get())
-    {
-        float fYaw = 0;
-        float fPitch = 0;
-        fYaw   = g_ptDeltaMouse.x * g_fSPF * 10.0f;
-        fPitch = g_ptDeltaMouse.y * g_fSPF * 10.0f;
-
-        float fDistance = 0.0f;
-        if (g_GameKey.dwWkey == KEY_HOLD)
-        {
-            fDistance += g_fSPF * 10.0f;
-        }
-        if (g_GameKey.dwSkey == KEY_HOLD)
-        {
-            fDistance -= g_fSPF * 10.0f;
-        }
-        if (m_nMouseWheelDelta != 0)
-        {
-            fDistance = ((m_nMouseWheelDelta / 120) > 0) ? (1.0f) : (-1.0f);
-            fDistance = fDistance * g_fSPF * 300.0f;
-        }
-        m_pSceneCamera->Update(TVector4(fPitch, fYaw, 0, fDistance));
+    {       
+        m_pSceneCamera->Tick();
     }
     Tick();
 }
 void   TEngine::CoreRender() 
 {
-    m_DxDevice.PreRender();  
+    m_DxDevice.PreRender();    
     m_SkyObj->m_matOffset = TMatrix::Identity();
     m_SkyObj->m_vScale = { 10,10,10 };
     m_SkyObj->m_vRotation = { 0, 0, 0.0f };
