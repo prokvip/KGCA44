@@ -5,7 +5,7 @@
 class Sample : public TEngine
 {
 	TFbxImporter   m_FbxImporter;
-	AActor		   m_FbxBox;
+	std::vector<std::shared_ptr<AActor>>   m_FbxObjs;
 public:
 	public:
 	void Init() override;

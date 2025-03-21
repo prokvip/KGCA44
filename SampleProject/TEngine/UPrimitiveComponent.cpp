@@ -53,14 +53,13 @@ void   UPrimitiveComponent::Tick()
 };
 void   UPrimitiveComponent::Render()
 {
+	for (auto child : m_SubChilds)
+	{
+		child->Render();
+	}
 	PreRender();
 	PostRender();
-
-	//for (auto child : m_Childs)
-	//{
-	//	child->PreRender();
-	//	child->PostRender();
-	//}
+	
 };
 void  UPrimitiveComponent::SetMaterial(
 	std::shared_ptr<UMaterial> pMaterial)
@@ -71,8 +70,12 @@ void	UPrimitiveComponent::PreRender()
 {
 	if (m_pMaterial)
 	{
-		TDevice::m_pd3dContext->PSSetShaderResources(
-			0, 1, &m_pMaterial->m_pTexture->m_pTexSRV);
+		if (m_pMaterial->m_pTexture)
+		{
+			TDevice::m_pd3dContext->PSSetShaderResources(
+				0, 1, &m_pMaterial->m_pTexture->m_pTexSRV);
+		}
+
 		TDevice::m_pd3dContext->VSSetShader(
 			m_pMaterial->m_pShader->m_pVertexShader.Get(), nullptr, 0);
 		TDevice::m_pd3dContext->PSSetShader(

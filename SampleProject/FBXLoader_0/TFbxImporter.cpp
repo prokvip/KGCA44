@@ -2,8 +2,8 @@
 bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 {
 	m_pManager	= FbxManager::Create();
-	FbxIOSettings* ios = FbxIOSettings::Create(m_pManager, IOSROOT);
-	m_pManager->SetIOSettings(ios);
+	/*FbxIOSettings* ios = FbxIOSettings::Create(m_pManager, IOSROOT);
+	m_pManager->SetIOSettings(ios);*/
 
 	m_pImporter = FbxImporter::Create(m_pManager,"");
 	m_pScene	= FbxScene::Create(m_pManager,"");
@@ -19,14 +19,14 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 		return false;
 	}
 
-	FbxAxisSystem	 m_SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
+	//FbxAxisSystem	 m_SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
 	FbxAxisSystem::MayaZUp.ConvertScene(m_pScene);
-	FbxSystemUnit	m_SceneSystemUnit = m_pScene->GetGlobalSettings().GetSystemUnit();
+	//FbxSystemUnit	m_SceneSystemUnit = m_pScene->GetGlobalSettings().GetSystemUnit();
 
-	if (m_SceneSystemUnit.GetScaleFactor() != 1)	//if (m_SceneSystemUnit != FbxSystemUnit::cm)
-	{
-		FbxSystemUnit::cm.ConvertScene(m_pScene);
-	}
+	//if (m_SceneSystemUnit.GetScaleFactor() != 1)	//if (m_SceneSystemUnit != FbxSystemUnit::cm)
+	//{
+	//	FbxSystemUnit::cm.ConvertScene(m_pScene);
+	//}
 
 	// vb, ib, texture, animation
 	m_pRootNode = m_pScene->GetRootNode();
@@ -43,7 +43,8 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 	Destroy();
 	return true;
 }
-void TFbxImporter::ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor)
+void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
+	UPrimitiveComponent* actor)
 {	
 	/// 기하행렬(초기 정점 위치를 변환 할 때 사용)
 	FbxNode* pNode = fbxmesh->GetNode();
@@ -55,11 +56,11 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor)
 	geom.SetR(rot);
 	geom.SetS(scale);
 	
-	FbxAMatrix matGlobal = pNode->EvaluateGlobalTransform(0);
+	/*FbxAMatrix matGlobal = pNode->EvaluateGlobalTransform(0);
 	if (matGlobal.IsIdentity()==false)
 	{
 		geom = matGlobal *geom;
-	}
+	}*/
 
 	FbxAMatrix normalMatrix = geom;
 
@@ -87,6 +88,30 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor)
 		if (pFbxLayer->GetNormals() != NULL)
 		{
 			VertexNormalSets.push_back(pFbxLayer->GetNormals());
+		}
+		if (pFbxLayer->GetMaterials() != nullptr)
+		{
+			MaterialSet.push_back(pFbxLayer->GetMaterials());
+		}
+	}
+
+	/// texture filename
+	int iNumMtl = pNode->GetMaterialCount();
+	if (iNumMtl > 1)
+	{
+		actor->m_SubChilds.resize(iNumMtl);
+		for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
+		{
+			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();
+		}
+	}
+	for (int iMtrl=0; iMtrl < iNumMtl; iMtrl++)
+	{
+		FbxSurfaceMaterial* pSurface = pNode->GetMaterial(iMtrl);
+		if (pSurface)
+		{
+			std::string texName = ParseMaterial(pSurface);			
+			actor->m_csTextures.emplace_back(to_mw(texName));
 		}
 	}
 
@@ -171,8 +196,17 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor)
 					// DX       ""         U, 1.0f-V  
 					v.t.x = uv.mData[0];
 					v.t.y = 1.0f - uv.mData[1];
-				}				
-				actor->m_vVertexList.emplace_back(v);
+				}		
+
+				int iSubMateriaIndex = 0;
+				if (MaterialSet.size() > 0)
+				{
+					iSubMateriaIndex = GetSubMaterialIndex(iPoly, MaterialSet[0]);
+				}
+				if( actor->m_SubChilds.size() <= 0)
+					actor->m_vVertexList.emplace_back(v);
+				else
+					actor->m_SubChilds[iSubMateriaIndex]->m_vVertexList.emplace_back(v);
 			}
 		}
 
@@ -206,6 +240,8 @@ void TFbxImporter::Destroy()
 	m_pScene = nullptr;
 	m_pImporter = nullptr;
 	m_pManager = nullptr;
+	m_FbxMeshs.clear();
+	m_FbxNodes.clear();
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
@@ -367,4 +403,68 @@ FbxVector4 TFbxImporter::ReadNormal(const FbxMesh* mesh,
 	}break;
 	}
 	return result;
+}
+
+
+std::string TFbxImporter::ParseMaterial(FbxSurfaceMaterial* pSurface)
+{		
+	auto property = pSurface->FindProperty(FbxSurfaceMaterial::sDiffuse);
+	if (property.IsValid())
+	{
+		//std::string texName;
+		FbxFileTexture* texfile =
+			property.GetSrcObject<FbxFileTexture>(0);
+		if (texfile)
+		{
+			const char* szTexPath = texfile->GetFileName();
+			CHAR Drive[MAX_PATH];
+			CHAR Dir[MAX_PATH];
+			CHAR FName[MAX_PATH];
+			CHAR Ext[MAX_PATH];
+			_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
+			std::string texName = FName;
+			std::string ext = Ext;
+			if (ext == ".tga" || ext == ".TGA")
+			{
+				ext.clear();
+				ext = ".dds";
+			}
+			texName += ext;
+			return texName;
+		}
+	}
+	
+	return std::string();
+}
+
+int TFbxImporter::GetSubMaterialIndex(
+	int iPoly, FbxLayerElementMaterial* pMaterialSetList)
+{
+	int iSubMtrl = 0;
+	if (pMaterialSetList != nullptr)
+	{
+		switch (pMaterialSetList->GetMappingMode())
+		{
+		case FbxLayerElement::eByPolygon:
+		{
+			// 매핑 정보가 배열에 저장되는 방식
+			switch (pMaterialSetList->GetReferenceMode())
+			{
+			case FbxLayerElement::eIndex:
+			{
+				iSubMtrl = iPoly;
+			}break;
+			case FbxLayerElement::eIndexToDirect:
+			{
+				iSubMtrl = pMaterialSetList->GetIndexArray().GetAt(iPoly);
+			}break;
+			}
+		}
+		default:
+		{
+			break;
+		}
+		}
+	}
+	return iSubMtrl;
 }
