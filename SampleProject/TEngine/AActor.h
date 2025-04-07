@@ -25,6 +25,7 @@ public:
 	TMatrix m_matTrans;
 	TMatrix m_matWorld;
 	cbData  m_cbData;
+	float   m_fFrame = 0.0f;
 	std::shared_ptr<UStaticMeshComponent> Mesh;
 	ComPtr<ID3D11Buffer>  m_pConstantBuffer = nullptr;
 public:	
