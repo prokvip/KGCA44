@@ -5,8 +5,9 @@ void Sample::Init()
 {
 	std::vector<std::string> list =
 	{
+		{"../../data/fbx/SKM_Manny.fbx"},
 		//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
-		{"../../data/fbx/Turret_Deploy1.fbx"},
+		//{"../../data/fbx/Turret_Deploy1.fbx"},
 		/*{"../../data/fbx/box.fbx"},
 		{"../../data/fbx/SM_Barrel.fbx"},
 		{"../../data/fbx/sphereBox.fbx"},
@@ -86,8 +87,8 @@ void Sample::Tick()
 	for (auto obj : m_FbxObjs)
 	{
 		//obj->m_vPosition = { -200.0f + 100.0f * index++,0,0 };
-		obj->m_vPosition = { 10,10,10 };
-		obj->m_vRotation.y = g_fGT;
+		obj->m_vPosition = { 0,0,0 };
+		//obj->m_vRotation.y = g_fGT;
 		obj->Tick();
 	}
 }

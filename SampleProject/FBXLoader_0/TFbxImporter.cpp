@@ -1,4 +1,31 @@
 #include "TFbxImporter.h"
+void        TFbxImporter::GetAnimation(
+	FbxNode* node,
+	UPrimitiveComponent* actor)
+{
+	FbxTime::SetGlobalTimeMode(FbxTime::eFrames30);
+	FbxAnimStack* stack = m_pScene->GetSrcObject<FbxAnimStack>(0);
+	if (stack == nullptr) return;
+
+	FbxString TakeName = stack->GetName();
+	FbxTakeInfo* TakeInfo = m_pScene->GetTakeInfo(TakeName);
+	FbxTimeSpan LocalTimeSpan = TakeInfo->mLocalTimeSpan;
+	FbxTime start = LocalTimeSpan.GetStart();
+	FbxTime end = LocalTimeSpan.GetStop();
+	FbxTime Duration = LocalTimeSpan.GetDuration();
+
+	FbxTime::EMode TimeMode = FbxTime::GetGlobalTimeMode();
+	FbxLongLong s = start.GetFrameCount(TimeMode);
+	FbxLongLong n = end.GetFrameCount(TimeMode);
+	FbxTime time;
+	for (FbxLongLong t = s; t <= n; t++)
+	{
+		time.SetFrame(t, TimeMode);
+		FbxAMatrix matGlobal = node->EvaluateGlobalTransform(time);
+		TMatrix mat = DxConvertMatrix(ConvertAMatrix(matGlobal));;
+		actor->m_AnimList.push_back(mat);
+	}
+}
 TMatrix     TFbxImporter::DxConvertMatrix(TMatrix m)
 {
 	TMatrix mat;
@@ -77,41 +104,11 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	geom.SetT(trans);
 	geom.SetR(rot);
 	geom.SetS(scale);
-	
-	FbxTime::SetGlobalTimeMode(FbxTime::eFrames30);
-	FbxAnimStack* stack = m_pScene->GetSrcObject<FbxAnimStack>(0);
-	if (stack == nullptr) return;
-
-	FbxString TakeName = stack->GetName();
-	FbxTakeInfo* TakeInfo = m_pScene->GetTakeInfo(TakeName);
-	FbxTimeSpan LocalTimeSpan = TakeInfo->mLocalTimeSpan;
-	FbxTime start = LocalTimeSpan.GetStart();
-	FbxTime end = LocalTimeSpan.GetStop();
-	FbxTime Duration = LocalTimeSpan.GetDuration();
-
-	FbxTime::EMode TimeMode = FbxTime::GetGlobalTimeMode();
-	FbxLongLong s = start.GetFrameCount(TimeMode);
-	FbxLongLong n = end.GetFrameCount(TimeMode);
-	FbxTime time;
-	for (FbxLongLong t = s; t <= n; t++)
-	{
-		time.SetFrame(t, TimeMode);
-		FbxAMatrix matGlobal = pNode->EvaluateGlobalTransform(time);
-		TMatrix mat = DxConvertMatrix(ConvertAMatrix(matGlobal));;
-		actor->m_AnimList.push_back(mat);
-	}
-	/*FbxLongLong t = 0;
-	time.SetFrame(t, TimeMode);
-	FbxAMatrix matGlobal = pNode->EvaluateGlobalTransform(time);
-	if (matGlobal.IsIdentity()==false)
-	{
-		geom = matGlobal *geom;
-	}*/
-
 	FbxAMatrix normalMatrix = geom;
-
 	normalMatrix = normalMatrix.Inverse();
 	normalMatrix = normalMatrix.Transpose();
+
+	GetAnimation(pNode, actor);
 
 	// 레이어 ( 1번에 랜더링, 여러번에 걸쳐서 랜더링 개념)
 	std::vector<FbxLayerElementUV*>				VertexUVSet;
@@ -264,12 +261,10 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 void  TFbxImporter::PreProcess(FbxNode* pNode)
 {
 	if (pNode == nullptr) return;
-	std::string nodename = pNode->GetName();
 	FbxMesh* pMesh = pNode->GetMesh();
 	if (pMesh != nullptr)
 	{
 		m_FbxMeshs.emplace_back(pMesh);
-		m_FbxNodes.emplace_back(pNode);
 	}
 	int iNumChild = pNode->GetChildCount();
 	for (int iNode = 0; iNode < iNumChild; iNode++)
@@ -287,7 +282,6 @@ void TFbxImporter::Destroy()
 	m_pImporter = nullptr;
 	m_pManager = nullptr;
 	m_FbxMeshs.clear();
-	m_FbxNodes.clear();
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,

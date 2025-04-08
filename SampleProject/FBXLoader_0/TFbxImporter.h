@@ -8,20 +8,6 @@
 #pragma comment(lib,"libxml2-md.lib")
 #pragma comment(lib,"zlib-md.lib")
 
-class TFbxNode
-{
-	std::wstring                m_szName;
-	std::wstring                m_szTexName;
-	std::vector<PNCT_VERTEX>	m_vVertexList;
-	std::vector<DWORD>			m_vIndexList;
-	std::vector<TFbxNode>	    m_Childs;
-};
-class TFbxFile
-{
-public:
-	std::vector<TFbxNode>  m_lists;
-};
-
 class TFbxImporter
 {
 public:
@@ -30,7 +16,6 @@ public:
 	FbxScene* m_pScene;
 	FbxNode* m_pRootNode;
 	std::vector<FbxMesh*>  m_FbxMeshs;
-	std::vector<FbxNode*>  m_FbxNodes;
 	TMatrix     DxConvertMatrix(TMatrix m);
 	TMatrix     ConvertAMatrix(FbxAMatrix& m);
 public:
@@ -51,5 +36,7 @@ public:
 
 	std::string ParseMaterial(FbxSurfaceMaterial* pSurface);
 	int GetSubMaterialIndex(int iPoly, FbxLayerElementMaterial*);
+
+	void        GetAnimation(FbxNode* node,	UPrimitiveComponent* actor);
 };
 
