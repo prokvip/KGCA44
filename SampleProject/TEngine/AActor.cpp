@@ -55,26 +55,20 @@ void AActor::PostRender()
 	{		
 		m_fFrame += g_fSPF * 30 * 1.0f;
 		if (m_fFrame >= 30) m_fFrame = 0;
-		int iMesh = 0;
+
 		for (auto child : Mesh->m_Childs)
 		{
-			if (iMesh == 2)
+			auto mesh = child;
+			if (mesh != nullptr && mesh->m_AnimList.size() > 0)
 			{
-				auto mesh = child;
-				if (mesh != nullptr && mesh->m_AnimList.size() > 0)
-				{
-					TMatrix world =
-						mesh->m_AnimList[(int)m_fFrame] * m_matWorld;
-					m_cbData.matWorld = TMatrix::Transpose(world);
+				TMatrix world =	mesh->m_AnimList[(int)m_fFrame] * m_matWorld;
+				m_cbData.matWorld = TMatrix::Transpose(world);
 
-					TDevice::m_pd3dContext->UpdateSubresource(
-						m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
+				TDevice::m_pd3dContext->UpdateSubresource(
+					m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
 
-				}
-				child->Render();				
 			}
-
-			iMesh++;
+			child->Render();
 		}
 		Mesh->Render();
 	}

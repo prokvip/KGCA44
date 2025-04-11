@@ -1,7 +1,34 @@
 #include "TFbxImporter.h"
-TMatrix     TFbxImporter::DxConvertMatrix(TMatrix m)
+void        TFbxImporter::GetAnimation(
+	FbxNode* node,
+	TAssetFileFormat* asset)
 {
-	TMatrix mat;
+	FbxTime::SetGlobalTimeMode(FbxTime::eFrames30);
+	FbxAnimStack* stack = m_pScene->GetSrcObject<FbxAnimStack>(0);
+	if (stack == nullptr) return;
+
+	FbxString TakeName = stack->GetName();
+	FbxTakeInfo* TakeInfo = m_pScene->GetTakeInfo(TakeName);
+	FbxTimeSpan LocalTimeSpan = TakeInfo->mLocalTimeSpan;
+	FbxTime start = LocalTimeSpan.GetStart();
+	FbxTime end = LocalTimeSpan.GetStop();
+	FbxTime Duration = LocalTimeSpan.GetDuration();
+
+	FbxTime::EMode TimeMode = FbxTime::GetGlobalTimeMode();
+	FbxLongLong s = start.GetFrameCount(TimeMode);
+	FbxLongLong n = end.GetFrameCount(TimeMode);
+	FbxTime time;
+	for (FbxLongLong t = s; t <= n; t++)
+	{
+		time.SetFrame(t, TimeMode);
+		FbxAMatrix matGlobal = node->EvaluateGlobalTransform(time);
+		T::TMatrix mat = DxConvertMatrix(ConvertAMatrix(matGlobal));
+		asset->m_pAnimationMatrixList.push_back(mat);
+	}
+}
+T::TMatrix     TFbxImporter::DxConvertMatrix(T::TMatrix m)
+{
+	T::TMatrix mat;
 	mat._11 = m._11; mat._12 = m._13; mat._13 = m._12;
 	mat._21 = m._31; mat._22 = m._33; mat._23 = m._32;
 	mat._31 = m._21; mat._32 = m._23; mat._33 = m._22;
@@ -10,9 +37,9 @@ TMatrix     TFbxImporter::DxConvertMatrix(TMatrix m)
 	mat._44 = 1.0f;
 	return mat;
 }
-TMatrix     TFbxImporter::ConvertAMatrix(FbxAMatrix& m)
+T::TMatrix     TFbxImporter::ConvertAMatrix(FbxAMatrix& m)
 {
-	TMatrix mat;
+	T::TMatrix mat;
 	float* pMatArray = reinterpret_cast<float*>(&mat);
 	double* pSrcArray = reinterpret_cast<double*>(&m);
 	for (int i = 0; i < 16; i++)
@@ -21,15 +48,17 @@ TMatrix     TFbxImporter::ConvertAMatrix(FbxAMatrix& m)
 	}
 	return mat;
 }
-bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
+bool  TFbxImporter::Load(std::string loadfile, TAssetFileFormat* asset)
 {
-	m_pManager = FbxManager::Create();
+	asset->m_szFileName = to_mw(loadfile);
+
+	m_pManager	= FbxManager::Create();
 	/*FbxIOSettings* ios = FbxIOSettings::Create(m_pManager, IOSROOT);
 	m_pManager->SetIOSettings(ios);*/
 
-	m_pImporter = FbxImporter::Create(m_pManager, "");
-	m_pScene = FbxScene::Create(m_pManager, "");
-
+	m_pImporter = FbxImporter::Create(m_pManager,"");
+	m_pScene	= FbxScene::Create(m_pManager,"");
+	
 	if (!m_pImporter->Initialize(loadfile.c_str()))
 	{
 		Destroy();
@@ -52,55 +81,26 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 
 	// vb, ib, texture, animation
 	m_pRootNode = m_pScene->GetRootNode();
-	auto tFbxNodeRoot = std::make_shared<TFbxNodeTree>(m_pRootNode);
-	PreProcess(tFbxNodeRoot);
-
-	auto mesh = std::make_shared<UStaticMeshComponent>();
+	PreProcess(m_pRootNode);
+	
 	for (int iMesh = 0; iMesh < m_FbxMeshs.size(); iMesh++)
 	{
-		auto child = std::make_shared<UPrimitiveComponent>();
-		ParseMesh(m_FbxMeshs[iMesh], child.get());
-		mesh->m_Childs.emplace_back(child);
-	}
-	actor->SetMesh(mesh);
+		auto child = std::make_shared<TAssetFileFormat>();
+		ParseMesh(m_FbxMeshs[iMesh], child.get());	
+		asset->m_ChildList.emplace_back(child);
+	}	
+
 	Destroy();
 	return true;
 }
-void        TFbxImporter::GetAnimation(
-	FbxNode* node,
-	UPrimitiveComponent* actor)
-{
-	FbxTime::SetGlobalTimeMode(FbxTime::eFrames30);
-	FbxAnimStack* stack = m_pScene->GetSrcObject<FbxAnimStack>(0);
-	if (stack == nullptr) return;
-
-	FbxString TakeName = stack->GetName();
-	FbxTakeInfo* TakeInfo = m_pScene->GetTakeInfo(TakeName);
-	FbxTimeSpan LocalTimeSpan = TakeInfo->mLocalTimeSpan;
-	FbxTime start = LocalTimeSpan.GetStart();
-	FbxTime end = LocalTimeSpan.GetStop();
-	FbxTime Duration = LocalTimeSpan.GetDuration();
-
-	FbxTime::EMode TimeMode = FbxTime::GetGlobalTimeMode();
-	FbxLongLong s = start.GetFrameCount(TimeMode);
-	FbxLongLong n = end.GetFrameCount(TimeMode);
-	FbxTime time;
-	for (FbxLongLong t = s; t <= n; t++)
-	{
-		time.SetFrame(t, TimeMode);
-		FbxAMatrix matGlobal = node->EvaluateGlobalTransform(time);
-		TMatrix mat = DxConvertMatrix(ConvertAMatrix(matGlobal));;
-		actor->m_AnimList.push_back(mat);
-	}
-}
 void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
-	UPrimitiveComponent* actor)
-{
+	TAssetFileFormat* asset)
+{	
 	/// 기하행렬(초기 정점 위치를 변환 할 때 사용)
 	FbxNode* pNode = fbxmesh->GetNode();
 	FbxAMatrix geom;
 	FbxVector4 trans = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
-	FbxVector4 rot = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+	FbxVector4 rot   = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
 	FbxVector4 scale = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
 	geom.SetT(trans);
 	geom.SetR(rot);
@@ -109,7 +109,7 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	normalMatrix = normalMatrix.Inverse();
 	normalMatrix = normalMatrix.Transpose();
 
-	GetAnimation(pNode, actor);
+	GetAnimation(pNode, asset);
 
 	// 레이어 ( 1번에 랜더링, 여러번에 걸쳐서 랜더링 개념)
 	std::vector<FbxLayerElementUV*>				VertexUVSet;
@@ -141,21 +141,22 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 
 	/// texture filename
 	int iNumMtl = pNode->GetMaterialCount();
-	if (iNumMtl > 1)
+	if (iNumMtl <= 0)
 	{
-		actor->m_SubChilds.resize(iNumMtl);
-		for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
-		{
-			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();
-		}
+		iNumMtl = 1;
 	}
-	for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
+	if (iNumMtl >= 1)
+	{
+		asset->m_vSubMeshVertexList.resize(iNumMtl);
+		asset->m_vSubMeshIndexList.resize(iNumMtl);
+	}
+	for (int iMtrl=0; iMtrl < iNumMtl; iMtrl++)
 	{
 		FbxSurfaceMaterial* pSurface = pNode->GetMaterial(iMtrl);
 		if (pSurface)
 		{
-			std::string texName = ParseMaterial(pSurface);
-			actor->m_csTextures.emplace_back(to_mw(texName));
+			std::string texName = ParseMaterial(pSurface);			
+			asset->m_szTexFileList.emplace_back(to_mw(texName));
 		}
 	}
 
@@ -240,48 +241,38 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 					// DX       ""         U, 1.0f-V  
 					v.t.x = uv.mData[0];
 					v.t.y = 1.0f - uv.mData[1];
-				}
+				}		
 
 				int iSubMateriaIndex = 0;
 				if (MaterialSet.size() > 0)
 				{
 					iSubMateriaIndex = GetSubMaterialIndex(iPoly, MaterialSet[0]);
 				}
-				if (actor->m_SubChilds.size() <= 0)
-					actor->m_vVertexList.emplace_back(v);
+				if( asset->m_vSubMeshVertexList.size() <= 0)
+					asset->m_vSubMeshVertexList[0].emplace_back(v);
 				else
-					actor->m_SubChilds[iSubMateriaIndex]->m_vVertexList.emplace_back(v);
+					asset->m_vSubMeshVertexList[iSubMateriaIndex].emplace_back(v);
 			}
 		}
 
 
 		iBasePolyIndex += iPolySize;
 	}
-
+	
 }
-void  TFbxImporter::PreProcess(tFbxTree& pParentNode)
+void  TFbxImporter::PreProcess(FbxNode* pNode)
 {
-	if (pParentNode == nullptr) return;
-	FbxNode* node = pParentNode->m_pFbxNode;
-	FbxMesh* pMesh = node->GetMesh();
-	pParentNode->m_bMesh = false;
+	if (pNode == nullptr) return;
+	FbxMesh* pMesh = pNode->GetMesh();
 	if (pMesh != nullptr)
 	{
 		m_FbxMeshs.emplace_back(pMesh);
-		pParentNode->m_bMesh = true;
 	}
-	m_FbxNodes.emplace_back(pParentNode);
-
-	int iNumChild = node->GetChildCount();
+	int iNumChild = pNode->GetChildCount();
 	for (int iNode = 0; iNode < iNumChild; iNode++)
 	{
-		FbxNode* pChild = node->GetChild(iNode);
-		auto tFbxChildTree = std::make_shared<TFbxNodeTree>(pChild);
-		tFbxChildTree->m_szName = to_mw(pChild->GetName());
-		tFbxChildTree->m_pFbxParentNode = node;
-		pParentNode->m_Childs.emplace_back(tFbxChildTree);
-		tFbxChildTree->m_szParentName = pParentNode->m_szName;
-		PreProcess(tFbxChildTree);
+		FbxNode* pChild = pNode->GetChild(iNode);
+		PreProcess(pChild);
 	}
 }
 void TFbxImporter::Destroy()
@@ -293,7 +284,6 @@ void TFbxImporter::Destroy()
 	m_pImporter = nullptr;
 	m_pManager = nullptr;
 	m_FbxMeshs.clear();
-	m_FbxNodes.clear();
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
@@ -459,7 +449,7 @@ FbxVector4 TFbxImporter::ReadNormal(const FbxMesh* mesh,
 
 
 std::string TFbxImporter::ParseMaterial(FbxSurfaceMaterial* pSurface)
-{
+{		
 	auto property = pSurface->FindProperty(FbxSurfaceMaterial::sDiffuse);
 	if (property.IsValid())
 	{
@@ -485,7 +475,7 @@ std::string TFbxImporter::ParseMaterial(FbxSurfaceMaterial* pSurface)
 			return texName;
 		}
 	}
-
+	
 	return std::string();
 }
 

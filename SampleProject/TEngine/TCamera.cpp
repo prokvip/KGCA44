@@ -57,15 +57,15 @@ void TCamera::CreateProjMatrix(
 }
 TMatrix TCamera::Update(TVector4 vDirValue)
 {		
-	TBASIS_EX::TQuaternion* pqRotation = (TBASIS_EX::TQuaternion*)&m_qRotation;
-	TBASIS_EX::TVector3* pPosition = (TBASIS_EX::TVector3*)&m_vPosition;
-	TBASIS_EX::TMatrix* pMatView = (TBASIS_EX::TMatrix*)&m_matView;
+	T::TQuaternion* pqRotation = (T::TQuaternion*)&m_qRotation;
+	T::TVector3* pPosition = (T::TVector3*)&m_vPosition;
+	T::TMatrix* pMatView = (T::TMatrix*)&m_matView;
 
 	m_fYaw += vDirValue.y;
 	m_fPitch += vDirValue.x;
 	m_fRoll += vDirValue.z;
 
-	TBASIS_EX::D3DXQuaternionRotationYawPitchRoll(
+	T::D3DXQuaternionRotationYawPitchRoll(
 		pqRotation,
 		m_fYaw,
 		m_fPitch,
@@ -74,11 +74,11 @@ TMatrix TCamera::Update(TVector4 vDirValue)
 	m_vPosition += m_vLook * vDirValue.w * m_fSpeed;
 	m_fRadius += vDirValue.w;
 
-	TBASIS_EX::TMatrix matRotation;
-	TBASIS_EX::D3DXMatrixAffineTransformation(
+	T::TMatrix matRotation;
+	T::D3DXMatrixAffineTransformation(
 		&matRotation, 1.0f, NULL, 
 		pqRotation, pPosition);
-	TBASIS_EX::D3DXMatrixInverse(
+	T::D3DXMatrixInverse(
 		pMatView, NULL, &matRotation);
 
 	return UpdateVector();

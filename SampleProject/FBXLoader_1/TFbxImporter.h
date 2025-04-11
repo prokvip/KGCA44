@@ -16,14 +16,9 @@ struct TFbxNodeTree
 	std::wstring                m_szName;
 	std::wstring                m_szParentName;
 	FbxNode*					m_pFbxParentNode;
-	FbxNode*					m_pFbxNode;			
-	std::vector<tFbxTree>	m_Childs;
+	FbxNode*					m_pFbxNode;
+	std::vector<tFbxTree>		m_Childs;
 	TFbxNodeTree(FbxNode* node) { m_pFbxNode = node; }
-};
-class TFbxFile
-{
-public:
-	std::vector<TFbxNodeTree>  m_lists;
 };
 
 class TFbxImporter
@@ -34,22 +29,21 @@ public:
 	FbxScene* m_pScene;
 	FbxNode* m_pRootNode;
 	std::vector<FbxMesh*>  m_FbxMeshs;
-	
 	std::vector<tFbxTree>  m_FbxNodes;
+
 	TMatrix     DxConvertMatrix(TMatrix m);
 	TMatrix     ConvertAMatrix(FbxAMatrix& m);
 public:
 	bool  Load(std::string loadfile, AActor* actor);
 	//void  PreProcess(FbxNode* pParentNode, FbxNode* pNode);
 	void  PreProcess(tFbxTree& pParentNode);
-	void  ParseMesh(
-		FbxMesh* fbxmesh, UPrimitiveComponent* actor);
+	void  ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor);
 	void ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
 		int vertexIndex, int uvIndex, FbxVector2& uv);
-	FbxColor ReadColor( FbxMesh* mesh,
-						DWORD dwVertexColorCount,
-						FbxLayerElementVertexColor* pVertexColorSet,
-						DWORD dwDCCIndex, DWORD dwVertexIndex);
+	FbxColor ReadColor(FbxMesh* mesh,
+		DWORD dwVertexColorCount,
+		FbxLayerElementVertexColor* pVertexColorSet,
+		DWORD dwDCCIndex, DWORD dwVertexIndex);
 	FbxVector4 ReadNormal(const FbxMesh* mesh,
 		DWORD dwVertexNormalCount, FbxLayerElementNormal* VertexNormalSets,
 		int controlPointIndex, int iVertexIndex);
@@ -58,6 +52,6 @@ public:
 	std::string ParseMaterial(FbxSurfaceMaterial* pSurface);
 	int GetSubMaterialIndex(int iPoly, FbxLayerElementMaterial*);
 
-	void GetAnimation(FbxNode* pNode,FbxAnimStack* pAnimStack, FbxTime& time);
+	void    GetAnimation(FbxNode* node, UPrimitiveComponent* actor);
 };
 

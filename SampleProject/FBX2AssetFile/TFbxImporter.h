@@ -1,6 +1,7 @@
 #pragma once
 #include <AActor.h>
 #include <fbxsdk.h>
+#include "TAssetFileFormat.h"
 //libfbxsdk - md.lib
 //libxml2 - md.lib
 //zlib - md.lib
@@ -16,12 +17,13 @@ public:
 	FbxScene* m_pScene;
 	FbxNode* m_pRootNode;
 	std::vector<FbxMesh*>  m_FbxMeshs;
-	TMatrix     DxConvertMatrix(TMatrix m);
-	TMatrix     ConvertAMatrix(FbxAMatrix& m);
+	T::TMatrix     DxConvertMatrix(T::TMatrix m);
+	T::TMatrix     ConvertAMatrix(FbxAMatrix& m);
 public:
-	bool  Load(std::string loadfile, AActor* actor);
+	bool  Load(std::string loadfile, TAssetFileFormat* actor);
 	void  PreProcess(FbxNode* pNode);
-	void  ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor);
+	void  ParseMesh(
+		FbxMesh* fbxmesh, TAssetFileFormat* actor);
 	void ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
 		int vertexIndex, int uvIndex, FbxVector2& uv);
 	FbxColor ReadColor( FbxMesh* mesh,
@@ -36,6 +38,6 @@ public:
 	std::string ParseMaterial(FbxSurfaceMaterial* pSurface);
 	int GetSubMaterialIndex(int iPoly, FbxLayerElementMaterial*);
 
-	void        GetAnimation(FbxNode* node,	UPrimitiveComponent* actor);
+	void        GetAnimation(FbxNode* node, TAssetFileFormat* actor);
 };
 

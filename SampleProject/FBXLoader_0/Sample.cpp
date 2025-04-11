@@ -5,9 +5,9 @@ void Sample::Init()
 {
 	std::vector<std::string> list =
 	{
-		{"../../data/fbx/SKM_Manny.fbx"},
+		//{"../../data/fbx/SKM_Manny.fbx"},
 		//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
-		//{"../../data/fbx/Turret_Deploy1.fbx"},
+		{"../../data/fbx/Turret_Deploy1.fbx"},
 		/*{"../../data/fbx/box.fbx"},
 		{"../../data/fbx/SM_Barrel.fbx"},
 		{"../../data/fbx/sphereBox.fbx"},
@@ -118,3 +118,7 @@ int WINAPI wWinMain(
 	sample.SetWindow(L"test", 800, 600);
 	sample.GameRun();
 }
+
+
+
+

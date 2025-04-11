@@ -5,6 +5,7 @@ void Sample::Init()
 {
 	std::vector<std::string> list =
 	{
+		//{"../../data/fbx/SKM_Manny.fbx"},
 		//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
 		{"../../data/fbx/Turret_Deploy1.fbx"},
 		/*{"../../data/fbx/box.fbx"},
@@ -15,7 +16,7 @@ void Sample::Init()
 	};
 
 	m_FbxObjs.resize(list.size());
-	for( int iObj=0; iObj < list.size(); iObj++)
+	for (int iObj = 0; iObj < list.size(); iObj++)
 	{
 		m_FbxObjs[iObj] = std::make_shared<AActor>();
 		m_FbxObjs[iObj]->Init();
@@ -39,11 +40,11 @@ void Sample::Init()
 					{
 						texPath += child->m_csTextures[0];
 					}
-						
+
 					pMaterialPlane->Load(L"../../data/shader/object.txt",
-							texPath);
+						texPath);
 					child->SetMaterial(pMaterialPlane);
-					
+
 					child->CreateVertexBuffer();
 					child->CreateIndexBuffer();
 				}
@@ -59,7 +60,7 @@ void Sample::Init()
 
 						auto pMaterialPlane = std::make_shared<UMaterial>();
 						std::wstring texPath = L"../../data/fbx/";
-						if (child->m_csTextures[iSubMaterial].empty()==false)
+						if (child->m_csTextures[iSubMaterial].empty() == false)
 						{
 							texPath += child->m_csTextures[iSubMaterial];
 
@@ -80,14 +81,14 @@ void Sample::Init()
 	float fAspect = (float)g_ptClientSize.x / (float)g_ptClientSize.y;
 	g_pCamera->CreateProjMatrix((float)T_Pi * 0.25f, fAspect, 1.0f, 1000.0f);
 }
-void Sample::Tick() 
+void Sample::Tick()
 {
 	int index = 0;
 	for (auto obj : m_FbxObjs)
 	{
 		//obj->m_vPosition = { -200.0f + 100.0f * index++,0,0 };
-		obj->m_vPosition = { 10,10,10 };
-		obj->m_vRotation.y = g_fGT;
+		obj->m_vPosition = { 0,0,0 };
+		//obj->m_vRotation.y = g_fGT;
 		obj->Tick();
 	}
 }
@@ -98,7 +99,7 @@ void Sample::Render() {
 		obj->Render();
 	}
 }
-void Sample::Release() 
+void Sample::Release()
 {
 	for (auto obj : m_FbxObjs)
 	{

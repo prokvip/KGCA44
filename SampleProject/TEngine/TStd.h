@@ -13,6 +13,7 @@
 #include <atlconv.h>  // A2W
 #include <wrl.h> // windows runtime c++ template library
 #include "TVertex.h"
+#include "TMath.h"
 #pragma comment(lib,"d3d11.lib") // 加己 眠啊辆加己 
 #pragma comment(lib,"d3dcompiler.lib") // 加己 眠啊辆加己 
 
