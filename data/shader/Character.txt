@@ -21,10 +21,10 @@ VS_Out VS( PNCTIW_In vs)
 	float4 vNormal =0;
 	for(int i = 0; i < 4; i++)
 	{
-		uint iBoneIndex = g_fData.z;
-		float fWeight   = g_fData.w;		
-		//uint iBoneIndex = vs.i[i];
-		//float fWeight   = vs.w[i];
+		//uint iBoneIndex = g_fData.z;
+		//float fWeight   = g_fData.w;		
+		uint iBoneIndex = (uint)vs.i[i];
+		float fWeight   = vs.w[i];
 
 		vAnim += mul(vLocal, g_matAnim[iBoneIndex])*fWeight;
 		vNormal += mul(vs.n, g_matAnim[iBoneIndex])*fWeight;		
@@ -36,7 +36,8 @@ VS_Out VS( PNCTIW_In vs)
 	float4 vProj = mul(vView, g_matProj);
 	vsOut.p = vProj;
 	vsOut.n = vNormal;
-	vsOut.c = g_fData.z / 30.0f;
+	//vsOut.c = g_fData.z / 30.0f;
+	vsOut.c = vs.i[0] / 30.0f;
 	vsOut.c.a = 1.0f;
 	vsOut.t = vs.t;
 	return vsOut;
@@ -45,7 +46,7 @@ PS_Out PS( VS_Out PS_In)
 {
 	PS_Out psOut = (PS_Out)0;
 	float4 texColor = g_txDiffuseA.Sample(sample,PS_In.t);
-	psOut.c = texColor;//PS_In.c;
+	psOut.c = PS_In.c;
 	psOut.c.a = 1.0f;
 	return psOut;
 }

@@ -167,7 +167,7 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 		actor->m_SubChilds.resize(iNumMtl);
 		for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
 		{
-			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();
+			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();			
 		}
 	}
 	for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)

@@ -4,7 +4,7 @@ void UMaterial::Load(std::wstring shaderfilename,
 {
 	m_pShader = I_Shader.Load(shaderfilename);
 	m_pTexture = I_Tex.Load(texturefilename);
-	m_pInputLayout = I_InputLayout.GetPtr(L"PNCT_IW");
+	m_pInputLayout = I_InputLayout.GetPtr(L"PNCT");
 }
 void UMaterial::SetShader(TShader* pShader)
 {
