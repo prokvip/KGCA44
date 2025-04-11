@@ -67,6 +67,7 @@ void   UPrimitiveComponent::Render()
 {
 	for (auto child : m_SubChilds)
 	{
+		if (child->m_bRenderMesh == false) continue;
 		child->Render();
 	}
 	PreRender();

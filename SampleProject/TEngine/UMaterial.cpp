@@ -14,3 +14,8 @@ void UMaterial::SetTexture(TTexture* pTexture)
 {
 	m_pTexture = pTexture;
 }
+
+void UMaterial::SetInputLayout(TInputLayout* pInputLayout)
+{
+	m_pInputLayout = pInputLayout;
+}

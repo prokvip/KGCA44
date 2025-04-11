@@ -59,7 +59,7 @@ void Sample::Init()
 								texPath += child->m_csTextures[0];
 							}
 
-							pMaterial->Load(L"../../data/shader/object.txt", texPath);
+							pMaterial->Load(L"../../data/shader/Character.txt", texPath);
 							child->SetMaterial(pMaterial);
 							// iw
 							child->m_vIWList.resize(child->m_vVertexList.size());
@@ -73,8 +73,8 @@ void Sample::Init()
 
 							if (pMaterial->m_pShader)
 							{
-								pMaterial->m_pInputLayout = I_InputLayout.Load(
-									pMaterial->m_pShader->m_pCode.Get(), layoutiw, iNumCnt, L"PNCT_IW");
+								pMaterial->SetInputLayout(I_InputLayout.Load(
+									pMaterial->m_pShader->m_pCode.Get(), layoutiw, iNumCnt, L"PNCT_IW"));
 							}
 						}
 
@@ -84,31 +84,35 @@ void Sample::Init()
 						for (int iSubMaterial = 0;iSubMaterial < child->m_SubChilds.size();iSubMaterial++)
 						{
 							auto sub = child->m_SubChilds[iSubMaterial];							
-							if (sub->m_vVertexList.size() > 0)
+							if (sub->m_vVertexList.size() == 0)
 							{
-								sub->m_vIWList.resize(sub->m_vVertexList.size());
-								for (int i = 0; i < sub->m_vVertexList.size(); i++)
-								{
-									sub->m_vIWList[i].i[0] = iMesh;
-									sub->m_vIWList[i].w[0] = 1.0f;
-								}
-								sub->CreateVertexBuffer();
-								sub->CreateIndexBuffer();
-
-								auto pMaterial = std::make_shared<UMaterial>();
-								std::wstring texPath = L"../../data/fbx/";
-								if (child->m_csTextures[iSubMaterial].empty() == false)
-								{
-									texPath += child->m_csTextures[iSubMaterial];
-									pMaterial->Load(L"../../data/shader/Character.txt", texPath);	
-									sub->SetMaterial(pMaterial);
-								}
-								if (pMaterial->m_pShader)
-								{
-									pMaterial->m_pInputLayout = I_InputLayout.Load(
-										pMaterial->m_pShader->m_pCode.Get(), layoutiw, iNumCnt, L"PNCT_IW");
-								}
+								sub->m_bRenderMesh = false;
+								continue;
 							}
+							
+							sub->m_vIWList.resize(sub->m_vVertexList.size());
+							for (int i = 0; i < sub->m_vVertexList.size(); i++)
+							{
+								sub->m_vIWList[i].i[0] = iMesh;
+								sub->m_vIWList[i].w[0] = 1.0f;
+							}
+							sub->CreateVertexBuffer();
+							sub->CreateIndexBuffer();
+
+							auto pMaterial = std::make_shared<UMaterial>();
+							std::wstring texPath = L"../../data/fbx/";
+							if (child->m_csTextures[iSubMaterial].empty() == false)
+							{
+								texPath += child->m_csTextures[iSubMaterial];
+								pMaterial->Load(L"../../data/shader/Character.txt", texPath);	
+								
+							}
+							if (pMaterial->m_pShader)
+							{
+								pMaterial->SetInputLayout(I_InputLayout.Load(
+									pMaterial->m_pShader->m_pCode.Get(), layoutiw, iNumCnt, L"PNCT_IW"));
+							}
+							sub->SetMaterial(pMaterial);
 						}
 					}
 				}
