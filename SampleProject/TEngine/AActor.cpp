@@ -30,6 +30,15 @@ bool	AActor::CreateConstantBuffer()
 	{
 		return false;
 	}
+	/// 에니메이션 행렬(현재 프레임)
+	bd.ByteWidth = sizeof(cbAnimData);
+	sd.pSysMem = &m_cbAnimData;
+	hr = TDevice::m_pd3dDevice->CreateBuffer(
+		&bd, &sd, m_pCurrentAnimationCB.GetAddressOf());
+	if (FAILED(hr))
+	{
+		return false;
+	}
 	return true;
 }
 void AActor::Init() 
@@ -39,6 +48,19 @@ void AActor::Init()
 void AActor::Tick() 
 {
 	if (Mesh != nullptr) Mesh->Tick();
+	if (Mesh != nullptr)
+	{
+		m_fFrame += g_fSPF * 30 * 1.0f;
+		if (m_fFrame >= 50) m_fFrame = 0;
+		for (int iChild=0; iChild < Mesh->m_Childs.size(); iChild++)
+		{			
+			m_CurrentAnimMatrix[iChild] = Mesh->m_Childs[iChild]->m_AnimList[(int)m_fFrame];
+			m_cbAnimData.matBone[iChild] = TMatrix::Transpose(m_CurrentAnimMatrix[iChild]);
+		}	
+		TDevice::m_pd3dContext->UpdateSubresource(
+			m_pCurrentAnimationCB.Get(), 0, NULL, &m_cbAnimData, 0, 0);
+
+	}
 }
 void AActor::PreRender()
 {
@@ -51,26 +73,25 @@ void AActor::PostRender()
 {	
 	// 0번 레지스터에 셰이더상수 m_pConstantBuffer를 연결
 	TDevice::m_pd3dContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
+	TDevice::m_pd3dContext->VSSetConstantBuffers(2, 1, m_pCurrentAnimationCB.GetAddressOf());
 	if (Mesh != nullptr)
-	{		
-		m_fFrame += g_fSPF * 30 * 1.0f;
-		if (m_fFrame >= 30) m_fFrame = 0;
-
-		for (auto child : Mesh->m_Childs)
+	{	
+		//for (auto child : Mesh->m_Childs)
+		for( int iChild=0; iChild < Mesh->m_Childs.size(); iChild++)
 		{
-			auto mesh = child;
-			if (mesh != nullptr && mesh->m_AnimList.size() > 0)
+			m_cbData.vData.z = iChild;
+			m_cbData.vData.w = 1.0f;
+
+			auto mesh = Mesh->m_Childs[iChild];
+			if (mesh->m_bRenderMesh)
 			{
-				TMatrix world =	mesh->m_AnimList[(int)m_fFrame] * m_matWorld;
-				m_cbData.matWorld = TMatrix::Transpose(world);
-
-				TDevice::m_pd3dContext->UpdateSubresource(
-					m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
-
+				//TMatrix world = m_CurrentAnimMatrix[iChild] * m_matWorld;
+				m_cbData.matWorld = TMatrix::Transpose(m_matWorld);
+				TDevice::m_pd3dContext->UpdateSubresource(m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
+				mesh->Render();
 			}
-			child->Render();
 		}
-		Mesh->Render();
+		//Mesh->Render();
 	}
 	
 }

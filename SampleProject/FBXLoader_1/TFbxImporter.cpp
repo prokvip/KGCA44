@@ -55,14 +55,35 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 	auto tFbxNodeRoot = std::make_shared<TFbxNodeTree>(m_pRootNode);
 	PreProcess(tFbxNodeRoot);
 
-	auto mesh = std::make_shared<UStaticMeshComponent>();
+
+	//UStaticMeshComponent : fbxfile
+	//nodes[10] UPrimitiveComponent
+
+	/*auto mesh = std::make_shared<UStaticMeshComponent>();
 	for (int iMesh = 0; iMesh < m_FbxMeshs.size(); iMesh++)
 	{
 		auto child = std::make_shared<UPrimitiveComponent>();
 		ParseMesh(m_FbxMeshs[iMesh], child.get());
 		mesh->m_Childs.emplace_back(child);
 	}
+	actor->SetMesh(mesh);*/
+
+	auto mesh = std::make_shared<UStaticMeshComponent>();
+	for (auto node : m_FbxNodes)
+	{
+		auto child = std::make_shared<UPrimitiveComponent>();
+		child->m_bRenderMesh = false;
+		if (node->m_bMesh)
+		{
+			child->m_bRenderMesh = true;
+			auto mesh = node->m_pFbxNode->GetMesh();
+			ParseMesh(mesh, child.get());
+		}
+		GetAnimation(node->m_pFbxNode, child.get());
+		mesh->m_Childs.emplace_back(child);		
+	}
 	actor->SetMesh(mesh);
+
 	Destroy();
 	return true;
 }
@@ -109,7 +130,7 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	normalMatrix = normalMatrix.Inverse();
 	normalMatrix = normalMatrix.Transpose();
 
-	GetAnimation(pNode, actor);
+	//GetAnimation(pNode, actor);
 
 	// 레이어 ( 1번에 랜더링, 여러번에 걸쳐서 랜더링 개념)
 	std::vector<FbxLayerElementUV*>				VertexUVSet;

@@ -20,6 +20,18 @@ bool	UPrimitiveComponent::CreateVertexBuffer()
 	{
 		return false;
 	}
+	if (m_vIWList.size() == 0)
+	{
+		m_vIWList.resize(m_vVertexList.size());
+	}
+	bd.ByteWidth = sizeof(IW_VERTEX) * m_vVertexList.size();
+	sd.pSysMem = &m_vIWList.at(0);
+	hr = TDevice::m_pd3dDevice->CreateBuffer(
+		&bd, &sd, m_pVertexIWBubber.GetAddressOf());
+	if (FAILED(hr))
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -72,27 +84,24 @@ void	UPrimitiveComponent::PreRender()
 	{
 		if (m_pMaterial->m_pTexture)
 		{
-			TDevice::m_pd3dContext->PSSetShaderResources(
-				0, 1, &m_pMaterial->m_pTexture->m_pTexSRV);
+			TDevice::m_pd3dContext->PSSetShaderResources(0, 1, &m_pMaterial->m_pTexture->m_pTexSRV);
 		}
-
-		TDevice::m_pd3dContext->VSSetShader(
-			m_pMaterial->m_pShader->m_pVertexShader.Get(), nullptr, 0);
-		TDevice::m_pd3dContext->PSSetShader(
-			m_pMaterial->m_pShader->m_pPixelShader.Get(), nullptr, 0);
-		TDevice::m_pd3dContext->IASetInputLayout(
-			m_pMaterial->m_pInputLayout->Get());
+		TDevice::m_pd3dContext->VSSetShader(m_pMaterial->m_pShader->m_pVertexShader.Get(), nullptr, 0);
+		TDevice::m_pd3dContext->PSSetShader(m_pMaterial->m_pShader->m_pPixelShader.Get(), nullptr, 0);
+		TDevice::m_pd3dContext->IASetInputLayout(m_pMaterial->m_pInputLayout->Get());
 	}
 	// 정점버퍼에서 Offsets에서 시작하여
 	// Strides크기로 정점을 정점쉐이더로 전달해라.
-	UINT Strides = sizeof(PNCT_VERTEX);
-	UINT Offsets = 0;
+	UINT Strides[2] = { sizeof(PNCT_VERTEX), sizeof(IW_VERTEX)};
+	UINT Offsets[2] = { 0,0 };
+	ID3D11Buffer* pVB[2] = { m_pVertexBuffer.Get(), 
+							 m_pVertexIWBubber.Get() };
 	TDevice::m_pd3dContext->IASetVertexBuffers(
 		0,
-		1,
-		m_pVertexBuffer.GetAddressOf(),
-		&Strides,
-		&Offsets);
+		2,
+		pVB,
+		Strides,
+		Offsets);
 	TDevice::m_pd3dContext->IASetIndexBuffer(
 		m_pIndexBuffer.Get(),
 		DXGI_FORMAT_R32_UINT, 0);

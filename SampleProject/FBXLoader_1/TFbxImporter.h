@@ -35,7 +35,6 @@ public:
 	TMatrix     ConvertAMatrix(FbxAMatrix& m);
 public:
 	bool  Load(std::string loadfile, AActor* actor);
-	//void  PreProcess(FbxNode* pParentNode, FbxNode* pNode);
 	void  PreProcess(tFbxTree& pParentNode);
 	void  ParseMesh(FbxMesh* fbxmesh, UPrimitiveComponent* actor);
 	void ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,

@@ -31,17 +31,13 @@ struct PNCT_VERTEX
 		this->t = t;
 	}
 };
-struct IW_Vertex
+struct IW_VERTEX
 {
-	float	w0[4];// W0, fW1, fW2, fW3;
-	float	i0[4];	// I0, I1, I2, I3
-	float	w1[4];// W4, fW5, fW6, fNumWeight;	
-	float	i1[4];	// I4, I5, I6, I7
-	IW_Vertex()
+	float	w[4];// W0, fW1, fW2, fNumWeight;
+	float	i[4];// I0, I1, I2, I3
+	IW_VERTEX()
 	{
-		i0[3] = i0[2] = i0[1] = i0[0] = 0.0f;
-		w0[3] = w0[2] = w0[1] = w0[0] = 0.0f;
-		i1[3] = i1[2] = i1[1] = i1[0] = 0.0f;
-		w1[3] = w1[2] = w1[1] = w1[0] = 0.0f;
+		i[3] = i[2] = i[1] = i[0] = 0.0f;
+		w[3] = w[2] = w[1] = w[0] = 0.0f;		
 	}
 };

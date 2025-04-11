@@ -153,6 +153,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\data\shader\Character.txt" />
     <Text Include="..\..\data\shader\object.txt" />
     <Text Include="..\..\data\shader\pnct.txt">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

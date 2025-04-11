@@ -1,11 +1,17 @@
-#pragma once
+#define MAX_BONE 250
 // »ó¼ö	
 cbuffer cb0 : register(b0)
 {
 	matrix g_matWorld;
 	matrix g_matView;
 	matrix g_matProj;
-}
+	float4 g_fData;
+};
+
+cbuffer cbAnim : register(b2)
+{
+	matrix g_matAnim[MAX_BONE];
+};
 struct VS_In
 {
 	float3 p : POS;

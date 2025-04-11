@@ -7,6 +7,7 @@ void   UStaticMeshComponent::Init()
 }
 void   UStaticMeshComponent::Tick()
 {
+
 };
 void   UStaticMeshComponent::Destroy()
 {
