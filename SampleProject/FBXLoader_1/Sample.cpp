@@ -5,7 +5,7 @@ void Sample::Init()
 {
 	std::vector<std::string> list =
 	{
-		//{"../../data/fbx/SKM_Manny.fbx"},		
+		{"../../data/fbx/SKM_Manny.fbx"},		
 		{"../../data/fbx/Turret_Deploy1.fbx"},
 		//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
 		/*{"../../data/fbx/box.fbx"},
@@ -60,17 +60,9 @@ void Sample::Init()
 							}
 
 							pMaterial->Load(L"../../data/shader/Character.txt", texPath);
-							child->SetMaterial(pMaterial);
-							// iw
-							child->m_vIWList.resize(child->m_vVertexList.size());
-							for (int i = 0; i < child->m_vVertexList.size(); i++)
-							{
-								child->m_vIWList[i].i[0] = iMesh;
-								child->m_vIWList[i].w[0] = 1.0f;
-							}
+							child->SetMaterial(pMaterial);					
 							child->CreateVertexBuffer();
 							child->CreateIndexBuffer();
-
 							if (pMaterial->m_pShader)
 							{
 								pMaterial->SetInputLayout(I_InputLayout.Load(

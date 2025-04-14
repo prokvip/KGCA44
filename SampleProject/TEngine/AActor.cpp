@@ -51,7 +51,7 @@ void AActor::Tick()
 	if (Mesh != nullptr)
 	{
 		m_fFrame += g_fSPF * 30 * 1.0f;
-		if (m_fFrame >= 50) m_fFrame = 0;
+		if (m_fFrame >= m_iEndFrame) m_fFrame = m_iStartFrame;
 		for (int iChild=0; iChild < Mesh->m_Childs.size(); iChild++)
 		{			
 			m_CurrentAnimMatrix[iChild] = Mesh->m_Childs[iChild]->m_AnimList[(int)m_fFrame];

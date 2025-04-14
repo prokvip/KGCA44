@@ -33,6 +33,8 @@ public:
 	TMatrix m_matWorld;
 	cbData  m_cbData;
 	cbAnimData m_cbAnimData;
+	UINT    m_iStartFrame;
+	UINT    m_iEndFrame;
 	float   m_fFrame = 0.0f;
 	std::shared_ptr<UStaticMeshComponent> Mesh;
 	ComPtr<ID3D11Buffer>  m_pConstantBuffer = nullptr;
