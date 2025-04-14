@@ -81,10 +81,9 @@ void AActor::PostRender()
 		{
 			m_cbData.vData.z = iChild;
 			m_cbData.vData.w = 1.0f;
-
-			auto mesh = Mesh->m_Childs[iChild];
+			auto mesh = Mesh->m_Childs[iChild];		
 			if (mesh->m_bRenderMesh)
-			{
+			{			
 				//TMatrix world = m_CurrentAnimMatrix[iChild] * m_matWorld;
 				m_cbData.matWorld = TMatrix::Transpose(m_matWorld);
 				TDevice::m_pd3dContext->UpdateSubresource(m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);

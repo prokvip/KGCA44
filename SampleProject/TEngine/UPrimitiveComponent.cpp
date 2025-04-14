@@ -27,7 +27,7 @@ bool	UPrimitiveComponent::CreateVertexBuffer()
 	bd.ByteWidth = sizeof(IW_VERTEX) * m_vVertexList.size();
 	sd.pSysMem = &m_vIWList.at(0);
 	hr = TDevice::m_pd3dDevice->CreateBuffer(
-		&bd, &sd, m_pVertexIWBubber.GetAddressOf());
+		&bd, &sd, m_pVertexIWBuffer.GetAddressOf());
 	if (FAILED(hr))
 	{
 		return false;
@@ -96,7 +96,7 @@ void	UPrimitiveComponent::PreRender()
 	UINT Strides[2] = { sizeof(PNCT_VERTEX), sizeof(IW_VERTEX)};
 	UINT Offsets[2] = { 0,0 };
 	ID3D11Buffer* pVB[2] = { m_pVertexBuffer.Get(), 
-							 m_pVertexIWBubber.Get() };
+							 m_pVertexIWBuffer.Get() };
 	TDevice::m_pd3dContext->IASetVertexBuffers(
 		0,
 		2,

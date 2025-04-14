@@ -15,7 +15,7 @@ public:
 public:
 	ComPtr<ID3D11Buffer>		m_pVertexBuffer = nullptr;	
 	std::vector<PNCT_VERTEX>	m_vVertexList;
-	ComPtr<ID3D11Buffer>		m_pVertexIWBubber = nullptr;
+	ComPtr<ID3D11Buffer>		m_pVertexIWBuffer = nullptr;
 	std::vector<IW_VERTEX>		m_vIWList;
 
 	ComPtr<ID3D11Buffer>		m_pIndexBuffer = nullptr;

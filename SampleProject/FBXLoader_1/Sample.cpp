@@ -101,7 +101,7 @@ void Sample::Init()
 
 							auto pMaterial = std::make_shared<UMaterial>();
 							std::wstring texPath = L"../../data/fbx/";
-							if (child->m_csTextures[iSubMaterial].empty() == false)
+							//if (child->m_csTextures[iSubMaterial].empty() == false)
 							{
 								texPath += child->m_csTextures[iSubMaterial];
 								pMaterial->Load(L"../../data/shader/Character.txt", texPath);	
