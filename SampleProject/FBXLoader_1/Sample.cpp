@@ -5,8 +5,9 @@ void Sample::Init()
 {
 	std::vector<std::string> list =
 	{
+		{"../../data/fbx/Man.fbx"},
 		{"../../data/fbx/SKM_Manny.fbx"},		
-		{"../../data/fbx/Turret_Deploy1.fbx"},
+		//{"../../data/fbx/Turret_Deploy1.fbx"},
 		//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
 		/*{"../../data/fbx/box.fbx"},
 		{"../../data/fbx/SM_Barrel.fbx"},
@@ -35,6 +36,7 @@ void Sample::Init()
 		m_FbxObjs[iObj]->Init();
 
 		auto fbxobj = m_FbxObjs[iObj].get();
+		m_FbxImporter.reset();
 		if (m_FbxImporter.Load(list[iObj], fbxobj))
 		{
 			// 몇개의 오브젝트가 있느냐?

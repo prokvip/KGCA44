@@ -1,4 +1,8 @@
 #include "TFbxImporter.h"
+void  TFbxImporter::reset()
+{
+	Destroy();	
+}
 bool    TFbxImporter::ParseMeshSkinning(FbxMesh* fbxmesh,
 	UPrimitiveComponent* actor)
 {
@@ -26,6 +30,18 @@ bool    TFbxImporter::ParseMeshSkinning(FbxMesh* fbxmesh,
 			{
 				iWeightIndex = iter->second;
 			}
+
+			/// 본 오브젝트의 좌표계 변환 행렬
+			FbxAMatrix matXBindPosLink;
+			FbxAMatrix matReferenceGlobalInitPosition;
+			pCluster->GetTransformLinkMatrix(matXBindPosLink);
+			pCluster->GetTransformMatrix(matReferenceGlobalInitPosition);
+			FbxAMatrix matWorldBindPose = matReferenceGlobalInitPosition.Inverse() * matXBindPosLink;
+			FbxAMatrix matBindPose = matWorldBindPose.Inverse(); // 본의 로컬 좌표계로 변환
+			TMatrix mat = DxConvertMatrix(ConvertAMatrix(matBindPose));			
+			actor->m_matBindPose.emplace_back(mat);
+			actor->m_matID.emplace_back(iWeightIndex);
+
 			int iClusterSize = pCluster->GetControlPointIndicesCount();
 			int* pFbxNodeIndex = pCluster->GetControlPointIndices();
 			double* pFbxNodeWegiht = pCluster->GetControlPointWeights();
@@ -103,19 +119,22 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 	actor->SetMesh(mesh);*/
 
 	auto mesh = std::make_shared<UStaticMeshComponent>();
-	//for (auto node : m_FbxNodes)
+	// 케릭터 당 m_matBindPose 행렬리스트
+	mesh->m_matBindPose.resize(m_FbxNodes.size());
 	for (int iNode = 0; iNode < m_FbxNodes.size(); iNode++)
 	{		
 		auto node = m_FbxNodes[iNode];		
 		auto child = std::make_shared<UPrimitiveComponent>();
 		node->m_iIndex = child->m_iIndex = iNode;
-		child->m_bRenderMesh = false;
+		child->m_bRenderMesh = false;		
 		if (node->m_bMesh)
 		{
 			child->m_bRenderMesh = true;
 			auto mesh = node->m_pFbxNode->GetMesh();
+			// 메쉬 당 m_matBindPose 행렬리스트
 			ParseMesh(mesh, child.get());
 		}
+	
 		GetNodeAnimation(node->m_pFbxNode, child.get());
 		mesh->m_Childs.emplace_back(child);		
 	}
@@ -377,6 +396,8 @@ void TFbxImporter::Destroy()
 	m_pManager = nullptr;
 	m_FbxMeshs.clear();
 	m_FbxNodes.clear();
+	m_matBindPose.clear();
+	m_FbxNodeNames.clear();	
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,

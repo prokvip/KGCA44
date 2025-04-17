@@ -21,7 +21,10 @@ public:
 	ComPtr<ID3D11Buffer>		m_pIndexBuffer = nullptr;
 	std::vector<DWORD>			m_vIndexList;
 
+	UINT						m_iIndex = 0;	
 	std::vector<TMatrix>		m_AnimList;
+	std::vector<TMatrix>	    m_matBindPose;
+	std::vector<UINT>			m_matID;
 	//ComPtr<ID3D11Buffer>        m_pConstantBuffer = nullptr;
 public:
 	bool	CreateVertexBuffer();
