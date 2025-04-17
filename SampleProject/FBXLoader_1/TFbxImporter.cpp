@@ -378,6 +378,30 @@ void  TFbxImporter::PreProcess(tFbxTree& pParentNode)
 	for (int iNode = 0; iNode < iNumChild; iNode++)
 	{
 		FbxNode* pChild = node->GetChild(iNode);
+		// 헬퍼오브젝트 + 지오메트리 오브젝트
+		//if (pChild->GetNodeAttribute() != nullptr)
+		//{
+		//	FbxNodeAttribute::EType type = pChild->GetNodeAttribute()->GetAttributeType();
+		//	if (/*type == FbxNodeAttribute::eMesh ||*/
+		//		type == FbxNodeAttribute::eSkeleton 
+		//		/*type == FbxNodeAttribute::eNull*/)
+		//	{
+		//		auto tFbxChildTree = std::make_shared<TFbxNodeTree>(pChild);
+		//		tFbxChildTree->m_szName = to_mw(pChild->GetName());
+		//		tFbxChildTree->m_pFbxParentNode = node;
+		//		pParentNode->m_Childs.emplace_back(tFbxChildTree);
+		//		tFbxChildTree->m_szParentName = pParentNode->m_szName;
+		//		PreProcess(tFbxChildTree);
+		//	}
+		//}else
+		//{
+		//	auto tFbxChildTree = std::make_shared<TFbxNodeTree>(pChild);
+		//	tFbxChildTree->m_szName = to_mw(pChild->GetName());
+		//	tFbxChildTree->m_pFbxParentNode = node;
+		//	pParentNode->m_Childs.emplace_back(tFbxChildTree);
+		//	tFbxChildTree->m_szParentName = pParentNode->m_szName;
+		//	PreProcess(tFbxChildTree);			
+		//}
 		auto tFbxChildTree = std::make_shared<TFbxNodeTree>(pChild);
 		tFbxChildTree->m_szName = to_mw(pChild->GetName());
 		tFbxChildTree->m_pFbxParentNode = node;

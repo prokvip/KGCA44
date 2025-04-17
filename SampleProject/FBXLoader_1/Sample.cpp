@@ -5,6 +5,7 @@ void Sample::Init()
 {
 	std::vector<std::string> list =
 	{
+		//{"../../data/fbx/MM_Idle.fbx"},
 		{"../../data/fbx/Man.fbx"},
 		{"../../data/fbx/SKM_Manny.fbx"},		
 		//{"../../data/fbx/Turret_Deploy1.fbx"},
