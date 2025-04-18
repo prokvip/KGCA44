@@ -3,18 +3,23 @@
 
 void Sample::Init()
 {
+	//std::vector<std::string> list =
+	//{
+	//	//{"../../data/fbx/Turret_Deploy1.fbx"},
+	//	//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
+	//	/*{"../../data/fbx/box.fbx"},
+	//	{"../../data/fbx/SM_Barrel.fbx"},
+	//	{"../../data/fbx/sphereBox.fbx"},
+	//	{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
+	//	{"../../data/fbx/ship/ship.fbx"},*/
+	//};
 	std::vector<std::string> list =
-	{
-		//{"../../data/fbx/MM_Idle.fbx"},
-		{"../../data/fbx/Man.fbx"},
-		{"../../data/fbx/SKM_Manny.fbx"},		
-		//{"../../data/fbx/Turret_Deploy1.fbx"},
-		//{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
-		/*{"../../data/fbx/box.fbx"},
-		{"../../data/fbx/SM_Barrel.fbx"},
-		{"../../data/fbx/sphereBox.fbx"},
-		{"../../data/fbx/MultiCamera/MultiCameras.fbx"},
-		{"../../data/fbx/ship/ship.fbx"},*/
+	{		
+		{"../../data/fbx/SKM_Manny.fbx"},
+		{"../../data/fbx/MM_Idle.fbx"},
+		/*{"../../data/fbx/MM_run.fbx"},
+		{"../../data/fbx/MM_walk.fbx"},
+		{"../../data/fbx/Man.fbx"},	*/	
 	};
 
 	D3D11_INPUT_ELEMENT_DESC layoutiw[] =
@@ -114,6 +119,9 @@ void Sample::Init()
 			}
 		}
 	}
+
+	m_FbxObjs[0]->m_pCurrentAnimation = m_FbxObjs[1].get();
+		;
 	//g_pCamera->m_fPitch = T_Pi * 0.25f;
 	g_pCamera->CreateViewMatrix(
 		{ 0, 0, -100.0f },
@@ -125,20 +133,22 @@ void Sample::Init()
 void Sample::Tick()
 {
 	int index = 0;
-	for (auto obj : m_FbxObjs)
-	{
-		//obj->m_vPosition = { -200.0f + 100.0f * index++,0,0 };
-		obj->m_vPosition = { 0,0,0 };
-		//obj->m_vRotation.y = g_fGT;
-		obj->Tick();
-	}
+	m_FbxObjs[0]->Tick();
+	//for (auto obj : m_FbxObjs)
+	//{
+	//	//obj->m_vPosition = { -200.0f + 100.0f * index++,0,0 };
+	//	obj->m_vPosition = { 0,0,0 };
+	//	//obj->m_vRotation.y = g_fGT;
+	//	obj->Tick();
+	//}
 }
 void Sample::Render() {
 
-	for (auto obj : m_FbxObjs)
+	m_FbxObjs[0]->Render();
+	/*for (auto obj : m_FbxObjs)
 	{
 		obj->Render();
-	}
+	}*/
 }
 void Sample::Release()
 {

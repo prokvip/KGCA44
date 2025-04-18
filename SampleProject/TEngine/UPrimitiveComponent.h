@@ -22,6 +22,9 @@ public:
 	std::vector<DWORD>			m_vIndexList;
 
 	UINT						m_iIndex = 0;	
+	std::map<std::wstring, UINT>  m_FbxNodeNames;
+	std::map<UINT, std::wstring>  m_FbxNameNodes;
+	std::vector<std::wstring>		m_szNames;
 	std::vector<TMatrix>		m_AnimList;
 	std::vector<TMatrix>	    m_matBindPose;
 	std::vector<UINT>			m_matID;

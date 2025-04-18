@@ -41,6 +41,7 @@ bool    TFbxImporter::ParseMeshSkinning(FbxMesh* fbxmesh,
 			TMatrix mat = DxConvertMatrix(ConvertAMatrix(matBindPose));			
 			actor->m_matBindPose.emplace_back(mat);
 			actor->m_matID.emplace_back(iWeightIndex);
+			actor->m_szNames.emplace_back(to_mw(pLinkNode->GetName()));
 
 			int iClusterSize = pCluster->GetControlPointIndicesCount();
 			int* pFbxNodeIndex = pCluster->GetControlPointIndices();
@@ -123,7 +124,7 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 	mesh->m_matBindPose.resize(m_FbxNodes.size());
 	for (int iNode = 0; iNode < m_FbxNodes.size(); iNode++)
 	{		
-		auto node = m_FbxNodes[iNode];		
+		auto node = m_FbxNodes[iNode];	
 		auto child = std::make_shared<UPrimitiveComponent>();
 		node->m_iIndex = child->m_iIndex = iNode;
 		child->m_bRenderMesh = false;		
@@ -134,10 +135,13 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 			// 메쉬 당 m_matBindPose 행렬리스트
 			ParseMesh(mesh, child.get());
 		}
-	
+		child->m_szName = node->m_szName;
+		
 		GetNodeAnimation(node->m_pFbxNode, child.get());
 		mesh->m_Childs.emplace_back(child);		
 	}
+	mesh->m_FbxNodeNames = m_FbxNodeNames;
+	mesh->m_FbxNameNodes = m_FbxNameNodes;
 	actor->SetMesh(mesh);
 
 	Destroy();
@@ -373,7 +377,9 @@ void  TFbxImporter::PreProcess(tFbxTree& pParentNode)
 	}
 	m_FbxNodes.emplace_back(pParentNode);
 	m_FbxNodeNames.insert(std::make_pair(to_mw(node->GetName()),
-						  m_FbxNodeNames.size()));
+						   m_FbxNodeNames.size()));
+	m_FbxNameNodes.insert(std::make_pair(m_FbxNodeNames.size()-1,
+							to_mw(node->GetName())));
 	int iNumChild = node->GetChildCount();
 	for (int iNode = 0; iNode < iNumChild; iNode++)
 	{
@@ -421,7 +427,7 @@ void TFbxImporter::Destroy()
 	m_FbxMeshs.clear();
 	m_FbxNodes.clear();
 	m_matBindPose.clear();
-	m_FbxNodeNames.clear();	
+	m_FbxNodeNames.clear();		
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,

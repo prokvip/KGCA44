@@ -3,5 +3,7 @@
 class AActor;
 class UActorComponent
 {
+public:
+	std::wstring m_szName;
 };
 

@@ -37,6 +37,10 @@ public:
 	UINT    m_iEndFrame;
 	float   m_fFrame = 0.0f;
 	std::shared_ptr<UStaticMeshComponent> Mesh;
+	AActor*								  m_pCurrentAnimation = nullptr;		
+	std::shared_ptr<AActor>				  Idle;
+	std::shared_ptr<AActor>				  run;
+	std::shared_ptr<AActor>				  walk;
 	ComPtr<ID3D11Buffer>  m_pConstantBuffer = nullptr;
 	ComPtr<ID3D11Buffer>  m_pCurrentAnimationCB = nullptr;
 public:	

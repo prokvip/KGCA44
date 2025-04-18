@@ -48,28 +48,23 @@ void AActor::Init()
 void AActor::Tick() 
 {
 	if (Mesh != nullptr) Mesh->Tick();
-	//if (Mesh != nullptr)
+	//if (m_pCurrentAnimation != nullptr)
 	//{
 	//	m_fFrame += g_fSPF * 30 * 1.0f;
 	//	if (m_fFrame >= m_iEndFrame) m_fFrame = m_iStartFrame;
-	//	for (int iChild=0; iChild < Mesh->m_Childs.size(); iChild++)
-	//	{		
-	//		if (Mesh->m_Childs[iChild]->m_bRenderMesh == false) continue;
-	//		for (int iBone = 0; iBone < Mesh->m_Childs[iChild]->m_matID.size(); iBone++)
+	//	for (int iChild=0; iChild < Mesh->m_Childs.size(); iChild++) // 139
+	//	{				
+	//		auto name = Mesh->m_Childs[iChild]->m_szName;
+	//		auto iter = m_pCurrentAnimation->Mesh->m_FbxNodeNames.find(name);//90
+	//		if (iter != m_pCurrentAnimation->Mesh->m_FbxNodeNames.end())
 	//		{
-	//			UINT iGIndex = Mesh->m_Childs[iChild]->m_matID[iBone];
-	//			TMatrix matBone = Mesh->m_Childs[iChild]->m_matBindPose[iBone];
-
-	//			m_CurrentAnimMatrix[iGIndex] =
-	//				matBone *   /// 본 로칼 좌표계로 변환
-	//				Mesh->m_Childs[iGIndex]->m_AnimList[(int)m_fFrame];// 에니메이션
-	//			m_cbAnimData.matBone[iGIndex] = TMatrix::Transpose(
-	//				m_CurrentAnimMatrix[iGIndex]);				
+	//			auto animIndex = iter->second;
+	//			m_CurrentAnimMatrix[iChild] =
+	//				m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_AnimList[(int)m_fFrame];
 	//		}
-	//		break;
+	//		m_cbAnimData.matBone[iChild] = TMatrix::Transpose(m_CurrentAnimMatrix[iChild]);
 	//	}	
-	//	TDevice::m_pd3dContext->UpdateSubresource(
-	//		m_pCurrentAnimationCB.Get(), 0, NULL, &m_cbAnimData, 0, 0);
+	//	TDevice::m_pd3dContext->UpdateSubresource(m_pCurrentAnimationCB.Get(), 0, NULL, &m_cbAnimData, 0, 0);
 
 	//}
 }
@@ -87,8 +82,16 @@ void AActor::PostRender()
 	TDevice::m_pd3dContext->VSSetConstantBuffers(2, 1, m_pCurrentAnimationCB.GetAddressOf());
 	if (Mesh != nullptr)
 	{	
-		m_fFrame += g_fSPF * 30 * 1.0f;
-		if (m_fFrame >= m_iEndFrame) m_fFrame = m_iStartFrame;
+		m_fFrame += g_fSPF * 30 * 0.0f;
+		//if (m_fFrame >= m_iEndFrame) m_fFrame = m_iStartFrame;
+		if (m_pCurrentAnimation != nullptr)
+		{
+			if (m_fFrame >= m_pCurrentAnimation->m_iEndFrame) m_fFrame = m_iStartFrame;
+		}
+		else
+		{
+			if (m_fFrame >= m_iEndFrame) m_fFrame = m_iStartFrame;
+		}
 
 		//for (auto child : Mesh->m_Childs)
 		for( int iChild=0; iChild < Mesh->m_Childs.size(); iChild++)
@@ -97,26 +100,40 @@ void AActor::PostRender()
 			m_cbData.vData.w = 1.0f;
 			auto mesh = Mesh->m_Childs[iChild];		
 			if (mesh->m_bRenderMesh)
-			{			
+			{
 				for (int iBone = 0; iBone < Mesh->m_Childs[iChild]->m_matID.size(); iBone++)
 				{
 					UINT iGIndex = Mesh->m_Childs[iChild]->m_matID[iBone];
 					TMatrix matBone = Mesh->m_Childs[iChild]->m_matBindPose[iBone];
 
+					auto matAnim = Mesh->m_Childs[iGIndex]->m_AnimList[(int)m_fFrame];
+					if (m_pCurrentAnimation!=nullptr)
+					{
+						auto nameiter = Mesh->m_Childs[iChild]->m_szNames[iBone];
+						auto iter = m_pCurrentAnimation->Mesh->m_FbxNodeNames.find(nameiter);//90
+						if (iter != m_pCurrentAnimation->Mesh->m_FbxNodeNames.end())
+						{
+							auto animIndex = iter->second;
+							auto name1 = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_szName;
+							auto name2 = Mesh->m_Childs[iGIndex]->m_szName;
+							auto name3 = nameiter;
+
+							
+							matAnim =
+								m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_AnimList[(int)m_fFrame];
+						}
+					}
 					m_CurrentAnimMatrix[iGIndex] =
-						matBone *   /// 본 로칼 좌표계로 변환
-						Mesh->m_Childs[iGIndex]->m_AnimList[(int)m_fFrame];// 에니메이션
-					
-					m_cbAnimData.matBone[iGIndex] = TMatrix::Transpose(
-						m_CurrentAnimMatrix[iGIndex]);
+							matBone *   /// 본 로칼 좌표계로 변환
+							matAnim;// 에니메이션
+					m_cbAnimData.matBone[iGIndex] = TMatrix::Transpose(m_CurrentAnimMatrix[iGIndex]);
 				}					
 				
-				TDevice::m_pd3dContext->UpdateSubresource(
-					m_pCurrentAnimationCB.Get(), 0, NULL, &m_cbAnimData, 0, 0);
-
-				//TMatrix world = m_CurrentAnimMatrix[iChild] * m_matWorld;
+				TDevice::m_pd3dContext->UpdateSubresource(m_pCurrentAnimationCB.Get(), 0, NULL, &m_cbAnimData, 0, 0);
 				m_cbData.matWorld = TMatrix::Transpose(m_matWorld);
-				TDevice::m_pd3dContext->UpdateSubresource(m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
+				TDevice::m_pd3dContext->UpdateSubresource(m_pConstantBuffer.Get(), 0, 
+					NULL, &m_cbData, 0, 0);
+
 				mesh->Render();
 			}
 		}

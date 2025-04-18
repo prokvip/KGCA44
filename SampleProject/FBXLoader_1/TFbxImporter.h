@@ -44,6 +44,7 @@ public:
 	std::vector<tFbxTree>  m_FbxNodes;
 	std::vector<TMatrix>   m_matBindPose;
 	std::map<std::wstring, UINT>  m_FbxNodeNames;
+	std::map<UINT, std::wstring>  m_FbxNameNodes;
 	//std::map<FbxNode*, UINT>  m_FbxNodes;
 
 	TMatrix     DxConvertMatrix(TMatrix m);
