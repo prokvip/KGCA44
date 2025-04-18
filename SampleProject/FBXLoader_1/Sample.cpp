@@ -95,12 +95,13 @@ void Sample::Init()
 								continue;
 							}
 							
+							/*  디버그 중복삭제
 							sub->m_vIWList.resize(sub->m_vVertexList.size());
 							for (int i = 0; i < sub->m_vVertexList.size(); i++)
 							{
 								sub->m_vIWList[i].i1[0] = iMesh;
 								sub->m_vIWList[i].w1[0] = 1.0f;
-							}
+							}*/
 							sub->CreateVertexBuffer();
 							sub->CreateIndexBuffer();
 

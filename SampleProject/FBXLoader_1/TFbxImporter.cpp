@@ -226,15 +226,15 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	}
 
 	/// texture filename
-	int iNumMtl = 1;// pNode->GetMaterialCount();
-	/*if (iNumMtl > 1)
+	int iNumMtl =  pNode->GetMaterialCount();
+	if (iNumMtl > 1)
 	{
 		actor->m_SubChilds.resize(iNumMtl);
 		for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
 		{
 			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();			
 		}
-	}*/
+	}
 	for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
 	{
 		FbxSurfaceMaterial* pSurface = pNode->GetMaterial(iMtrl);
