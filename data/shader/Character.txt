@@ -6,8 +6,10 @@ struct PNCTIW_In
 	float4 c : COLOR;
 	float2 t : TEX;
 
-	float4 i : INDEX;
-	float4 w : WEIGHT;
+	float4 i1 : TEXCOORD0;
+	float4 w1 : TEXCOORD1;
+	float4 i2 : TEXCOORD2;
+	float4 w2 : TEXCOORD3;
 };
 // HLSL 상위레벨쉐이더언어
 // POSITION, SV_POSITION 시멘틱(의미구조)
@@ -19,15 +21,27 @@ VS_Out VS( PNCTIW_In vs)
 	float4 vLocal = float4(vs.p, 1.0f);
 	float4 vAnim =0;
 	float4 vNormal =0;
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 8; i++)
 	{
 		//uint iBoneIndex = g_fData.z;
 		//float fWeight   = g_fData.w;		
-		uint iBoneIndex = (uint)vs.i[i];
-		float fWeight   = vs.w[i];
 
-		vAnim += mul(vLocal, g_matAnim[iBoneIndex])*fWeight;
-		vNormal += mul(vs.n, g_matAnim[iBoneIndex])*fWeight;		
+		if( i >= 4) 
+		{
+			uint iBoneIndex = (uint)vs.i2[i-4];
+			float fWeight   = vs.w2[i-4];
+
+			vAnim +=  mul(vLocal, g_matAnim[iBoneIndex]) * fWeight;
+			vNormal +=  mul(vs.n, g_matAnim[iBoneIndex]) * fWeight;	
+		}else
+		{
+			uint iBoneIndex = (uint)vs.i1[i];
+			float fWeight   = vs.w1[i];
+
+			vAnim +=   mul(vLocal, g_matAnim[iBoneIndex]) * fWeight;
+			vNormal +=   mul(vs.n, g_matAnim[iBoneIndex]) * fWeight;	
+		}
+			
 	}
 	// vWorld = vLocal * g_matAnim* g_matWorld
 	float4 vWorld = mul(vAnim, g_matWorld);
@@ -36,8 +50,7 @@ VS_Out VS( PNCTIW_In vs)
 	float4 vProj = mul(vView, g_matProj);
 	vsOut.p = vProj;
 	vsOut.n = vNormal;
-	//vsOut.c = g_fData.z / 30.0f;
-	vsOut.c = vs.i[0] / 30.0f;
+	vsOut.c = g_fData.z / 30.0f;	
 	vsOut.c.a = 1.0f;
 	vsOut.t = vs.t;
 	return vsOut;

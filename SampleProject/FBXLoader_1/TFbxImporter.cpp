@@ -226,15 +226,15 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	}
 
 	/// texture filename
-	int iNumMtl = pNode->GetMaterialCount();
-	if (iNumMtl > 1)
+	int iNumMtl = 1;// pNode->GetMaterialCount();
+	/*if (iNumMtl > 1)
 	{
 		actor->m_SubChilds.resize(iNumMtl);
 		for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
 		{
 			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();			
 		}
-	}
+	}*/
 	for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
 	{
 		FbxSurfaceMaterial* pSurface = pNode->GetMaterial(iMtrl);
@@ -334,16 +334,23 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 					iSubMateriaIndex = GetSubMaterialIndex(iPoly, MaterialSet[0]);
 				}
 				IW_VERTEX iw;
-				iw.i[0] = actor->m_iIndex;
-				iw.w[0] = 1.0f;
+				iw.i1[0] = actor->m_iIndex;
+				iw.w1[0] = 1.0f;
 				if (bSkinned)
 				{
 					TVertexWeight& weight = m_VertexWeights[CornerIndex[index]];
-					for (int i = 0; i < weight.m_iIndex.size(); i++)
+					for (int i = 0; i < weight.m_iCounter; i++)
 					{
-						if (i >= 4) break;
-						iw.i[i] = weight.m_iIndex[i];
-						iw.w[i] = weight.m_fWeight[i];
+						if (i >= 4)
+						{
+							iw.i2[i-4] = weight.m_iIndex[i];
+							iw.w2[i-4] = weight.m_fWeight[i];
+						}
+						else
+						{
+							iw.i1[i] = weight.m_iIndex[i];
+							iw.w1[i] = weight.m_fWeight[i];
+						}
 					}
 				}
 				if (actor->m_SubChilds.size() <= 0)

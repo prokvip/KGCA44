@@ -77,12 +77,10 @@ void AActor::PreRender()
 }
 void AActor::PostRender()
 {	
-	// 0번 레지스터에 셰이더상수 m_pConstantBuffer를 연결
-	TDevice::m_pd3dContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
-	TDevice::m_pd3dContext->VSSetConstantBuffers(2, 1, m_pCurrentAnimationCB.GetAddressOf());
+	
 	if (Mesh != nullptr)
 	{	
-		m_fFrame += g_fSPF * 30 * 0.0f;
+		m_fFrame += g_fSPF * 30 * 1.0f;
 		//if (m_fFrame >= m_iEndFrame) m_fFrame = m_iStartFrame;
 		if (m_pCurrentAnimation != nullptr)
 		{
@@ -105,26 +103,23 @@ void AActor::PostRender()
 				{
 					UINT iGIndex = Mesh->m_Childs[iChild]->m_matID[iBone];
 					TMatrix matBone = Mesh->m_Childs[iChild]->m_matBindPose[iBone];
+					auto nameiter = Mesh->m_Childs[iChild]->m_szNames[iBone];
+					TMatrix matAnim = Mesh->m_Childs[iGIndex]->m_AnimList[0];
 
-					auto matAnim = Mesh->m_Childs[iGIndex]->m_AnimList[(int)m_fFrame];
 					if (m_pCurrentAnimation!=nullptr)
-					{
-						auto nameiter = Mesh->m_Childs[iChild]->m_szNames[iBone];
+					{						
 						auto iter = m_pCurrentAnimation->Mesh->m_FbxNodeNames.find(nameiter);//90
 						if (iter != m_pCurrentAnimation->Mesh->m_FbxNodeNames.end())
 						{
 							auto animIndex = iter->second;
 							auto name1 = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_szName;
 							auto name2 = Mesh->m_Childs[iGIndex]->m_szName;
-							auto name3 = nameiter;
-
-							
-							matAnim =
-								m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_AnimList[(int)m_fFrame];
+							auto name3 = nameiter;							
+							matAnim = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_AnimList[(int)m_fFrame];
 						}
 					}
 					m_CurrentAnimMatrix[iGIndex] =
-							matBone *   /// 본 로칼 좌표계로 변환
+						matBone *   /// 본 로칼 좌표계로 변환
 							matAnim;// 에니메이션
 					m_cbAnimData.matBone[iGIndex] = TMatrix::Transpose(m_CurrentAnimMatrix[iGIndex]);
 				}					
@@ -134,7 +129,11 @@ void AActor::PostRender()
 				TDevice::m_pd3dContext->UpdateSubresource(m_pConstantBuffer.Get(), 0, 
 					NULL, &m_cbData, 0, 0);
 
+				// 0번 레지스터에 셰이더상수 m_pConstantBuffer를 연결
+				TDevice::m_pd3dContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
+				TDevice::m_pd3dContext->VSSetConstantBuffers(2, 1, m_pCurrentAnimationCB.GetAddressOf());
 				mesh->Render();
+				break;
 			}
 		}
 		//Mesh->Render();

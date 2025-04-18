@@ -14,9 +14,12 @@ void Sample::Init()
 	//	{"../../data/fbx/ship/ship.fbx"},*/
 	//};
 	std::vector<std::string> list =
-	{		
+	{				
+		//{"../../data/fbx/Man.fbx"},
+		//{"../../data/fbx/Man.fbx"},
 		{"../../data/fbx/SKM_Manny.fbx"},
 		{"../../data/fbx/MM_Idle.fbx"},
+	
 		/*{"../../data/fbx/MM_run.fbx"},
 		{"../../data/fbx/MM_walk.fbx"},
 		{"../../data/fbx/Man.fbx"},	*/	
@@ -30,8 +33,10 @@ void Sample::Init()
 		{ "COLOR",0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 24,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEX",  0, DXGI_FORMAT_R32G32_FLOAT,			0, 40,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
-		{ "INDEX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "WEIGHT",0, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 16,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",0, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",1, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 16,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",2, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 32,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",3, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 48,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	UINT iNumCnt = sizeof(layoutiw) / sizeof(layoutiw[0]);
 	
@@ -93,8 +98,8 @@ void Sample::Init()
 							sub->m_vIWList.resize(sub->m_vVertexList.size());
 							for (int i = 0; i < sub->m_vVertexList.size(); i++)
 							{
-								sub->m_vIWList[i].i[0] = iMesh;
-								sub->m_vIWList[i].w[0] = 1.0f;
+								sub->m_vIWList[i].i1[0] = iMesh;
+								sub->m_vIWList[i].w1[0] = 1.0f;
 							}
 							sub->CreateVertexBuffer();
 							sub->CreateIndexBuffer();
@@ -121,7 +126,6 @@ void Sample::Init()
 	}
 
 	m_FbxObjs[0]->m_pCurrentAnimation = m_FbxObjs[1].get();
-		;
 	//g_pCamera->m_fPitch = T_Pi * 0.25f;
 	g_pCamera->CreateViewMatrix(
 		{ 0, 0, -100.0f },
