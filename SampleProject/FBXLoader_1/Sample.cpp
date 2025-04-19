@@ -65,7 +65,7 @@ void Sample::Init()
 							std::wstring texPath = L"../../data/fbx/";
 							if (child->m_csTextures.size() == 0)
 							{
-								texPath += L"kgca08.bmp";
+								texPath += L"T_Manny_01_D.PNG";
 							}
 							else
 							{
@@ -93,8 +93,7 @@ void Sample::Init()
 							{
 								sub->m_bRenderMesh = false;
 								continue;
-							}
-							
+							}							
 							/*  디버그 중복삭제
 							sub->m_vIWList.resize(sub->m_vVertexList.size());
 							for (int i = 0; i < sub->m_vVertexList.size(); i++)
@@ -107,16 +106,21 @@ void Sample::Init()
 
 							auto pMaterial = std::make_shared<UMaterial>();
 							std::wstring texPath = L"../../data/fbx/";
-							//if (child->m_csTextures[iSubMaterial].empty() == false)
+							if (child->m_csTextures[iSubMaterial].empty() == false)
 							{
-								texPath += child->m_csTextures[iSubMaterial];
-								pMaterial->Load(L"../../data/shader/Character.txt", texPath);	
-								
+								texPath += child->m_csTextures[iSubMaterial]; 
 							}
+							else
+							{
+								if(iSubMaterial==0) texPath += L"T_Manny_02_D.PNG";
+								else texPath += L"T_Manny_01_D.PNG";
+							}
+							
+							pMaterial->Load(L"../../data/shader/Character.txt", texPath);
+
 							if (pMaterial->m_pShader)
 							{
-								pMaterial->SetInputLayout(I_InputLayout.Load(
-									pMaterial->m_pShader->m_pCode.Get(), layoutiw, iNumCnt, L"PNCT_IW"));
+								pMaterial->SetInputLayout(I_InputLayout.Load(pMaterial->m_pShader->m_pCode.Get(), layoutiw, iNumCnt, L"PNCT_IW"));
 							}
 							sub->SetMaterial(pMaterial);
 						}

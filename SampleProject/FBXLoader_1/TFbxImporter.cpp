@@ -69,6 +69,20 @@ TMatrix     TFbxImporter::DxConvertMatrix(TMatrix m)
 	mat._41 = m._41; mat._42 = m._43; mat._43 = m._42;
 	mat._14 = mat._24 = mat._34 = 0.0f;
 	mat._44 = 1.0f;
+
+
+	TVector3 v0, v1, v2, v3;
+	v0 = { mat.m[0][0], mat.m[0][1], mat.m[0][2] };
+	v1 = { mat.m[1][0], mat.m[1][1], mat.m[1][2] };
+	v2 = { mat.m[2][0], mat.m[2][1], mat.m[2][2] };
+	v3 = v1 ^ v2;// D3DXVec3Cross(&v3, &v1, &v2);
+	if ((v3 | v0) < 0.0f)
+	{
+		TMatrix matNegative;
+		matNegative.Scale(-1.0f, -1.0f, -1.0f);
+		mat = mat * matNegative;
+	}
+
 	return mat;
 }
 TMatrix     TFbxImporter::ConvertAMatrix(FbxAMatrix& m)
@@ -136,12 +150,20 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 			ParseMesh(mesh, child.get());
 		}
 		child->m_szName = node->m_szName;
-		
+		for (int i = 0; mesh->m_Childs.size(); i++)
+		{
+			if (mesh->m_Childs[i]->m_szName == node->m_szParentName)
+			{
+				child->m_pParent = mesh->m_Childs[i].get();
+				break;
+			}			
+		}
 		GetNodeAnimation(node->m_pFbxNode, child.get());
 		mesh->m_Childs.emplace_back(child);		
 	}
 	mesh->m_FbxNodeNames = m_FbxNodeNames;
 	mesh->m_FbxNameNodes = m_FbxNameNodes;
+	mesh->m_FbxParentNameNodes = m_FbxParentNameNodes;
 	actor->SetMesh(mesh);
 
 	Destroy();
@@ -174,7 +196,15 @@ void        TFbxImporter::GetNodeAnimation(
 	{
 		time.SetFrame(t, TimeMode);
 		FbxAMatrix matGlobal = node->EvaluateGlobalTransform(time);
-		TMatrix mat = DxConvertMatrix(ConvertAMatrix(matGlobal));;
+		FbxNode* pParent = node->GetParent();
+		FbxAMatrix matParent;
+		if (pParent)
+		{
+			matParent = pParent->EvaluateGlobalTransform(time);
+		}		
+		FbxAMatrix matLocal = matParent.Inverse() * matGlobal;
+		FbxAMatrix matWorld = matParent * matLocal;
+		TMatrix mat = DxConvertMatrix(ConvertAMatrix(matLocal));;
 		actor->m_AnimList.push_back(mat);
 	}
 }
@@ -226,7 +256,7 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	}
 
 	/// texture filename
-	int iNumMtl =  pNode->GetMaterialCount();
+	int iNumMtl = pNode->GetMaterialCount();
 	if (iNumMtl > 1)
 	{
 		actor->m_SubChilds.resize(iNumMtl);
@@ -387,6 +417,8 @@ void  TFbxImporter::PreProcess(tFbxTree& pParentNode)
 						   m_FbxNodeNames.size()));
 	m_FbxNameNodes.insert(std::make_pair(m_FbxNodeNames.size()-1,
 							to_mw(node->GetName())));
+
+	m_FbxParentNameNodes.insert(std::make_pair(to_mw(node->GetName()), pParentNode->m_szParentName));
 	int iNumChild = node->GetChildCount();
 	for (int iNode = 0; iNode < iNumChild; iNode++)
 	{
@@ -434,7 +466,8 @@ void TFbxImporter::Destroy()
 	m_FbxMeshs.clear();
 	m_FbxNodes.clear();
 	m_matBindPose.clear();
-	m_FbxNodeNames.clear();		
+	m_FbxNodeNames.clear();			
+	m_FbxNameNodes.clear();
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
@@ -601,31 +634,89 @@ FbxVector4 TFbxImporter::ReadNormal(const FbxMesh* mesh,
 
 std::string TFbxImporter::ParseMaterial(FbxSurfaceMaterial* pSurface)
 {
-	auto property = pSurface->FindProperty(FbxSurfaceMaterial::sDiffuse);
-	if (property.IsValid())
+	std::vector<std::string> surfacelist =
 	{
-		//std::string texName;
-		FbxFileTexture* texfile =
-			property.GetSrcObject<FbxFileTexture>(0);
-		if (texfile)
+		"FbxSurfaceMaterial::sShadingModel",
+		"FbxSurfaceMaterial::sMultiLayer",		
+		"FbxSurfaceMaterial::sEmissive",
+		"FbxSurfaceMaterial::sEmissiveFactor",		
+		"FbxSurfaceMaterial::sAmbient",
+		"FbxSurfaceMaterial::sAmbientFactor",		
+		"FbxSurfaceMaterial::sDiffuse",
+		"FbxSurfaceMaterial::sDiffuseFactor",		
+		"FbxSurfaceMaterial::sSpecular",
+		"FbxSurfaceMaterial::sSpecularFactor",
+		"FbxSurfaceMaterial::sShininess",		
+		"FbxSurfaceMaterial::sBump",
+		"FbxSurfaceMaterial::sNormalMap",
+		"FbxSurfaceMaterial::sBumpFactor",		
+		"FbxSurfaceMaterial::sTransparentColor",
+		"FbxSurfaceMaterial::sTransparencyFactor",		
+		"FbxSurfaceMaterial::sReflection",
+		"FbxSurfaceMaterial::sReflectionFactor",		
+		"FbxSurfaceMaterial::sDisplacementColor",
+		"FbxSurfaceMaterial::sDisplacementFactor",		
+		"FbxSurfaceMaterial::sVectorDisplacementColor",
+		"FbxSurfaceMaterial::sVectorDisplacementFactor",
+	};
+	for (auto& str : surfacelist)
+	{
+		FbxProperty prop = pSurface->FindProperty(str.c_str());
+		if (prop.IsValid())
 		{
-			const char* szTexPath = texfile->GetFileName();
-			CHAR Drive[MAX_PATH];
-			CHAR Dir[MAX_PATH];
-			CHAR FName[MAX_PATH];
-			CHAR Ext[MAX_PATH];
-			_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
-			std::string texName = FName;
-			std::string ext = Ext;
-			if (ext == ".tga" || ext == ".TGA")
+			FbxString name = prop.GetName();
+			FbxDataType type = prop.GetPropertyDataType();
+			FbxDouble3 value = prop.Get<FbxDouble3>();
+			FbxDouble4 value4 = prop.Get<FbxDouble4>();
+			FbxDouble value1 = prop.Get<FbxDouble>();
+			FbxBool value2 = prop.Get<FbxBool>();
+
+			FbxFileTexture* texfile = prop.GetSrcObject<FbxFileTexture>(0);
+			if (texfile)
 			{
-				ext.clear();
-				ext = ".dds";
+				const char* szTexPath = texfile->GetFileName();
+				CHAR Drive[MAX_PATH];
+				CHAR Dir[MAX_PATH];
+				CHAR FName[MAX_PATH];
+				CHAR Ext[MAX_PATH];
+				_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
+				std::string texName = FName;
+				std::string ext = Ext;
+				if (ext == ".tga" || ext == ".TGA")
+				{
+					ext.clear();
+					ext = ".dds";
+				}
+				texName += ext;
+				return texName;
 			}
-			texName += ext;
-			return texName;
 		}
 	}
+	//auto property = pSurface->FindProperty(FbxSurfaceMaterial::sDiffuse);
+	//if (property.IsValid())
+	//{
+	//	//std::string texName;
+	//	FbxFileTexture* texfile =
+	//		property.GetSrcObject<FbxFileTexture>(0);
+	//	if (texfile)
+	//	{
+	//		const char* szTexPath = texfile->GetFileName();
+	//		CHAR Drive[MAX_PATH];
+	//		CHAR Dir[MAX_PATH];
+	//		CHAR FName[MAX_PATH];
+	//		CHAR Ext[MAX_PATH];
+	//		_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
+	//		std::string texName = FName;
+	//		std::string ext = Ext;
+	//		if (ext == ".tga" || ext == ".TGA")
+	//		{
+	//			ext.clear();
+	//			ext = ".dds";
+	//		}
+	//		texName += ext;
+	//		return texName;
+	//	}
+	//}
 
 	return std::string();
 }

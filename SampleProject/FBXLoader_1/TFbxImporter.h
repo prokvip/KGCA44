@@ -45,6 +45,7 @@ struct TVertexWeight
 	{
 		m_iIndex.emplace_back(iIndex);
 		m_fWeight.emplace_back(fWeight);
+		m_iCounter = m_iIndex.size();
 		return m_iIndex.size();
 	};*/
 };
@@ -72,6 +73,7 @@ public:
 	std::vector<TMatrix>   m_matBindPose;
 	std::map<std::wstring, UINT>  m_FbxNodeNames;
 	std::map<UINT, std::wstring>  m_FbxNameNodes;
+	std::map<std::wstring, std::wstring>  m_FbxParentNameNodes;
 	//std::map<FbxNode*, UINT>  m_FbxNodes;
 
 	TMatrix     DxConvertMatrix(TMatrix m);
