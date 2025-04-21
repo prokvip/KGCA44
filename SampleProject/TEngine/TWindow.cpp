@@ -84,6 +84,7 @@ bool   TWindow::SetWindow(
     GetWindowRect(hWnd, &m_rtWindow);
     GetClientRect(hWnd, &m_rtClient);
     ShowWindow(hWnd, SW_SHOW);
+    ::SetActiveWindow(hWnd);
     m_hWnd = hWnd;
     g_hWnd = hWnd;
 	return true;
