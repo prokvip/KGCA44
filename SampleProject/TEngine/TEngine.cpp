@@ -152,18 +152,29 @@ void   TEngine::CoreRelease()
 
     Release();
 }
+void   TEngine::CoreReset()
+{
+    g_ptDeltaMouse.x = 0;
+    g_ptDeltaMouse.y = 0;
+    m_GameTimer.Reset();
+    m_Input.Reset();
+}
 bool TEngine::GameRun()
 {
     CoreInit();
    
     while (m_bRun)
     {            
-        if(!MessageProcess())
+        if (!MessageProcess() && m_bActive)
         {
             CoreFrame();
-            CoreRender();      
+            CoreRender();
             g_nMouseWheelDelta = m_nMouseWheelDelta = 0;
-        }        
+        }
+        if (m_bActive == false)
+        {
+            CoreReset();
+        }
     }	
     CoreRelease();
 	return true;

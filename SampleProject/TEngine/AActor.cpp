@@ -86,6 +86,20 @@ void AActor::PostRender()
 		m_fFrame += g_fSPF * 30 * 1.0f;
 		if (m_pCurrentAnimation != nullptr)
 		{
+			// root motion
+			auto iter = m_pCurrentAnimation->Mesh->m_FbxNodeNames.find(L"root");//90
+			if (iter != m_pCurrentAnimation->Mesh->m_FbxNodeNames.end())
+			{
+				auto mat = m_pCurrentAnimation->Mesh->m_Childs[iter->second]->m_AnimList[0];
+				
+				for (int iFrame = m_pCurrentAnimation->m_iStartFrame; 
+						iFrame < m_pCurrentAnimation->m_iEndFrame; iFrame++)
+				{
+					m_pCurrentAnimation->Mesh->m_Childs[iter->second]->m_AnimList[iFrame]._41 = mat._41;
+					m_pCurrentAnimation->Mesh->m_Childs[iter->second]->m_AnimList[iFrame]._42 = mat._42;
+					m_pCurrentAnimation->Mesh->m_Childs[iter->second]->m_AnimList[iFrame]._43 = mat._43;
+				}
+			}
 			if (m_fFrame >= m_pCurrentAnimation->m_iEndFrame) m_fFrame = m_iStartFrame;
 			for (auto child : m_pCurrentAnimation->Mesh->m_Childs)
 			{

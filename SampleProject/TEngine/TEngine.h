@@ -42,6 +42,7 @@ public:
 	virtual void   SetCamera(TCamera* pCamera=nullptr);
 public:
 	void   CoreInit();
+	void   CoreReset();
 	void   CoreFrame();
 	void   CoreRender();
 	void   CoreRelease();

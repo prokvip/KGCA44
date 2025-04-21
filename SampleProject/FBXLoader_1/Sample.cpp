@@ -18,8 +18,9 @@ void Sample::Init()
 		//{"../../data/fbx/Man.fbx"},
 		//{"../../data/fbx/Man.fbx"},
 		{"../../data/fbx/SKM_Manny.fbx"},
-		{"../../data/fbx/MM_Idle.fbx"},
-	
+		//{"../../data/fbx/MM_Idle.fbx"},
+		{"../../data/fbx/MM_Walk_Fwd.fbx"},
+		//{"../../data/fbx/MM_Run_Fwd.fbx"},
 		/*{"../../data/fbx/MM_run.fbx"},
 		{"../../data/fbx/MM_walk.fbx"},
 		{"../../data/fbx/Man.fbx"},	*/	
