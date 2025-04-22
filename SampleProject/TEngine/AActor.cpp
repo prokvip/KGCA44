@@ -145,7 +145,6 @@ void AActor::PostRender()
 					// todo
 					UINT iGIndex = Mesh->m_Childs[iChild]->m_matID[iBone];
 					auto nameiter = Mesh->m_Childs[iChild]->m_szNames[iBone];
-
 					TMatrix matBone = Mesh->m_Childs[iChild]->m_matBindPose[iBone];					
 					TMatrix matAnim;
 					TMatrix matAnimParent;
@@ -156,9 +155,9 @@ void AActor::PostRender()
 						if (iter != m_pCurrentAnimation->Mesh->m_FbxNodeNames.end())
 						{
 							auto animIndex = iter->second;
-							auto name1 = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_szName;
+							/*auto name1 = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_szName;
 							auto name2 = Mesh->m_Childs[iGIndex]->m_szName;
-							auto name3 = nameiter;							
+							auto name3 = nameiter;	*/						
 						
 							matAnim = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_matBoneAnim;
 						}

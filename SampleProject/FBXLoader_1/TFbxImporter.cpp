@@ -134,6 +134,7 @@ bool  TFbxImporter::Load(std::string loadfile, AActor* actor)
 	actor->SetMesh(mesh);*/
 
 	auto mesh = std::make_shared<UStaticMeshComponent>();
+	mesh.SetOwner(actor);
 	// 케릭터 당 m_matBindPose 행렬리스트
 	mesh->m_matBindPose.resize(m_FbxNodes.size());
 	for (int iNode = 0; iNode < m_FbxNodes.size(); iNode++)

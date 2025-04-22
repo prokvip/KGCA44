@@ -10,8 +10,8 @@ struct TScene
 struct TFbxNode
 {
 	BOOL         m_bMesh = FALSE;
-	WCHAR        m_szName[32];
-	WCHAR        m_szParentName[32];
+	WCHAR        m_szName[64];
+	WCHAR        m_szParentName[64];
 };
 struct TTrack
 {
@@ -101,7 +101,9 @@ struct TAssetFileHeader
 {
 	int				iVersion = 100;
 	int				iNumNodeCounter = 0;
+	int				iNumTexture = 0;
 	int				iMaxWeight = 0;
+	int				iNumWeight = 0;
 	int				isMesh = 0;
 	int				isSubMesh = 0; // 서브메터리얼 유무
 	int				iStartFrame = 0;

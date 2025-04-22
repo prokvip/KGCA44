@@ -10,5 +10,9 @@ public:
 	virtual void   Tick();
 	virtual void   Render();
 	virtual void   Destroy();
+	void SetOwner(AActor* pOwner)
+	{
+		m_pOwner = pOwner;
+	}
 };
 

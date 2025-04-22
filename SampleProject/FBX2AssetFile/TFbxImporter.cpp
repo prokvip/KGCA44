@@ -131,17 +131,13 @@ bool  TFbxImporter::Load(std::string loadfile, AAsset* actor)
 		for( int i=0; i < m_FbxNodes.size();i ++)
 		{
 			actor->m_expFbxNodes[i].m_bMesh  = m_FbxNodes[i]->m_bMesh;
-			_tcscpy_s(
-				actor->m_expFbxNodes[i].m_szName,
-				32,
-				m_FbxNodes[i]->m_szName.c_str()	);
-			_tcscpy_s(actor->m_expFbxNodes[i].m_szParentName,
-				32,
-				m_FbxNodes[i]->m_szParentName.c_str());
+			_tcscpy_s(actor->m_expFbxNodes[i].m_szName,	_countof(actor->m_expFbxNodes[i].m_szName),m_FbxNodes[i]->m_szName.c_str()	);
+			_tcscpy_s(actor->m_expFbxNodes[i].m_szParentName,_countof(actor->m_expFbxNodes[i].m_szParentName),m_FbxNodes[i]->m_szParentName.c_str());
 		}
 	}
 
 	auto mesh = std::make_shared<UStaticMeshComponent>();
+	mesh->SetOwner(actor);
 	// 케릭터 당 m_matBindPose 행렬리스트
 	//mesh->m_matBindPose.resize(m_FbxNodes.size());
 	for (int iNode = 0; iNode < m_FbxNodes.size(); iNode++)
@@ -423,10 +419,8 @@ void  TFbxImporter::PreProcess(tFbxTree& pParentNode)
 	pParentNode->m_szName = to_mw(node->GetName());
 	
 	m_FbxNodes.emplace_back(pParentNode);
-	m_FbxNodeNames.insert(std::make_pair(to_mw(node->GetName()),
-		m_FbxNodeNames.size()));
-	m_FbxNameNodes.insert(std::make_pair(m_FbxNodeNames.size() - 1,
-		to_mw(node->GetName())));
+	m_FbxNodeNames.insert(std::make_pair(to_mw(node->GetName()),m_FbxNodeNames.size()));
+	m_FbxNameNodes.insert(std::make_pair(m_FbxNodeNames.size() - 1,to_mw(node->GetName())));
 
 	m_FbxParentNameNodes.insert(std::make_pair(to_mw(node->GetName()), pParentNode->m_szParentName));
 	int iNumChild = node->GetChildCount();
