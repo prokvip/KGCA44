@@ -142,9 +142,11 @@ void AActor::PostRender()
 			{
 				for (int iBone = 0; iBone < Mesh->m_Childs[iChild]->m_matID.size(); iBone++)
 				{
+					// todo
 					UINT iGIndex = Mesh->m_Childs[iChild]->m_matID[iBone];
-					TMatrix matBone = Mesh->m_Childs[iChild]->m_matBindPose[iBone];
 					auto nameiter = Mesh->m_Childs[iChild]->m_szNames[iBone];
+
+					TMatrix matBone = Mesh->m_Childs[iChild]->m_matBindPose[iBone];					
 					TMatrix matAnim;
 					TMatrix matAnimParent;
 

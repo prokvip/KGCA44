@@ -18,7 +18,7 @@ void Sample::Init()
 		//{"../../data/fbx/Man.fbx"},
 		{"../../data/fbx/SKM_Manny.fbx"},
 		//{"../../data/fbx/MM_Idle.fbx"},
-		//{"../../data/fbx/MM_Walk_Fwd.fbx"},
+		{"../../data/fbx/MM_Walk_Fwd.fbx"},
 		//{"../../data/fbx/MM_Run_Fwd.fbx"},
 		/*{"../../data/fbx/MM_run.fbx"},
 		{"../../data/fbx/MM_walk.fbx"},
@@ -30,14 +30,14 @@ void Sample::Init()
 		//{L"../../data/fbx/Man.asset"},
 		{L"../../data/fbx/SKM_Manny.asset"},
 		//{L"../../data/fbx/MM_Idle.asset"},
-		//{L"../../data/fbx/MM_Walk_Fwd.asset"},
+		{L"../../data/fbx/MM_Walk_Fwd.asset"},
 		//{L"../../data/fbx/MM_Run_Fwd.asset"},
 		/*{L"../../data/fbx/MM_run.asset"},
 		{L"../../data/fbx/MM_walk.asset"},
 		{L"../../data/fbx/Man.asset"},	*/
 	};
 	// asset 출력
-	for (int iObj = 0; iObj < list.size(); iObj++)
+	/*for (int iObj = 0; iObj < list.size(); iObj++)
 	{
 		auto asset= std::make_shared<AAsset>();
 		m_FbxImporter.reset();
@@ -45,14 +45,15 @@ void Sample::Init()
 		{
 			AAsset::Export(asset.get(), assetlist[iObj]);
 		}
-	}
-	// asset 로드
+	}*/
+	//// asset 로드
 	for (int iObj = 0; iObj < list.size(); iObj++)
 	{
 		auto asset = std::make_shared<AAsset>();
 		if(AAsset::Import(assetlist[iObj], asset ))
 		{			
 		}
+		m_FbxObjs.emplace_back(asset);
 	}
 
 	D3D11_INPUT_ELEMENT_DESC layoutiw[] =
@@ -73,18 +74,30 @@ void Sample::Init()
 	m_FbxObjs.resize(list.size());
 	for (int iObj = 0; iObj < list.size(); iObj++)
 	{
-		m_FbxObjs[iObj] = std::make_shared<AAsset>();
+		//m_FbxObjs[iObj] = std::make_shared<AAsset>();
 		m_FbxObjs[iObj]->Init();
 
-		auto fbxobj = m_FbxObjs[iObj].get();
-		m_FbxImporter.reset();
-		if (m_FbxImporter.Load(list[iObj], fbxobj))
+		auto fbxobj = m_FbxObjs[iObj].get();		
+		//m_FbxImporter.reset();
+		//if (m_FbxImporter.Load(list[iObj], fbxobj))
 		{
 			// 몇개의 오브젝트가 있느냐?
 			for (int iMesh = 0; iMesh < m_FbxObjs[iObj]->GetMesh()->m_Childs.size(); iMesh++)
-			{
+			{				
+
 				m_FbxObjs[iObj]->m_CurrentAnimMatrix.resize(m_FbxObjs[iObj]->GetMesh()->m_Childs.size());
 				auto child = m_FbxObjs[iObj]->GetMesh()->m_Childs[iMesh];
+				for (int i = 0; i < m_FbxObjs[iObj]->GetMesh()->m_Childs.size(); i++)
+				{
+					if (_tcscmp(fbxobj->m_ptNodeList[iMesh].m_szParentName,
+						fbxobj->m_ptNodeList[i].m_szName) == 0)
+					{
+						child->m_pParent = 
+							m_FbxObjs[iObj]->GetMesh()->m_Childs[i].get();
+						break;
+					}
+				}
+
 				if (child->m_bRenderMesh)
 				{
 					if (child->m_SubChilds.size() == 0)
@@ -136,11 +149,11 @@ void Sample::Init()
 
 							auto pMaterial = std::make_shared<UMaterial>();
 							std::wstring texPath = L"../../data/fbx/";
-							if (child->m_csTextures[iSubMaterial].empty() == false)
+							/*if (child->m_csTextures[iSubMaterial].empty() == false)
 							{
 								texPath += child->m_csTextures[iSubMaterial];
 							}
-							else
+							else*/
 							{
 								if (iSubMaterial == 0) texPath += L"T_Manny_02_D.PNG";
 								else texPath += L"T_Manny_01_D.PNG";
@@ -160,7 +173,7 @@ void Sample::Init()
 		}
 	}
 
-	m_FbxObjs[0]->m_pCurrentAnimation = m_FbxObjs[0].get();
+	m_FbxObjs[0]->m_pCurrentAnimation = m_FbxObjs[1].get();
 	//g_pCamera->m_fPitch = T_Pi * 0.25f;
 	g_pCamera->CreateViewMatrix(
 		{ 0, 0, -100.0f },

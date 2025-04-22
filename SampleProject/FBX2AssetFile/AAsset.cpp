@@ -24,26 +24,25 @@ bool AAsset::Import(std::wstring szFileName,
 		auto child = std::make_shared<UPrimitiveComponent>();
 
 		TAssetFileHeader childheader;
-		fread(&childheader, sizeof(TAssetFileHeader), 1, fp);
-
-		child->m_AnimList.resize(childheader.iNumTrack);
-		child->m_matBindPose.resize(fileHeader.iBindposeMatrix);
-
+		fread(&childheader, sizeof(TAssetFileHeader), 1, fp);				
+		child->m_bRenderMesh = childheader.isMesh;
 		if (childheader.isMesh > 0)
 		{
+			child->m_matBindPose.resize(childheader.iBindposeMatrix);
 			fread(&child->m_matBindPose.at(0),
 				sizeof(TMatrix),
 				childheader.iBindposeMatrix, fp);
 		}
 		if (childheader.iNumTrack > 0)
 		{
-			fread(&child->m_AnimList,
+			child->m_AnimList.resize(childheader.iNumTrack);
+			fread(&child->m_AnimList.at(0),
 				sizeof(TMatrix), childheader.iNumTrack, fp);
 		}
 
 		if (childheader.isSubMesh > 0)
 		{
-			for (int isubchild = 0; isubchild < childheader.iSubVertexBufferCounter; isubchild)
+			for (int isubchild = 0; isubchild < childheader.iSubVertexBufferCounter; isubchild++)
 			{
 				auto subchild = std::make_shared<UPrimitiveComponent>();
 				
@@ -55,13 +54,12 @@ bool AAsset::Import(std::wstring szFileName,
 					fread(&subchild->m_vVertexList.at(0), sizeof(PNCT_VERTEX), iSize, fp);
 				}
 
-				/*iSize = sub->m_vIndexList.size();
 				fread(&iSize, sizeof(int), 1, fp);
 				if (iSize > 0)
 				{
 					subchild->m_vIndexList.resize(iSize);
 					fread(&subchild->m_vIndexList.at(0), sizeof(DWORD), iSize, fp);
-				}*/
+				}
 
 				fread(&iSize, sizeof(int), 1, fp);
 				if (iSize > 0)
@@ -135,7 +133,7 @@ bool  AAsset::Export(AAsset* tFile, std::wstring szFileName)
 		ZeroMemory(&header, sizeof(header));	
 		_tcscpy_s(header.szName, 32,mesh->m_szName.c_str());
 		header.isMesh = mesh->m_bRenderMesh;
-		header.iBindposeMatrix = tFile->GetMesh()->m_matBindPose.size();
+		header.iBindposeMatrix = mesh->m_matBindPose.size();
 		header.isSubMesh = (mesh->m_SubChilds.size() > 0) ? 1 : 0;
 		header.iSubVertexBufferCounter = mesh->m_SubChilds.size();
 		header.iSubIndexBufferCounter = 0;
@@ -169,38 +167,50 @@ bool  AAsset::Export(AAsset* tFile, std::wstring szFileName)
 			{
 				int iSize = sub->m_vVertexList.size();
 				fwrite(&iSize, sizeof(int), 1, fp);
-				if (iSize <= 0) continue;
-				fwrite(&sub->m_vVertexList.at(0), 
-					sizeof(PNCT_VERTEX), iSize, fp);
+				if (iSize > 0)
+				{
+					fwrite(&sub->m_vVertexList.at(0),
+						sizeof(PNCT_VERTEX), iSize, fp);
+				}
 			
 				iSize = sub->m_vIndexList.size();
 				fwrite(&iSize, sizeof(int), 1, fp);
-				if (iSize <= 0) continue;
-				fwrite(&sub->m_vIndexList.at(0), sizeof(DWORD), iSize, fp);
+				if (iSize > 0)
+				{
+					fwrite(&sub->m_vIndexList.at(0), sizeof(DWORD), iSize, fp);
+				}
 			
 				iSize = sub->m_vIWList.size();
 				fwrite(&iSize, sizeof(int), 1, fp);
-				if (iSize <= 0) continue;
-				fwrite(&sub->m_vIWList.at(0), sizeof(IW_VERTEX), iSize, fp);
+				if (iSize > 0)
+				{
+					fwrite(&sub->m_vIWList.at(0), sizeof(IW_VERTEX), iSize, fp);
+				}
 			}
 		}
 		else
 		{
 			int iSize = mesh->m_vVertexList.size();
 			fwrite(&iSize, sizeof(int), 1, fp);
-			if (iSize <= 0) continue;
-			fwrite(&mesh->m_vVertexList.at(0),
-				sizeof(PNCT_VERTEX), iSize, fp);
+			if (iSize > 0)
+			{
+				fwrite(&mesh->m_vVertexList.at(0),
+					sizeof(PNCT_VERTEX), iSize, fp);
+			}
 
 			iSize = mesh->m_vIndexList.size();
 			fwrite(&iSize, sizeof(int), 1, fp);
-			if (iSize <= 0) continue;
-			fwrite(&mesh->m_vIndexList.at(0), sizeof(DWORD), iSize, fp);
+			if (iSize > 0)
+			{
+				fwrite(&mesh->m_vIndexList.at(0), sizeof(DWORD), iSize, fp);
+			}
 
 			iSize = mesh->m_vIWList.size();
 			fwrite(&iSize, sizeof(int), 1, fp);
-			if (iSize <= 0) continue;
-			fwrite(&mesh->m_vIWList.at(0), sizeof(IW_VERTEX), iSize, fp);
+			if (iSize > 0)
+			{
+				fwrite(&mesh->m_vIWList.at(0), sizeof(IW_VERTEX), iSize, fp);
+			}
 		}
 	}
 	err = fclose(fp);
