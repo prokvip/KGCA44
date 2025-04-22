@@ -3,5 +3,7 @@
 
 class UMeshComponent : public UPrimitiveComponent
 {
+public:
+
 };
 

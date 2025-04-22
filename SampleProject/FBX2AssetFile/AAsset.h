@@ -1,5 +1,5 @@
 #pragma once
-#include "TStd.h"
+#include "AActor.h"
 #define MAX_BONE_MATRICES 255
 struct TScene
 {
@@ -9,9 +9,9 @@ struct TScene
 };
 struct TFbxNode
 {
-	BOOL         isMesh = FALSE;
-	WCHAR        szName[32];
-	WCHAR        szParentName[32];
+	BOOL         m_bMesh = FALSE;
+	WCHAR        m_szName[32];
+	WCHAR        m_szParentName[32];
 };
 struct TTrack
 {
@@ -102,16 +102,19 @@ struct TAssetFileHeader
 	int				iVersion = 100;
 	int				iNumNodeCounter = 0;
 	int				iMaxWeight = 0;
+	int				isMesh = 0;
 	int				isSubMesh = 0; // 서브메터리얼 유무
 	int				iStartFrame = 0;
 	int				iLastFrame = 0;
 	int				iFrameSpeed = 30;
 	int				iLength = 0;
 	int				iNumTrack = 0;
+	int				iBindposeMatrix=0;
 	int				iChildNodeCounter = 0;
 	int				iSubVertexBufferCounter = 0;
 	int				iSubIndexBufferCounter = 0;
 	int				iSubIWVertexBufferCounter = 0;
+	WCHAR			szName[32] = { 0, };
 	T::TMatrix		matWorld;
 };
 struct TKgcFileTrack
@@ -127,8 +130,9 @@ struct  TBoneMatrix
 {
 	T::TMatrix  matBone[MAX_BONE_MATRICES];
 };
-
-class TAssetFileFormat
+// fbx -> load -> render
+// fbx -> load -> asset -> import -> render
+class AAsset : public AActor
 {
 public:
 	TAssetFileHeader		m_Header;
@@ -137,30 +141,29 @@ public:
 	std::vector<std::wstring> m_szTexFileList;
 	using vList = std::vector<PNCT_VERTEX>;
 	using iList = std::vector<DWORD>;
-	using iwList = std::vector<IW_Vertex>;
+	using iwList = std::vector<IW_VERTEX>;
 	vList			m_vVertexList;		 // 프레임 화면 정보
 	iList			m_vIndexList;
 	iwList			m_vIWVertexList;
-	//vList			m_vMeshVertexList;
+	std::vector<TFbxNode>   m_expFbxNodes;
 	std::vector<vList>		m_vSubMeshVertexList;
 	std::vector<iList>		m_vSubMeshIndexList;
-	std::vector<T::TMatrix> m_pAnimationMatrix;
-	std::vector<std::shared_ptr<TAssetFileFormat>> m_ChildList;
+	std::vector<TMatrix> m_pAnimationMatrix;
+	std::vector<std::shared_ptr<AAsset>> m_ChildList;
 	// 모든 행렬에 대한 에니메이션 프레임 저장
-	using boneFrameMatrix = std::vector<T::TMatrix>;
+	using boneFrameMatrix = std::vector<TMatrix>;
 		boneFrameMatrix m_pAnimationMatrixList;// 정적에니메이션	
 	std::vector<boneFrameMatrix> m_pBoneAnimMatrix;
 	// Skinning : 전체 트리 노드가 본 좌표계로 변환되는 행렬
-	std::vector<T::TMatrix>		m_matBindPose;
+	std::vector<TMatrix>		m_matBindPose;
 	std::vector<int>			m_pUsedBoneIndexList;
 	std::vector<TFbxNode>		m_ptNodeList;
 	std::vector<TWeight>        m_WeightList;
 	std::vector<iwList>			m_vSubMeshIWVertexList;
 	public:
-		static bool Export(TAssetFileFormat* tFile, 
+		static bool Export(AAsset* tFile,
 							std::wstring szFileName);
-		//static bool Import( std::wstring szFileName,
-		//					std::wstring szShaderFile,
-		//					std::shared_ptr<TFbxModel>& tFbxModel);
+		static bool Import( std::wstring szFileName,
+							std::shared_ptr<AAsset>& tFbxModel);
 };
 

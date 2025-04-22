@@ -1,7 +1,183 @@
 #include "TFbxImporter.h"
-void        TFbxImporter::GetAnimation(
-	FbxNode* node,
-	TAssetFileFormat* asset)
+void  TFbxImporter::reset()
+{
+	Destroy();
+}
+bool    TFbxImporter::ParseMeshSkinning(FbxMesh* fbxmesh,
+	UPrimitiveComponent* actor)
+{
+	m_VertexWeights.clear();
+	int iDeformerCount = fbxmesh->GetDeformerCount(FbxDeformer::eSkin);
+	if (iDeformerCount <= 0) return false;
+	// 중요 : 메쉬에 정점 개수와 iVretexCount는 같다.
+	int iVertexCount = fbxmesh->GetControlPointsCount();
+	m_VertexWeights.resize(iVertexCount);
+
+	for (int iDeformer = 0; iDeformer < iDeformerCount; iDeformer++)
+	{
+		FbxSkin* pSkin = (FbxSkin*)fbxmesh->GetDeformer(iDeformer, FbxDeformer::eSkin);
+		if (pSkin == nullptr) continue;
+		int iClusterCount = pSkin->GetClusterCount();
+		for (int iCluster = 0; iCluster < iClusterCount; iCluster++)
+		{
+			FbxCluster* pCluster = pSkin->GetCluster(iCluster);
+			if (pCluster == nullptr) continue;
+			FbxNode* pLinkNode = pCluster->GetLink();
+			if (pLinkNode == nullptr) continue;
+			auto iter = m_FbxNodeNames.find(to_mw(pLinkNode->GetName()));
+			UINT iWeightIndex = 0;
+			if (iter != m_FbxNodeNames.end())
+			{
+				iWeightIndex = iter->second;
+			}
+
+			/// 본 오브젝트의 좌표계 변환 행렬
+			FbxAMatrix matXBindPosLink;
+			FbxAMatrix matReferenceGlobalInitPosition;
+			pCluster->GetTransformLinkMatrix(matXBindPosLink);
+			pCluster->GetTransformMatrix(matReferenceGlobalInitPosition);
+			FbxAMatrix matWorldBindPose = matReferenceGlobalInitPosition.Inverse() * matXBindPosLink;
+			FbxAMatrix matBindPose = matWorldBindPose.Inverse(); // 본의 로컬 좌표계로 변환
+			TMatrix mat = DxConvertMatrix(ConvertAMatrix(matBindPose));
+			actor->m_matBindPose.emplace_back(mat);
+			actor->m_matID.emplace_back(iWeightIndex);
+			actor->m_szNames.emplace_back(to_mw(pLinkNode->GetName()));
+
+			int iClusterSize = pCluster->GetControlPointIndicesCount();
+			int* pFbxNodeIndex = pCluster->GetControlPointIndices();
+			double* pFbxNodeWegiht = pCluster->GetControlPointWeights();
+			for (int v = 0; v < iClusterSize; v++)
+			{
+				int iIndex = pFbxNodeIndex[v];
+				float fWeight = pFbxNodeWegiht[v];
+				int iMaxCnt = m_VertexWeights[iIndex].Insert(iWeightIndex, fWeight);
+				if (m_iMaxWeightCount < iMaxCnt)
+				{
+					m_iMaxWeightCount = iMaxCnt;
+				}
+			}
+		}
+	}
+	return true;
+}
+TMatrix     TFbxImporter::DxConvertMatrix(TMatrix m)
+{
+	TMatrix mat;
+	mat._11 = m._11; mat._12 = m._13; mat._13 = m._12;
+	mat._21 = m._31; mat._22 = m._33; mat._23 = m._32;
+	mat._31 = m._21; mat._32 = m._23; mat._33 = m._22;
+	mat._41 = m._41; mat._42 = m._43; mat._43 = m._42;
+	mat._14 = mat._24 = mat._34 = 0.0f;
+	mat._44 = 1.0f;
+
+
+	TVector3 v0, v1, v2, v3;
+	v0 = { mat.m[0][0], mat.m[0][1], mat.m[0][2] };
+	v1 = { mat.m[1][0], mat.m[1][1], mat.m[1][2] };
+	v2 = { mat.m[2][0], mat.m[2][1], mat.m[2][2] };
+	v3 = v1 ^ v2;// D3DXVec3Cross(&v3, &v1, &v2);
+	if ((v3 | v0) < 0.0f)
+	{
+		TMatrix matNegative;
+		matNegative.Scale(-1.0f, -1.0f, -1.0f);
+		mat = mat * matNegative;
+	}
+
+	return mat;
+}
+TMatrix     TFbxImporter::ConvertAMatrix(FbxAMatrix& m)
+{
+	TMatrix mat;
+	float* pMatArray = reinterpret_cast<float*>(&mat);
+	double* pSrcArray = reinterpret_cast<double*>(&m);
+	for (int i = 0; i < 16; i++)
+	{
+		pMatArray[i] = pSrcArray[i];
+	}
+	return mat;
+}
+bool  TFbxImporter::Load(std::string loadfile, AAsset* actor)
+{
+	actor->m_szFileName = to_mw(loadfile);
+	m_pManager = FbxManager::Create();
+	m_pImporter = FbxImporter::Create(m_pManager, "");
+	m_pScene = FbxScene::Create(m_pManager, "");
+
+	if (!m_pImporter->Initialize(loadfile.c_str()))
+	{
+		Destroy();
+		return false;
+	}
+	if (!m_pImporter->Import(m_pScene))
+	{
+		Destroy();
+		return false;
+	}
+
+	FbxAxisSystem::MayaZUp.ConvertScene(m_pScene);
+	m_pRootNode = m_pScene->GetRootNode();
+	auto tFbxNodeRoot = std::make_shared<TFbxNodeTree>(m_pRootNode);
+	tFbxNodeRoot->m_szName = to_mw(m_pRootNode->GetName());
+	tFbxNodeRoot->m_szParentName = L"none";
+	PreProcess(tFbxNodeRoot);
+
+	GetAnimation();
+	actor->m_iStartFrame = m_iStartFrame;
+	actor->m_iEndFrame = m_iEndFrame;
+	{
+		actor->m_Header.iLastFrame = m_iEndFrame;
+		actor->m_Header.iStartFrame = m_iStartFrame;
+		actor->m_expFbxNodes.resize(m_FbxNodes.size());
+		for( int i=0; i < m_FbxNodes.size();i ++)
+		{
+			actor->m_expFbxNodes[i].m_bMesh  = m_FbxNodes[i]->m_bMesh;
+			_tcscpy_s(
+				actor->m_expFbxNodes[i].m_szName,
+				32,
+				m_FbxNodes[i]->m_szName.c_str()	);
+			_tcscpy_s(actor->m_expFbxNodes[i].m_szParentName,
+				32,
+				m_FbxNodes[i]->m_szParentName.c_str());
+		}
+	}
+
+	auto mesh = std::make_shared<UStaticMeshComponent>();
+	// 케릭터 당 m_matBindPose 행렬리스트
+	//mesh->m_matBindPose.resize(m_FbxNodes.size());
+	for (int iNode = 0; iNode < m_FbxNodes.size(); iNode++)
+	{
+		auto node = m_FbxNodes[iNode];
+		auto child = std::make_shared<UPrimitiveComponent>();
+		node->m_iIndex = child->m_iIndex = iNode;
+		child->m_bRenderMesh = false;
+		if (node->m_bMesh)
+		{
+			child->m_bRenderMesh = true;
+			auto mesh = node->m_pFbxNode->GetMesh();
+			// 메쉬 당 m_matBindPose 행렬리스트
+			ParseMesh(mesh, child.get());
+		}
+		child->m_szName = node->m_szName;
+		for (int i = 0; mesh->m_Childs.size(); i++)
+		{
+			if (mesh->m_Childs[i]->m_szName == node->m_szParentName)
+			{
+				child->m_pParent = mesh->m_Childs[i].get();
+				break;
+			}
+		}
+		GetNodeAnimation(node->m_pFbxNode, child.get());
+		mesh->m_Childs.emplace_back(child);
+	}
+	mesh->m_FbxNodeNames = m_FbxNodeNames;
+	mesh->m_FbxNameNodes = m_FbxNameNodes;
+	mesh->m_FbxParentNameNodes = m_FbxParentNameNodes;
+	actor->SetMesh(mesh);
+
+	Destroy();
+	return true;
+}
+void        TFbxImporter::GetAnimation()
 {
 	FbxTime::SetGlobalTimeMode(FbxTime::eFrames30);
 	FbxAnimStack* stack = m_pScene->GetSrcObject<FbxAnimStack>(0);
@@ -15,92 +191,40 @@ void        TFbxImporter::GetAnimation(
 	FbxTime Duration = LocalTimeSpan.GetDuration();
 
 	FbxTime::EMode TimeMode = FbxTime::GetGlobalTimeMode();
-	FbxLongLong s = start.GetFrameCount(TimeMode);
-	FbxLongLong n = end.GetFrameCount(TimeMode);
+	m_iStartFrame = start.GetFrameCount(TimeMode);
+	m_iEndFrame = end.GetFrameCount(TimeMode);
+}
+void        TFbxImporter::GetNodeAnimation(
+	FbxNode* node,
+	UPrimitiveComponent* actor)
+{
+	FbxTime::EMode TimeMode = FbxTime::GetGlobalTimeMode();
 	FbxTime time;
-	for (FbxLongLong t = s; t <= n; t++)
+	for (FbxLongLong t = m_iStartFrame; t <= m_iEndFrame; t++)
 	{
 		time.SetFrame(t, TimeMode);
 		FbxAMatrix matGlobal = node->EvaluateGlobalTransform(time);
-		T::TMatrix mat = DxConvertMatrix(ConvertAMatrix(matGlobal));
-		asset->m_pAnimationMatrixList.push_back(mat);
+		FbxNode* pParent = node->GetParent();
+		FbxAMatrix matParent;
+		if (pParent)
+		{
+			matParent = pParent->EvaluateGlobalTransform(time);
+		}
+		FbxAMatrix matLocal = matParent.Inverse() * matGlobal;
+		FbxAMatrix matWorld = matParent * matLocal;
+		TMatrix mat = DxConvertMatrix(ConvertAMatrix(matLocal));;
+		actor->m_AnimList.push_back(mat);
 	}
-}
-T::TMatrix     TFbxImporter::DxConvertMatrix(T::TMatrix m)
-{
-	T::TMatrix mat;
-	mat._11 = m._11; mat._12 = m._13; mat._13 = m._12;
-	mat._21 = m._31; mat._22 = m._33; mat._23 = m._32;
-	mat._31 = m._21; mat._32 = m._23; mat._33 = m._22;
-	mat._41 = m._41; mat._42 = m._43; mat._43 = m._42;
-	mat._14 = mat._24 = mat._34 = 0.0f;
-	mat._44 = 1.0f;
-	return mat;
-}
-T::TMatrix     TFbxImporter::ConvertAMatrix(FbxAMatrix& m)
-{
-	T::TMatrix mat;
-	float* pMatArray = reinterpret_cast<float*>(&mat);
-	double* pSrcArray = reinterpret_cast<double*>(&m);
-	for (int i = 0; i < 16; i++)
-	{
-		pMatArray[i] = pSrcArray[i];
-	}
-	return mat;
-}
-bool  TFbxImporter::Load(std::string loadfile, TAssetFileFormat* asset)
-{
-	asset->m_szFileName = to_mw(loadfile);
-
-	m_pManager	= FbxManager::Create();
-	/*FbxIOSettings* ios = FbxIOSettings::Create(m_pManager, IOSROOT);
-	m_pManager->SetIOSettings(ios);*/
-
-	m_pImporter = FbxImporter::Create(m_pManager,"");
-	m_pScene	= FbxScene::Create(m_pManager,"");
-	
-	if (!m_pImporter->Initialize(loadfile.c_str()))
-	{
-		Destroy();
-		return false;
-	}
-	if (!m_pImporter->Import(m_pScene))
-	{
-		Destroy();
-		return false;
-	}
-
-	//FbxAxisSystem	 m_SceneAxisSystem = m_pScene->GetGlobalSettings().GetAxisSystem();
-	FbxAxisSystem::MayaZUp.ConvertScene(m_pScene);
-	//FbxSystemUnit	m_SceneSystemUnit = m_pScene->GetGlobalSettings().GetSystemUnit();
-
-	//if (m_SceneSystemUnit.GetScaleFactor() != 1)	//if (m_SceneSystemUnit != FbxSystemUnit::cm)
-	//{
-	//	FbxSystemUnit::cm.ConvertScene(m_pScene);
-	//}
-
-	// vb, ib, texture, animation
-	m_pRootNode = m_pScene->GetRootNode();
-	PreProcess(m_pRootNode);
-	
-	for (int iMesh = 0; iMesh < m_FbxMeshs.size(); iMesh++)
-	{
-		auto child = std::make_shared<TAssetFileFormat>();
-		ParseMesh(m_FbxMeshs[iMesh], child.get());	
-		asset->m_ChildList.emplace_back(child);
-	}	
-
-	Destroy();
-	return true;
 }
 void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
-	TAssetFileFormat* asset)
-{	
+	UPrimitiveComponent* actor)
+{
+	bool bSkinned = ParseMeshSkinning(fbxmesh, actor);
 	/// 기하행렬(초기 정점 위치를 변환 할 때 사용)
 	FbxNode* pNode = fbxmesh->GetNode();
 	FbxAMatrix geom;
 	FbxVector4 trans = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
-	FbxVector4 rot   = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+	FbxVector4 rot = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
 	FbxVector4 scale = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
 	geom.SetT(trans);
 	geom.SetR(rot);
@@ -109,7 +233,7 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 	normalMatrix = normalMatrix.Inverse();
 	normalMatrix = normalMatrix.Transpose();
 
-	GetAnimation(pNode, asset);
+	//GetAnimation(pNode, actor);
 
 	// 레이어 ( 1번에 랜더링, 여러번에 걸쳐서 랜더링 개념)
 	std::vector<FbxLayerElementUV*>				VertexUVSet;
@@ -141,22 +265,21 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 
 	/// texture filename
 	int iNumMtl = pNode->GetMaterialCount();
-	if (iNumMtl <= 0)
+	if (iNumMtl > 1)
 	{
-		iNumMtl = 1;
+		actor->m_SubChilds.resize(iNumMtl);
+		for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
+		{
+			actor->m_SubChilds[iMtrl] = std::make_shared<UPrimitiveComponent>();
+		}
 	}
-	if (iNumMtl >= 1)
-	{
-		asset->m_vSubMeshVertexList.resize(iNumMtl);
-		asset->m_vSubMeshIndexList.resize(iNumMtl);
-	}
-	for (int iMtrl=0; iMtrl < iNumMtl; iMtrl++)
+	for (int iMtrl = 0; iMtrl < iNumMtl; iMtrl++)
 	{
 		FbxSurfaceMaterial* pSurface = pNode->GetMaterial(iMtrl);
 		if (pSurface)
 		{
-			std::string texName = ParseMaterial(pSurface);			
-			asset->m_szTexFileList.emplace_back(to_mw(texName));
+			std::string texName = ParseMaterial(pSurface);
+			actor->m_csTextures.emplace_back(to_mw(texName));
 		}
 	}
 
@@ -241,38 +364,81 @@ void TFbxImporter::ParseMesh(FbxMesh* fbxmesh,
 					// DX       ""         U, 1.0f-V  
 					v.t.x = uv.mData[0];
 					v.t.y = 1.0f - uv.mData[1];
-				}		
+				}
 
 				int iSubMateriaIndex = 0;
 				if (MaterialSet.size() > 0)
 				{
 					iSubMateriaIndex = GetSubMaterialIndex(iPoly, MaterialSet[0]);
 				}
-				if( asset->m_vSubMeshVertexList.size() <= 0)
-					asset->m_vSubMeshVertexList[0].emplace_back(v);
+				IW_VERTEX iw;
+				iw.i1[0] = actor->m_iIndex;
+				iw.w1[0] = 1.0f;
+				if (bSkinned)
+				{
+					TVertexWeight& weight = m_VertexWeights[CornerIndex[index]];
+					for (int i = 0; i < weight.m_iCounter; i++)
+					{
+						if (i >= 4)
+						{
+							iw.i2[i - 4] = weight.m_iIndex[i];
+							iw.w2[i - 4] = weight.m_fWeight[i];
+						}
+						else
+						{
+							iw.i1[i] = weight.m_iIndex[i];
+							iw.w1[i] = weight.m_fWeight[i];
+						}
+					}
+				}
+				if (actor->m_SubChilds.size() <= 0)
+				{
+					actor->m_vVertexList.emplace_back(v);
+					actor->m_vIWList.emplace_back(iw);
+				}
 				else
-					asset->m_vSubMeshVertexList[iSubMateriaIndex].emplace_back(v);
+				{
+					actor->m_SubChilds[iSubMateriaIndex]->m_vVertexList.emplace_back(v);
+					actor->m_SubChilds[iSubMateriaIndex]->m_vIWList.emplace_back(iw);
+				}
 			}
 		}
 
 
 		iBasePolyIndex += iPolySize;
 	}
-	
+
 }
-void  TFbxImporter::PreProcess(FbxNode* pNode)
+void  TFbxImporter::PreProcess(tFbxTree& pParentNode)
 {
-	if (pNode == nullptr) return;
-	FbxMesh* pMesh = pNode->GetMesh();
+	if (pParentNode == nullptr) return;
+	FbxNode* node = pParentNode->m_pFbxNode;
+	FbxMesh* pMesh = node->GetMesh();
+	pParentNode->m_bMesh = false;
 	if (pMesh != nullptr)
 	{
 		m_FbxMeshs.emplace_back(pMesh);
+		pParentNode->m_bMesh = true;
 	}
-	int iNumChild = pNode->GetChildCount();
+	pParentNode->m_szName = to_mw(node->GetName());
+	
+	m_FbxNodes.emplace_back(pParentNode);
+	m_FbxNodeNames.insert(std::make_pair(to_mw(node->GetName()),
+		m_FbxNodeNames.size()));
+	m_FbxNameNodes.insert(std::make_pair(m_FbxNodeNames.size() - 1,
+		to_mw(node->GetName())));
+
+	m_FbxParentNameNodes.insert(std::make_pair(to_mw(node->GetName()), pParentNode->m_szParentName));
+	int iNumChild = node->GetChildCount();
 	for (int iNode = 0; iNode < iNumChild; iNode++)
 	{
-		FbxNode* pChild = pNode->GetChild(iNode);
-		PreProcess(pChild);
+		FbxNode* pChild = node->GetChild(iNode);
+		auto tFbxChildTree = std::make_shared<TFbxNodeTree>(pChild);
+		tFbxChildTree->m_szName = to_mw(pChild->GetName());
+		tFbxChildTree->m_pFbxParentNode = node;
+		pParentNode->m_Childs.emplace_back(tFbxChildTree);
+		tFbxChildTree->m_szParentName = pParentNode->m_szName;		
+		PreProcess(tFbxChildTree);
 	}
 }
 void TFbxImporter::Destroy()
@@ -284,6 +450,10 @@ void TFbxImporter::Destroy()
 	m_pImporter = nullptr;
 	m_pManager = nullptr;
 	m_FbxMeshs.clear();
+	m_FbxNodes.clear();
+	m_matBindPose.clear();
+	m_FbxNodeNames.clear();
+	m_FbxNameNodes.clear();
 }
 
 void TFbxImporter::ReadTextureCoord(FbxMesh* pFbxMesh, FbxLayerElementUV* pUVSet,
@@ -449,33 +619,91 @@ FbxVector4 TFbxImporter::ReadNormal(const FbxMesh* mesh,
 
 
 std::string TFbxImporter::ParseMaterial(FbxSurfaceMaterial* pSurface)
-{		
-	auto property = pSurface->FindProperty(FbxSurfaceMaterial::sDiffuse);
-	if (property.IsValid())
+{
+	std::vector<std::string> surfacelist =
 	{
-		//std::string texName;
-		FbxFileTexture* texfile =
-			property.GetSrcObject<FbxFileTexture>(0);
-		if (texfile)
+		"FbxSurfaceMaterial::sShadingModel",
+		"FbxSurfaceMaterial::sMultiLayer",
+		"FbxSurfaceMaterial::sEmissive",
+		"FbxSurfaceMaterial::sEmissiveFactor",
+		"FbxSurfaceMaterial::sAmbient",
+		"FbxSurfaceMaterial::sAmbientFactor",
+		"FbxSurfaceMaterial::sDiffuse",
+		"FbxSurfaceMaterial::sDiffuseFactor",
+		"FbxSurfaceMaterial::sSpecular",
+		"FbxSurfaceMaterial::sSpecularFactor",
+		"FbxSurfaceMaterial::sShininess",
+		"FbxSurfaceMaterial::sBump",
+		"FbxSurfaceMaterial::sNormalMap",
+		"FbxSurfaceMaterial::sBumpFactor",
+		"FbxSurfaceMaterial::sTransparentColor",
+		"FbxSurfaceMaterial::sTransparencyFactor",
+		"FbxSurfaceMaterial::sReflection",
+		"FbxSurfaceMaterial::sReflectionFactor",
+		"FbxSurfaceMaterial::sDisplacementColor",
+		"FbxSurfaceMaterial::sDisplacementFactor",
+		"FbxSurfaceMaterial::sVectorDisplacementColor",
+		"FbxSurfaceMaterial::sVectorDisplacementFactor",
+	};
+	for (auto& str : surfacelist)
+	{
+		FbxProperty prop = pSurface->FindProperty(str.c_str());
+		if (prop.IsValid())
 		{
-			const char* szTexPath = texfile->GetFileName();
-			CHAR Drive[MAX_PATH];
-			CHAR Dir[MAX_PATH];
-			CHAR FName[MAX_PATH];
-			CHAR Ext[MAX_PATH];
-			_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
-			std::string texName = FName;
-			std::string ext = Ext;
-			if (ext == ".tga" || ext == ".TGA")
+			FbxString name = prop.GetName();
+			FbxDataType type = prop.GetPropertyDataType();
+			FbxDouble3 value = prop.Get<FbxDouble3>();
+			FbxDouble4 value4 = prop.Get<FbxDouble4>();
+			FbxDouble value1 = prop.Get<FbxDouble>();
+			FbxBool value2 = prop.Get<FbxBool>();
+
+			FbxFileTexture* texfile = prop.GetSrcObject<FbxFileTexture>(0);
+			if (texfile)
 			{
-				ext.clear();
-				ext = ".dds";
+				const char* szTexPath = texfile->GetFileName();
+				CHAR Drive[MAX_PATH];
+				CHAR Dir[MAX_PATH];
+				CHAR FName[MAX_PATH];
+				CHAR Ext[MAX_PATH];
+				_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
+				std::string texName = FName;
+				std::string ext = Ext;
+				if (ext == ".tga" || ext == ".TGA")
+				{
+					ext.clear();
+					ext = ".dds";
+				}
+				texName += ext;
+				return texName;
 			}
-			texName += ext;
-			return texName;
 		}
 	}
-	
+	//auto property = pSurface->FindProperty(FbxSurfaceMaterial::sDiffuse);
+	//if (property.IsValid())
+	//{
+	//	//std::string texName;
+	//	FbxFileTexture* texfile =
+	//		property.GetSrcObject<FbxFileTexture>(0);
+	//	if (texfile)
+	//	{
+	//		const char* szTexPath = texfile->GetFileName();
+	//		CHAR Drive[MAX_PATH];
+	//		CHAR Dir[MAX_PATH];
+	//		CHAR FName[MAX_PATH];
+	//		CHAR Ext[MAX_PATH];
+	//		_splitpath_s(szTexPath, Drive, Dir, FName, Ext);
+	//		std::string texName = FName;
+	//		std::string ext = Ext;
+	//		if (ext == ".tga" || ext == ".TGA")
+	//		{
+	//			ext.clear();
+	//			ext = ".dds";
+	//		}
+	//		texName += ext;
+	//		return texName;
+	//	}
+	//}
+
 	return std::string();
 }
 
