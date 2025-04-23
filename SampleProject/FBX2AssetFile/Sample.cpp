@@ -33,7 +33,7 @@ void Sample::Init()
 		{L"../../data/fbx/MM_Walk_Fwd.asset"},				
 	};
 	// asset 출력
-	/*for (int iObj = 0; iObj < list.size(); iObj++)
+	for (int iObj = 0; iObj < list.size(); iObj++)
 	{
 		auto asset= std::make_shared<AAsset>();
 		m_FbxImporter.reset();
@@ -41,7 +41,7 @@ void Sample::Init()
 		{
 			AAsset::Export(asset.get(), assetlist[iObj]);
 		}
-	}*/
+	}
 	//// asset 로드
 	for (int iObj = 0; iObj < list.size(); iObj++)
 	{
