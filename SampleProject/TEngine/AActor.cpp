@@ -175,6 +175,7 @@ void AActor::PostRender()
 								}
 								else
 								{
+									auto child = Mesh->m_FbxNodeNames.find(szParent->second);
 									auto szParent2 = Mesh->m_FbxParentNameNodes.find(szParent->second);
 									if (szParent2 != Mesh->m_FbxParentNameNodes.end())
 									{
@@ -183,6 +184,7 @@ void AActor::PostRender()
 										{
 											auto animIndex = iter->second;						
 											matAnimParent = m_pCurrentAnimation->Mesh->m_Childs[animIndex]->m_matBoneAnim;											
+											matAnimParent = Mesh->m_Childs[child->second]->m_AnimList[0] * matAnimParent;
 										}
 										else
 										{

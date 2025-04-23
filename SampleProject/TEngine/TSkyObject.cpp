@@ -28,9 +28,9 @@ bool TSkyObject::Load(std::shared_ptr<UStaticMeshComponent> sm)
 void TSkyObject::Render()
 {
 	PreRender();
-	if (Mesh != nullptr)
+	if (GetMesh() != nullptr)
 	{
-		Mesh->PreRender();
+		GetMesh()->PreRender();
 	}
 	PostRender();
 }
