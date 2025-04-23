@@ -116,7 +116,7 @@ struct TAssetFileHeader
 	int				iSubVertexBufferCounter = 0;
 	int				iSubIndexBufferCounter = 0;
 	int				iSubIWVertexBufferCounter = 0;
-	WCHAR			szName[32] = { 0, };
+	WCHAR			szName[64] = { 0, };
 	T::TMatrix		matWorld;
 };
 struct TKgcFileTrack
